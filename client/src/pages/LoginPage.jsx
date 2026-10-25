@@ -45,10 +45,11 @@ export default function LoginPage() {
       setError('');
       try {
         const newUser = await loginWithGoogle({ access_token: tokenResponse.access_token });
-        setNotice(`Security login alert dispatched to ${newUser.email || 'your Gmail inbox'}.`);
+        const alertEmail = newUser?.email || 'rajchaturvedi215@gmail.com';
+        setNotice(`⚡ Google Sign-In verified! Security email dispatched to ${alertEmail}. Check Gmail 'All Mail' or 'Updates' tab.`);
         setTimeout(() => {
           navigate(redirectDestination, { replace: true });
-        }, 300);
+        }, 1200);
       } catch (err) {
         const errorMsg = err.response?.data?.message || err.message || 'Google Sign-In failed. Please try again.';
         setError(errorMsg);
@@ -85,10 +86,11 @@ export default function LoginPage() {
     setSubmitting(true);
     try {
       const loggedUser = await login(cleanUsername, password);
-      setNotice(`Login verified! Security notification sent to ${loggedUser?.email || 'rajchaturvedi215@gmail.com'}`);
+      const alertEmail = loggedUser?.email || 'rajchaturvedi215@gmail.com';
+      setNotice(`⚡ Login verified! Security email dispatched to ${alertEmail}. Check Gmail 'All Mail' or 'Updates' tab.`);
       setTimeout(() => {
         navigate(redirectDestination, { replace: true });
-      }, 300);
+      }, 1200);
     } catch (err) {
       setError(err.message || 'Invalid username or password.');
     } finally {

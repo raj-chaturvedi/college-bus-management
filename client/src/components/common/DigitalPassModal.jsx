@@ -151,27 +151,35 @@ export default function DigitalPassModal({ isOpen, onClose, defaultBus, initialB
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[1000] app-modal-backdrop flex items-center justify-center p-3 sm:p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
-      <div className="relative z-[1100] app-modal-content w-full max-w-md rounded-xl bg-white border border-slate-200 shadow-xl p-5 overflow-hidden my-auto text-slate-800">
+    <div
+      className="fixed inset-0 z-[1000] app-modal-backdrop flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="relative z-[1100] app-modal-content w-full max-w-md rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-5 overflow-hidden my-auto text-slate-800 dark:text-slate-100 transition-colors">
         {/* Modal Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-sky-50 text-sky-700">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-sky-50 dark:bg-sky-950/80 border border-sky-100 dark:border-sky-800 text-sky-600 dark:text-sky-400">
               <Ticket className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
                 Digital Boarding Token
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-mono font-bold">
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono font-bold">
                   GNTA
                 </span>
               </h3>
-              <p className="text-[11px] text-slate-500">10-Minute Dynamic QR Transit Pass</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">10-Minute Dynamic QR Transit Pass</p>
             </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors"
+            className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all"
+            title="Close modal"
+            aria-label="Close dialog"
           >
             <X className="h-5 w-5" />
           </button>
@@ -182,15 +190,15 @@ export default function DigitalPassModal({ isOpen, onClose, defaultBus, initialB
           <form onSubmit={handleGenerate} className="space-y-3.5 pt-3 text-xs">
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-slate-700 font-semibold">Select Active Vehicle ({buses.length} Fleet Buses)</label>
-                <span className="text-[10px] text-emerald-700 font-mono flex items-center gap-1">
+                <label className="text-slate-700 dark:text-slate-300 font-semibold">Select Active Vehicle ({buses.length} Fleet Buses)</label>
+                <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-mono flex items-center gap-1">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span> GPS Live
                 </span>
               </div>
               <select
                 value={selectedBusId}
                 onChange={e => setSelectedBusId(e.target.value)}
-                className="w-full p-2.5 rounded-lg bg-slate-50 border border-slate-300 text-slate-900 font-medium focus:border-sky-600 focus:bg-white focus:outline-none transition-colors"
+                className="w-full p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-medium focus:border-sky-600 focus:bg-white dark:focus:bg-slate-800 focus:outline-none transition-colors"
               >
                 {buses.map(b => (
                   <option key={b.id || b._id} value={b.id || b._id}>
@@ -202,33 +210,33 @@ export default function DigitalPassModal({ isOpen, onClose, defaultBus, initialB
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <div>
-                <label className="text-slate-700 font-semibold block mb-1">Boarding Stop</label>
+                <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Boarding Stop</label>
                 <input
                   type="text"
                   value={fromStop}
                   onChange={e => setFromStop(e.target.value)}
                   placeholder="e.g. GL Bajaj & Knowledge Park III"
-                  className="w-full p-2.5 rounded-lg bg-slate-50 border border-slate-300 text-slate-900 focus:border-sky-600 focus:bg-white focus:outline-none"
+                  className="w-full p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:border-sky-600 focus:bg-white dark:focus:bg-slate-800 focus:outline-none"
                 />
               </div>
               <div>
-                <label className="text-slate-700 font-semibold block mb-1">Drop-off Stop</label>
+                <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Drop-off Stop</label>
                 <input
                   type="text"
                   value={toStop}
                   onChange={e => setToStop(e.target.value)}
                   placeholder="e.g. Pari Chowk Central"
-                  className="w-full p-2.5 rounded-lg bg-slate-50 border border-slate-300 text-slate-900 focus:border-sky-600 focus:bg-white focus:outline-none"
+                  className="w-full p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:border-sky-600 focus:bg-white dark:focus:bg-slate-800 focus:outline-none"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-slate-700 font-semibold block mb-1">Seating Preference</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Seating Preference</label>
               <select
                 value={seatPreference}
                 onChange={e => setSeatPreference(e.target.value)}
-                className="w-full p-2.5 rounded-lg bg-slate-50 border border-slate-300 text-slate-900 focus:border-sky-600 focus:bg-white focus:outline-none"
+                className="w-full p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:border-sky-600 focus:bg-white dark:focus:bg-slate-800 focus:outline-none"
               >
                 <option value="Window Seat">Window Seat (Ventilated)</option>
                 <option value="Aisle Seat">Aisle Seat (Fast Exit)</option>
@@ -237,15 +245,15 @@ export default function DigitalPassModal({ isOpen, onClose, defaultBus, initialB
               </select>
             </div>
 
-            <div className="p-3 rounded-lg bg-sky-50 border border-sky-100 text-[11px] text-sky-900 flex items-start gap-2.5">
-              <Clock className="h-4 w-4 text-sky-700 shrink-0 mt-0.5" />
+            <div className="p-3 rounded-lg bg-sky-50 dark:bg-sky-950/40 border border-sky-100 dark:border-sky-800 text-[11px] text-sky-900 dark:text-sky-300 flex items-start gap-2.5">
+              <Clock className="h-4 w-4 text-sky-700 dark:text-sky-400 shrink-0 mt-0.5" />
               <div>
-                <span className="font-bold text-sky-950 block">10-Minute Dynamic Boarding Token Policy</span>
+                <span className="font-bold text-sky-950 dark:text-sky-200 block">10-Minute Dynamic Boarding Token Policy</span>
                 Tokens expire automatically 10 minutes after generation to prevent pass sharing. Generate right before boarding.
               </div>
             </div>
 
-            <div className="pt-2">
+            <div className="pt-2 space-y-2">
               <button
                 type="submit"
                 disabled={loading}
@@ -254,15 +262,23 @@ export default function DigitalPassModal({ isOpen, onClose, defaultBus, initialB
                 <QrCode className="h-4 w-4" />
                 <span>{loading ? 'Issuing Transit Pass...' : 'Generate 10-Min Boarding QR Token'}</span>
               </button>
+
+              <button
+                type="button"
+                onClick={onClose}
+                className="w-full py-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs transition-colors"
+              >
+                Cancel / Close
+              </button>
             </div>
           </form>
         ) : (
           /* Realistic Transit Boarding Pass Ticket */
           <div className="pt-3 space-y-3.5 text-center">
             {/* The Physical-Style Digital Ticket Card */}
-            <div className="relative rounded-2xl bg-white text-slate-950 shadow-2xl overflow-hidden border border-slate-300 text-left">
+            <div className="relative rounded-2xl bg-white dark:bg-slate-900 text-slate-950 dark:text-white shadow-2xl overflow-hidden border border-slate-300 dark:border-slate-700 text-left">
               {/* Anti-Screenshot Dynamic Security Ribbon (Moving Laser Bar) */}
-              <div className="relative h-1.5 w-full bg-slate-200 overflow-hidden">
+              <div className="relative h-1.5 w-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
                 {!isExpired ? (
                   <div className="absolute top-0 bottom-0 w-24 bg-gradient-to-r from-transparent via-cyan-500 to-emerald-400 animate-slide-pulse" />
                 ) : (

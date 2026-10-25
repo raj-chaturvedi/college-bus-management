@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -40,16 +40,26 @@ import AdminDashboardPage from './pages/AdminDashboardPage';
 
 // Route Handlers for specific student action URLs
 function DigitalPassRouteHandler({ onOpenPassModal }) {
+  const hasTriggered = useRef(false);
+
   useEffect(() => {
-    if (onOpenPassModal) onOpenPassModal();
+    if (!hasTriggered.current && onOpenPassModal) {
+      hasTriggered.current = true;
+      onOpenPassModal();
+    }
   }, [onOpenPassModal]);
 
   return <DashboardPage onOpenPassModal={onOpenPassModal} />;
 }
 
 function AssistantRouteHandler({ onOpenAI }) {
+  const hasTriggered = useRef(false);
+
   useEffect(() => {
-    if (onOpenAI) onOpenAI();
+    if (!hasTriggered.current && onOpenAI) {
+      hasTriggered.current = true;
+      onOpenAI();
+    }
   }, [onOpenAI]);
 
   return <DashboardPage onOpenAI={onOpenAI} />;
@@ -57,23 +67,46 @@ function AssistantRouteHandler({ onOpenAI }) {
 
 // Authenticated Application Shell (Only mounted and rendered after valid authentication)
 function AuthenticatedAppLayout() {
+  const navigate = useNavigate();
   const [aiOpen, setAiOpen] = useState(false);
   const [globalPassOpen, setGlobalPassOpen] = useState(false);
   const [scannerOpen, setScannerOpen] = useState(false);
   const [activeRouteContext, setActiveRouteContext] = useState(null);
 
+  const handleOpenPass = useCallback(() => {
+    setGlobalPassOpen(true);
+  }, []);
+
+  const handleClosePass = useCallback(() => {
+    setGlobalPassOpen(false);
+    if (window.location.pathname.includes('digital-pass')) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [navigate]);
+
+  const handleOpenAI = useCallback(() => {
+    setAiOpen(true);
+  }, []);
+
+  const handleCloseAI = useCallback(() => {
+    setAiOpen(false);
+    if (window.location.pathname.includes('assistant')) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [navigate]);
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased font-sans transition-colors duration-200">
       {/* Top Navbar */}
       <Navbar
-        onOpenAI={() => setAiOpen(true)}
+        onOpenAI={handleOpenAI}
         onOpenScanner={() => setScannerOpen(true)}
         unreadAlertsCount={2}
       />
 
       <div className="flex-1 flex overflow-hidden">
         {/* Modern Sidebar (Desktop) */}
-        <Sidebar onOpenAI={() => setAiOpen(true)} />
+        <Sidebar onOpenAI={handleOpenAI} />
 
         {/* Dynamic Route Pages */}
         <main className="flex-1 overflow-y-auto p-3 sm:p-6 lg:p-8 pb-20 md:pb-8">
@@ -83,8 +116,8 @@ function AuthenticatedAppLayout() {
               path="dashboard"
               element={
                 <DashboardPage
-                  onOpenAI={() => setAiOpen(true)}
-                  onOpenPassModal={() => setGlobalPassOpen(true)}
+                  onOpenAI={handleOpenAI}
+                  onOpenPassModal={handleOpenPass}
                   onUpdateRouteContext={(ctx) => setActiveRouteContext(ctx)}
                 />
               }
@@ -93,8 +126,8 @@ function AuthenticatedAppLayout() {
               path="/dashboard"
               element={
                 <DashboardPage
-                  onOpenAI={() => setAiOpen(true)}
-                  onOpenPassModal={() => setGlobalPassOpen(true)}
+                  onOpenAI={handleOpenAI}
+                  onOpenPassModal={handleOpenPass}
                   onUpdateRouteContext={(ctx) => setActiveRouteContext(ctx)}
                 />
               }
@@ -103,8 +136,8 @@ function AuthenticatedAppLayout() {
               path="find-route"
               element={
                 <DashboardPage
-                  onOpenAI={() => setAiOpen(true)}
-                  onOpenPassModal={() => setGlobalPassOpen(true)}
+                  onOpenAI={handleOpenAI}
+                  onOpenPassModal={handleOpenPass}
                   onUpdateRouteContext={(ctx) => setActiveRouteContext(ctx)}
                 />
               }
@@ -124,29 +157,17 @@ function AuthenticatedAppLayout() {
             <Route path="/alerts" element={<AlertsPage />} />
             <Route
               path="digital-pass"
-              element={
-                <DigitalPassRouteHandler
-                  onOpenPassModal={() => setGlobalPassOpen(true)}
-                />
-              }
+              element={<DigitalPassRouteHandler onOpenPassModal={handleOpenPass} />}
             />
             <Route
               path="/digital-pass"
-              element={
-                <DigitalPassRouteHandler
-                  onOpenPassModal={() => setGlobalPassOpen(true)}
-                />
-              }
+              element={<DigitalPassRouteHandler onOpenPassModal={handleOpenPass} />}
             />
             <Route path="scan-pass" element={<VerifyPassPage />} />
             <Route path="verify-pass/:token" element={<VerifyPassPage />} />
             <Route
               path="assistant"
-              element={
-                <AssistantRouteHandler
-                  onOpenAI={() => setAiOpen(true)}
-                />
-              }
+              element={<AssistantRouteHandler onOpenAI={handleOpenAI} />}
             />
 
             {/* Admin Routes Protected by AdminRoute Guard */}
@@ -223,22 +244,22 @@ function AuthenticatedAppLayout() {
 
       {/* Mobile Bottom Navigation Bar (Visible only on mobile screens < md) */}
       <MobileBottomNav
-        onOpenAI={() => setAiOpen(true)}
-        onOpenPassModal={() => setGlobalPassOpen(true)}
+        onOpenAI={handleOpenAI}
+        onOpenPassModal={handleOpenPass}
       />
 
       {/* Slide-over College Bus AI Assistant Drawer */}
       <AiChatDrawer
         isOpen={aiOpen}
-        onClose={() => setAiOpen(false)}
-        onOpenPassModal={() => setGlobalPassOpen(true)}
+        onClose={handleCloseAI}
+        onOpenPassModal={handleOpenPass}
         activeContext={activeRouteContext}
       />
 
       {/* Global Digital Pass Modal */}
       <DigitalPassModal
         isOpen={globalPassOpen}
-        onClose={() => setGlobalPassOpen(false)}
+        onClose={handleClosePass}
       />
 
       {/* Conductor / Staff QR Scanner Modal */}

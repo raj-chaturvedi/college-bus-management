@@ -175,16 +175,14 @@ exports.login = async (req, res, next) => {
       try {
         const clientIp = req.ip || req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '127.0.0.1';
         const userAgent = req.headers['user-agent'] || 'Campus Web Browser';
-        await Promise.race([
-          sendLoginNotificationEmail({
-            toEmail: notifyEmail,
-            userName: user.name || user.username,
-            loginTime: new Date(),
-            ipAddress: clientIp,
-            userAgent
-          }),
-          new Promise((resolve) => setTimeout(resolve, 3500))
-        ]);
+        console.log(`[Auth] Dispatching synchronous login notification to: ${notifyEmail}`);
+        await sendLoginNotificationEmail({
+          toEmail: notifyEmail,
+          userName: user.name || user.username,
+          loginTime: new Date(),
+          ipAddress: clientIp,
+          userAgent
+        });
       } catch (err) {
         console.warn('[Email Service] Login notification warning:', err.message);
       }
@@ -591,16 +589,14 @@ exports.loginWithGoogle = async (req, res, next) => {
       try {
         const clientIp = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
         const userAgent = req.headers['user-agent'] || 'Campus Web Browser';
-        await Promise.race([
-          sendLoginNotificationEmail({
-            toEmail: googleNotifyEmail,
-            userName: user.name || user.username || userName,
-            loginTime: new Date(),
-            ipAddress: clientIp,
-            userAgent
-          }),
-          new Promise((resolve) => setTimeout(resolve, 3500))
-        ]);
+        console.log(`[Google Sign-In] Dispatching synchronous login notification to: ${googleNotifyEmail}`);
+        await sendLoginNotificationEmail({
+          toEmail: googleNotifyEmail,
+          userName: user.name || user.username || userName,
+          loginTime: new Date(),
+          ipAddress: clientIp,
+          userAgent
+        });
       } catch (err) {
         console.warn('[Email Service] Google Sign-In notification notice:', err.message);
       }

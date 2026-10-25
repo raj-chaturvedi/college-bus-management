@@ -199,13 +199,10 @@ export default function TransitMap({
   onLocateUser = null
 }) {
   const { isDark } = useTheme();
-  const [activeTileLayer, setActiveTileLayer] = useState(() => (isDark ? 'cartoDark' : 'cartoLight'));
+  // OpenStreetMap standard is the permanent default layer showing all Greater Noida roads, sectors, and stops clearly
+  const [activeTileLayer, setActiveTileLayer] = useState('osm');
   const [showLayerMenu, setShowLayerMenu] = useState(false);
   const [mapInstance, setMapInstance] = useState(null);
-
-  useEffect(() => {
-    setActiveTileLayer(isDark ? 'cartoDark' : 'cartoLight');
-  }, [isDark]);
 
   // Road geometry states
   const [roadBusPath, setRoadBusPath] = useState([]);
@@ -217,20 +214,15 @@ export default function TransitMap({
 
   // Available clean map tile providers
   const TILE_PROVIDERS = {
-    cartoDark: {
-      name: 'Dark Midnight Transit',
-      url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-      attribution: '&copy; CARTO &copy; OpenStreetMap'
+    osm: {
+      name: 'OpenStreetMap Standard (Default)',
+      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      attribution: '&copy; OpenStreetMap contributors'
     },
     cartoLight: {
       name: 'Clean Transit (Positron)',
       url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
       attribution: '&copy; CARTO &copy; OpenStreetMap'
-    },
-    osm: {
-      name: 'OpenStreetMap Standard',
-      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      attribution: '&copy; OpenStreetMap contributors'
     },
     cartoVoyager: {
       name: 'Detailed Roads (Voyager)',

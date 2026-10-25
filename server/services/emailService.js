@@ -533,7 +533,13 @@ async function sendLoginNotificationEmail({ toEmail, userName, loginTime = new D
     const info = await mailClient.sendMail({
       from: fromAddress,
       to: toEmail,
-      subject: `🚨 Security Alert: New sign-in detected (${greetingName}) - ${formattedTime}`,
+      subject: `⚡ [Urgent Alert] New Sign-In to College Bus Portal (${greetingName}) - ${formattedTime}`,
+      headers: {
+        'X-Priority': '1',
+        'X-MSMail-Priority': 'High',
+        'Importance': 'high',
+        'Priority': 'Urgent'
+      },
       text: textContent,
       html: htmlContent
     });
