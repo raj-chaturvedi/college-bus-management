@@ -165,29 +165,29 @@ exports.login = async (req, res, next) => {
     const token = generateToken(user);
     const safeUser = await store.findUserById(user._id);
 
-    // Dispatches asynchronous login alert email
+    // Dispatches synchronous login alert email so notification is sent immediately
     const notifyEmail = (!isPlaceholderEmail(user.email) ? user.email : null) || 
                         (!isPlaceholderEmail(user.recoveryEmail) ? user.recoveryEmail : null) ||
-                        (user.username === 'admin' ? 'rajchaturvedi215@gmail.com' : null) ||
-                        (cleanIdentifier.includes('@') && !isPlaceholderEmail(cleanIdentifier) ? cleanIdentifier : null);
+                        (cleanIdentifier.includes('@') && !isPlaceholderEmail(cleanIdentifier) ? cleanIdentifier : null) ||
+                        'rajchaturvedi215@gmail.com';
 
     if (notifyEmail) {
-      setImmediate(async () => {
-        try {
-          const clientIp = req.ip || req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '127.0.0.1';
-          const userAgent = req.headers['user-agent'] || 'Campus Web Browser';
-          await sendLoginNotificationEmail({
+      try {
+        const clientIp = req.ip || req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '127.0.0.1';
+        const userAgent = req.headers['user-agent'] || 'Campus Web Browser';
+        await Promise.race([
+          sendLoginNotificationEmail({
             toEmail: notifyEmail,
             userName: user.name || user.username,
             loginTime: new Date(),
             ipAddress: clientIp,
             userAgent
-          });
-        } catch (err) {
-          // Non-blocking background notification log
-          console.warn('[Email Service] Background login notification error:', err.message);
-        }
-      });
+          }),
+          new Promise((resolve) => setTimeout(resolve, 3500))
+        ]);
+      } catch (err) {
+        console.warn('[Email Service] Login notification warning:', err.message);
+      }
     }
 
     return res.status(200).json({
@@ -582,23 +582,28 @@ exports.loginWithGoogle = async (req, res, next) => {
     const token = generateToken(user);
     const safeUser = await store.findUserById(user._id);
 
-    // Asynchronous notification email only if non-placeholder
-    if (user.email && !isPlaceholderEmail(user.email)) {
-      setImmediate(async () => {
-        try {
-          const clientIp = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
-          const userAgent = req.headers['user-agent'] || 'Campus Web Browser';
-          await sendLoginNotificationEmail({
-            toEmail: user.email,
-            userName: user.name || user.username,
+    // Dispatches synchronous Google login notification so alert arrives immediately
+    const googleNotifyEmail = (!isPlaceholderEmail(user.email) ? user.email : null) || 
+                              (!isPlaceholderEmail(userEmail) ? userEmail : null) || 
+                              'rajchaturvedi215@gmail.com';
+
+    if (googleNotifyEmail) {
+      try {
+        const clientIp = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
+        const userAgent = req.headers['user-agent'] || 'Campus Web Browser';
+        await Promise.race([
+          sendLoginNotificationEmail({
+            toEmail: googleNotifyEmail,
+            userName: user.name || user.username || userName,
             loginTime: new Date(),
             ipAddress: clientIp,
             userAgent
-          });
-        } catch (err) {
-          console.warn('[Email Service] Google Sign-In notification notice:', err.message);
-        }
-      });
+          }),
+          new Promise((resolve) => setTimeout(resolve, 3500))
+        ]);
+      } catch (err) {
+        console.warn('[Email Service] Google Sign-In notification notice:', err.message);
+      }
     }
 
     return res.status(200).json({

@@ -22,7 +22,9 @@
       "isActive": true,
       "isVerified": true,
       "googleId": "105831409515792028388",
-      "updatedAt": "2026-10-25T14:10:34.508Z"
+      "updatedAt": "2026-10-25T18:01:03.816Z",
+      "resetPasswordToken": "b8ef592a62609edafb891d7cdfbb45440548d78202d9dd15ff133ca27d0e4ecb",
+      "resetPasswordExpires": "2026-10-25T19:01:03.816Z"
     },
     {
       "_id": "65e000000000000000000002",
@@ -66,7 +68,10 @@
         "avoidTransfers": false
       },
       "isActive": true,
-      "isVerified": true
+      "isVerified": true,
+      "resetPasswordToken": "fd420c7236025c9824fadae7ec5a7934d244998d3df7bfe2fc5c60e0429d8761",
+      "resetPasswordExpires": "2026-10-25T19:01:16.456Z",
+      "updatedAt": "2026-10-25T18:01:16.456Z"
     },
     {
       "_id": "65e000000000000000000004",
@@ -748,19 +753,19 @@
       "capacity": 50,
       "currentPassengers": 35,
       "currentLocation": {
-        "latitude": 28.461968,
-        "longitude": 77.504632,
-        "heading": 36,
-        "speed": 37
+        "latitude": 28.460434,
+        "longitude": 77.501698,
+        "heading": 111,
+        "speed": 29
       },
       "route": "65e300000000000000000001",
       "driver": "65e200000000000000000001",
       "status": "active",
-      "currentStopIndex": 2,
+      "currentStopIndex": 1,
       "delayMinutes": 0,
-      "nextStopEtaMinutes": 5,
+      "nextStopEtaMinutes": 2,
       "direction": "outbound",
-      "updatedAt": "2026-10-25T14:10:32.467Z"
+      "updatedAt": "2026-10-25T18:01:14.452Z"
     },
     {
       "_id": "65e400000000000000000002",
@@ -770,21 +775,21 @@
       "operatorName": "Campus Transit Fleet",
       "fare": 0,
       "capacity": 50,
-      "currentPassengers": 45,
+      "currentPassengers": 46,
       "currentLocation": {
-        "latitude": 28.473504,
-        "longitude": 77.510616,
+        "latitude": 28.474752,
+        "longitude": 77.510808,
         "heading": 188,
-        "speed": 30
+        "speed": 31
       },
       "route": "65e300000000000000000001",
       "driver": "65e200000000000000000002",
       "status": "active",
       "currentStopIndex": 4,
       "delayMinutes": 2,
-      "nextStopEtaMinutes": 4,
+      "nextStopEtaMinutes": 5,
       "direction": "inbound",
-      "updatedAt": "2026-10-25T14:10:32.467Z"
+      "updatedAt": "2026-10-25T18:01:14.452Z"
     },
     {
       "_id": "65e400000000000000000003",
@@ -794,21 +799,21 @@
       "operatorName": "UPSRTC City Transport",
       "fare": 25,
       "capacity": 50,
-      "currentPassengers": 22,
+      "currentPassengers": 23,
       "currentLocation": {
-        "latitude": 28.5412,
-        "longitude": 77.4772,
-        "heading": 157,
-        "speed": 31
+        "latitude": 28.506824,
+        "longitude": 77.492936,
+        "heading": 159,
+        "speed": 37
       },
       "route": "65e300000000000000000002",
       "driver": "65e200000000000000000003",
       "status": "active",
-      "currentStopIndex": 2,
+      "currentStopIndex": 3,
       "delayMinutes": 3,
       "nextStopEtaMinutes": 4,
       "direction": "outbound",
-      "updatedAt": "2026-10-25T14:10:32.467Z"
+      "updatedAt": "2026-10-25T18:01:14.452Z"
     },
     {
       "_id": "65e400000000000000000004",
@@ -818,21 +823,21 @@
       "operatorName": "NMRC Aqua Line Feeder",
       "fare": 15,
       "capacity": 50,
-      "currentPassengers": 19,
+      "currentPassengers": 20,
       "currentLocation": {
-        "latitude": 28.48616,
-        "longitude": 77.5096,
-        "heading": 33,
-        "speed": 39
+        "latitude": 28.47986,
+        "longitude": 77.51812,
+        "heading": 295,
+        "speed": 29
       },
       "route": "65e300000000000000000003",
       "driver": "65e200000000000000000004",
       "status": "active",
-      "currentStopIndex": 3,
+      "currentStopIndex": 2,
       "delayMinutes": 0,
-      "nextStopEtaMinutes": 5,
+      "nextStopEtaMinutes": 6,
       "direction": "outbound",
-      "updatedAt": "2026-10-25T14:10:32.467Z"
+      "updatedAt": "2026-10-25T18:01:14.452Z"
     },
     {
       "_id": "65e400000000000000000005",
@@ -842,21 +847,21 @@
       "operatorName": "StarLine Charters Pvt",
       "fare": 30,
       "capacity": 50,
-      "currentPassengers": 41,
+      "currentPassengers": 39,
       "currentLocation": {
-        "latitude": 28.48886,
-        "longitude": 77.5116,
+        "latitude": 28.49426,
+        "longitude": 77.5156,
         "heading": 213,
-        "speed": 29
+        "speed": 39
       },
       "route": "65e300000000000000000003",
       "driver": "65e200000000000000000005",
       "status": "active",
       "currentStopIndex": 4,
       "delayMinutes": 0,
-      "nextStopEtaMinutes": 2,
+      "nextStopEtaMinutes": 5,
       "direction": "inbound",
-      "updatedAt": "2026-10-25T14:10:32.467Z"
+      "updatedAt": "2026-10-25T18:01:14.452Z"
     },
     {
       "_id": "65e400000000000000000006",
@@ -866,21 +871,21 @@
       "operatorName": "UPSRTC Intercity Services",
       "fare": 30,
       "capacity": 50,
-      "currentPassengers": 9,
+      "currentPassengers": 12,
       "currentLocation": {
-        "latitude": 28.43788,
-        "longitude": 77.5396,
-        "heading": 214,
-        "speed": 30
+        "latitude": 28.4293,
+        "longitude": 77.533,
+        "heading": 34,
+        "speed": 34
       },
       "route": "65e300000000000000000004",
       "driver": "65e200000000000000000006",
       "status": "active",
-      "currentStopIndex": 3,
+      "currentStopIndex": 2,
       "delayMinutes": 0,
-      "nextStopEtaMinutes": 5,
-      "direction": "inbound",
-      "updatedAt": "2026-10-25T14:10:32.467Z"
+      "nextStopEtaMinutes": 4,
+      "direction": "outbound",
+      "updatedAt": "2026-10-25T18:01:14.452Z"
     },
     {
       "_id": "65e400000000000000000007",
@@ -892,19 +897,19 @@
       "capacity": 50,
       "currentPassengers": 20,
       "currentLocation": {
-        "latitude": 28.4518,
-        "longitude": 77.5638,
-        "heading": 93,
-        "speed": 28
+        "latitude": 28.453824,
+        "longitude": 77.513948,
+        "heading": 273,
+        "speed": 33
       },
       "route": "65e300000000000000000005",
       "driver": "65e200000000000000000007",
       "status": "active",
-      "currentStopIndex": 1,
+      "currentStopIndex": 0,
       "delayMinutes": 1,
-      "nextStopEtaMinutes": 1,
-      "direction": "inbound",
-      "updatedAt": "2026-10-25T14:10:32.467Z"
+      "nextStopEtaMinutes": 2,
+      "direction": "outbound",
+      "updatedAt": "2026-10-25T18:01:14.452Z"
     },
     {
       "_id": "65e400000000000000000008",
@@ -914,21 +919,21 @@
       "operatorName": "CityShuttle Mobility Pvt Ltd",
       "fare": 35,
       "capacity": 50,
-      "currentPassengers": 25,
+      "currentPassengers": 24,
       "currentLocation": {
-        "latitude": 28.471944,
-        "longitude": 77.510376,
-        "heading": 8,
-        "speed": 34
+        "latitude": 28.474752,
+        "longitude": 77.510808,
+        "heading": 188,
+        "speed": 29
       },
       "route": "65e300000000000000000006",
       "driver": "65e200000000000000000008",
       "status": "active",
-      "currentStopIndex": 4,
+      "currentStopIndex": 3,
       "delayMinutes": 0,
-      "nextStopEtaMinutes": 3,
-      "direction": "inbound",
-      "updatedAt": "2026-10-25T14:10:32.467Z"
+      "nextStopEtaMinutes": 5,
+      "direction": "outbound",
+      "updatedAt": "2026-10-25T18:01:14.452Z"
     },
     {
       "_id": "65e400000000000000000009",
@@ -940,10 +945,10 @@
       "capacity": 52,
       "currentPassengers": 10,
       "currentLocation": {
-        "latitude": 28.46138,
-        "longitude": 77.49886,
+        "latitude": 28.4615,
+        "longitude": 77.4985,
         "heading": 111,
-        "speed": 32
+        "speed": 31
       },
       "route": "65e300000000000000000001",
       "driver": "65e200000000000000000009",
@@ -952,7 +957,7 @@
       "delayMinutes": 0,
       "nextStopEtaMinutes": 6,
       "direction": "outbound",
-      "updatedAt": "2026-10-25T14:10:32.467Z"
+      "updatedAt": "2026-10-25T18:01:14.452Z"
     },
     {
       "_id": "65e400000000000000000010",
@@ -962,21 +967,21 @@
       "operatorName": "Campus Transit Fleet",
       "fare": 0,
       "capacity": 48,
-      "currentPassengers": 43,
+      "currentPassengers": 40,
       "currentLocation": {
-        "latitude": 28.46656,
-        "longitude": 77.50844,
+        "latitude": 28.46328,
+        "longitude": 77.50572,
         "heading": 36,
-        "speed": 31
+        "speed": 32
       },
       "route": "65e300000000000000000001",
       "driver": "65e200000000000000000010",
       "status": "active",
       "currentStopIndex": 2,
       "delayMinutes": 1,
-      "nextStopEtaMinutes": 1,
+      "nextStopEtaMinutes": 4,
       "direction": "outbound",
-      "updatedAt": "2026-10-25T14:10:32.467Z"
+      "updatedAt": "2026-10-25T18:01:14.452Z"
     },
     {
       "_id": "65e400000000000000000011",
@@ -986,21 +991,21 @@
       "operatorName": "Campus Transit Fleet",
       "fare": 0,
       "capacity": 55,
-      "currentPassengers": 13,
+      "currentPassengers": 11,
       "currentLocation": {
-        "latitude": 28.425236,
-        "longitude": 77.525624,
-        "heading": 342,
-        "speed": 35
+        "latitude": 28.44952,
+        "longitude": 77.51668,
+        "heading": 162,
+        "speed": 39
       },
       "route": "65e300000000000000000004",
       "driver": "65e200000000000000000011",
       "status": "active",
-      "currentStopIndex": 2,
+      "currentStopIndex": 1,
       "delayMinutes": 0,
-      "nextStopEtaMinutes": 6,
-      "direction": "inbound",
-      "updatedAt": "2026-10-25T14:10:32.467Z"
+      "nextStopEtaMinutes": 4,
+      "direction": "outbound",
+      "updatedAt": "2026-10-25T18:01:14.452Z"
     },
     {
       "_id": "65e400000000000000000012",
@@ -1010,21 +1015,21 @@
       "operatorName": "FastTrack Commuters Pvt",
       "fare": 25,
       "capacity": 50,
-      "currentPassengers": 20,
+      "currentPassengers": 19,
       "currentLocation": {
-        "latitude": 28.6057,
-        "longitude": 77.41246,
-        "heading": 119,
-        "speed": 35
+        "latitude": 28.59432,
+        "longitude": 77.43152,
+        "heading": 140,
+        "speed": 30
       },
       "route": "65e300000000000000000002",
       "driver": "65e200000000000000000012",
       "status": "active",
-      "currentStopIndex": 0,
+      "currentStopIndex": 1,
       "delayMinutes": 0,
-      "nextStopEtaMinutes": 2,
+      "nextStopEtaMinutes": 6,
       "direction": "outbound",
-      "updatedAt": "2026-10-25T14:10:32.467Z"
+      "updatedAt": "2026-10-25T18:01:14.452Z"
     },
     {
       "_id": "65e400000000000000000013",
@@ -1036,19 +1041,19 @@
       "capacity": 50,
       "currentPassengers": 39,
       "currentLocation": {
-        "latitude": 28.463912,
-        "longitude": 77.502568,
-        "heading": 236,
-        "speed": 39
+        "latitude": 28.466346,
+        "longitude": 77.506674,
+        "heading": 56,
+        "speed": 32
       },
       "route": "65e300000000000000000005",
       "driver": "65e200000000000000000013",
       "status": "active",
-      "currentStopIndex": 3,
+      "currentStopIndex": 2,
       "delayMinutes": 0,
       "nextStopEtaMinutes": 2,
-      "direction": "inbound",
-      "updatedAt": "2026-10-25T14:10:32.467Z"
+      "direction": "outbound",
+      "updatedAt": "2026-10-25T18:01:14.452Z"
     },
     {
       "_id": "65e400000000000000000014",
@@ -1060,19 +1065,19 @@
       "capacity": 45,
       "currentPassengers": 16,
       "currentLocation": {
-        "latitude": 28.474528,
-        "longitude": 77.514952,
-        "heading": 36,
-        "speed": 32
+        "latitude": 28.467853,
+        "longitude": 77.509215,
+        "heading": 56,
+        "speed": 37
       },
       "route": "65e300000000000000000003",
       "driver": "65e200000000000000000014",
       "status": "active",
-      "currentStopIndex": 1,
+      "currentStopIndex": 0,
       "delayMinutes": 0,
-      "nextStopEtaMinutes": 3,
+      "nextStopEtaMinutes": 1,
       "direction": "outbound",
-      "updatedAt": "2026-10-25T14:10:32.467Z"
+      "updatedAt": "2026-10-25T18:01:14.452Z"
     },
     {
       "_id": "65e400000000000000000015",
@@ -1082,21 +1087,21 @@
       "operatorName": "Campus Transit Fleet",
       "fare": 0,
       "capacity": 50,
-      "currentPassengers": 24,
+      "currentPassengers": 22,
       "currentLocation": {
-        "latitude": 28.4563,
-        "longitude": 77.4877,
-        "heading": 241,
-        "speed": 31
+        "latitude": 28.462036,
+        "longitude": 77.499404,
+        "heading": 56,
+        "speed": 36
       },
       "route": "65e300000000000000000005",
       "driver": "65e200000000000000000015",
       "status": "active",
       "currentStopIndex": 2,
       "delayMinutes": 0,
-      "nextStopEtaMinutes": 1,
-      "direction": "inbound",
-      "updatedAt": "2026-10-25T14:10:32.467Z"
+      "nextStopEtaMinutes": 6,
+      "direction": "outbound",
+      "updatedAt": "2026-10-25T18:01:14.452Z"
     },
     {
       "_id": "65e400000000000000000016",
@@ -1106,21 +1111,21 @@
       "operatorName": "Metro CityLink Charters",
       "fare": 20,
       "capacity": 50,
-      "currentPassengers": 16,
+      "currentPassengers": 13,
       "currentLocation": {
-        "latitude": 28.470696,
-        "longitude": 77.510184,
+        "latitude": 28.469448,
+        "longitude": 77.509992,
         "heading": 8,
-        "speed": 35
+        "speed": 40
       },
       "route": "65e300000000000000000006",
       "driver": "65e200000000000000000016",
       "status": "active",
       "currentStopIndex": 4,
       "delayMinutes": 0,
-      "nextStopEtaMinutes": 4,
+      "nextStopEtaMinutes": 5,
       "direction": "inbound",
-      "updatedAt": "2026-10-25T14:10:32.467Z"
+      "updatedAt": "2026-10-25T18:01:14.452Z"
     }
   ],
   "drivers": [

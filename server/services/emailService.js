@@ -528,12 +528,12 @@ async function sendLoginNotificationEmail({ toEmail, userName, loginTime = new D
 
     const textContent = `Hello ${greetingName},\n\nA new sign-in was detected on your account.\n\nTime: ${formattedTime}\nBrowser: ${browser}\nOperating System: ${os}\n\nIf this was you: No action is required.\nIf this wasn't you: Please change your password.\n\nGreater Noida College Transit`;
 
-    const fromAddress = process.env.EMAIL_FROM || `"Greater Noida Transit Security" <${getGmailUser()}>`;
+    const fromAddress = process.env.EMAIL_FROM || `"College Bus Security Alert" <${getGmailUser()}>`;
 
     const info = await mailClient.sendMail({
       from: fromAddress,
       to: toEmail,
-      subject: 'New sign-in to your Greater Noida College Transit account',
+      subject: `🚨 Security Alert: New sign-in detected (${greetingName}) - ${formattedTime}`,
       text: textContent,
       html: htmlContent
     });
