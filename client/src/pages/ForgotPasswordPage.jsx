@@ -12,24 +12,29 @@ import {
 
 export default function ForgotPasswordPage() {
   const [identifier, setIdentifier] = useState('');
+  const [recoveryEmail, setRecoveryEmail] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e, customRecovery = null) => {
+    if (e) e.preventDefault();
     setError('');
-    setResult(null);
-
+    
     const clean = identifier.trim();
-    if (!clean) {
-      setError('Please provide your username.');
+    const cleanRecovery = (customRecovery || recoveryEmail).trim();
+
+    if (!clean && !cleanRecovery) {
+      setError('Please provide your username or email address.');
       return;
     }
 
     setSubmitting(true);
     try {
-      const res = await authAPI.forgotPassword({ identifier: clean });
+      const res = await authAPI.forgotPassword({
+        identifier: clean || cleanRecovery,
+        recoveryEmail: cleanRecovery || undefined
+      });
       setResult(res.data);
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Failed to process recovery request.');
@@ -52,7 +57,7 @@ export default function ForgotPasswordPage() {
         </div>
         <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Password recovery</h1>
         <p className="text-xs text-slate-500 mt-1">
-          Enter your username to retrieve account recovery instructions.
+          Enter your registered username or email address to receive recovery instructions.
         </p>
       </div>
 
@@ -70,11 +75,37 @@ export default function ForgotPasswordPage() {
           <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 space-y-3">
             <div className="flex items-center gap-2 text-amber-800 font-semibold text-xs">
               <Info className="w-4 h-4 text-amber-600 shrink-0" />
-              <span>In-Person Verification Required</span>
+              <span>Recovery Email Needed</span>
             </div>
             <p className="text-xs text-amber-800 leading-relaxed">
               {result.message}
             </p>
+            
+            {/* Quick Link Gmail option */}
+            <div className="pt-2 border-t border-amber-200/60 mt-3 space-y-2">
+              <label className="block text-[11px] font-semibold text-amber-900" htmlFor="quick-recovery-email">
+                Send reset link directly to your Gmail:
+              </label>
+              <div className="flex gap-2">
+                <input
+                  id="quick-recovery-email"
+                  type="email"
+                  value={recoveryEmail}
+                  onChange={(e) => setRecoveryEmail(e.target.value)}
+                  placeholder="Enter your Gmail address"
+                  className="flex-1 h-9 px-3 bg-white border border-amber-300 rounded-lg text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                />
+                <button
+                  type="button"
+                  disabled={submitting || !recoveryEmail.trim()}
+                  onClick={() => handleSubmit(null, recoveryEmail)}
+                  className="h-9 px-3 bg-sky-600 hover:bg-sky-700 text-white font-medium text-xs rounded-lg transition disabled:opacity-50"
+                >
+                  {submitting ? 'Sending...' : 'Send Link'}
+                </button>
+              </div>
+            </div>
+
             <div className="pt-2">
               <Link
                 to="/login"
@@ -107,7 +138,7 @@ export default function ForgotPasswordPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-medium text-slate-700 mb-1.5" htmlFor="forgot-identifier">
-              Username
+              Username or Registered Email
             </label>
             <input
               id="forgot-identifier"
@@ -115,7 +146,7 @@ export default function ForgotPasswordPage() {
               required
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
-              placeholder="Enter your registered username"
+              placeholder="Enter your username or email address"
               disabled={submitting}
               className="w-full h-10 px-3 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition"
             />

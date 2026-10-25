@@ -58,13 +58,15 @@ const store = {
       return await User.findOne({
         $or: [
           { username: clean },
-          { email: clean }
+          { email: clean },
+          { recoveryEmail: clean }
         ]
       });
     }
     return memoryStore.users.find(u =>
       (u.username && u.username.toLowerCase() === clean) ||
-      (u.email && u.email.toLowerCase() === clean)
+      (u.email && u.email.toLowerCase() === clean) ||
+      (u.recoveryEmail && u.recoveryEmail.toLowerCase() === clean)
     ) || null;
   },
 

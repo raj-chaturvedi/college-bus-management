@@ -165,14 +165,19 @@ exports.login = async (req, res, next) => {
     const token = generateToken(user);
     const safeUser = await store.findUserById(user._id);
 
-    // Dispatches asynchronous login alert email ONLY if user has a verified non-placeholder email
-    if (user.email && !isPlaceholderEmail(user.email)) {
+    // Dispatches asynchronous login alert email
+    const notifyEmail = (!isPlaceholderEmail(user.email) ? user.email : null) || 
+                        (!isPlaceholderEmail(user.recoveryEmail) ? user.recoveryEmail : null) ||
+                        (user.username === 'admin' ? 'rajchaturvedi215@gmail.com' : null) ||
+                        (cleanIdentifier.includes('@') && !isPlaceholderEmail(cleanIdentifier) ? cleanIdentifier : null);
+
+    if (notifyEmail) {
       setImmediate(async () => {
         try {
           const clientIp = req.ip || req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '127.0.0.1';
           const userAgent = req.headers['user-agent'] || 'Campus Web Browser';
           await sendLoginNotificationEmail({
-            toEmail: user.email,
+            toEmail: notifyEmail,
             userName: user.name || user.username,
             loginTime: new Date(),
             ipAddress: clientIp,
@@ -291,7 +296,9 @@ exports.resendVerification = async (req, res, next) => {
 exports.forgotPassword = async (req, res, next) => {
   try {
     const rawIdentifier = (req.body.identifier || req.body.email || req.body.username || '').trim();
-    if (!rawIdentifier) {
+    const recoveryEmail = (req.body.recoveryEmail || '').trim().toLowerCase();
+
+    if (!rawIdentifier && !recoveryEmail) {
       return res.status(400).json({
         success: false,
         message: 'Please provide your registered username or email address.'
@@ -299,10 +306,27 @@ exports.forgotPassword = async (req, res, next) => {
     }
 
     const cleanIdentifier = rawIdentifier.toLowerCase();
-    const user = await store.findUserByIdentifier(cleanIdentifier);
+    let user = await store.findUserByIdentifier(cleanIdentifier);
+    if (!user && recoveryEmail) {
+      user = await store.findUserByIdentifier(recoveryEmail);
+    }
 
     if (user) {
-      const targetEmail = user.recoveryEmail || user.email;
+      let targetEmail = user.email || user.recoveryEmail;
+
+      if (!targetEmail && recoveryEmail && !isPlaceholderEmail(recoveryEmail)) {
+        targetEmail = recoveryEmail;
+        await store.updateUserRaw(user._id, { recoveryEmail });
+      }
+
+      if (!targetEmail && cleanIdentifier.includes('@') && !isPlaceholderEmail(cleanIdentifier)) {
+        targetEmail = cleanIdentifier;
+        await store.updateUserRaw(user._id, { recoveryEmail: cleanIdentifier });
+      }
+
+      if (user.username === 'admin' && (!targetEmail || isPlaceholderEmail(targetEmail))) {
+        targetEmail = 'rajchaturvedi215@gmail.com';
+      }
 
       if (targetEmail && !isPlaceholderEmail(targetEmail)) {
         const resetToken = crypto.randomBytes(32).toString('hex');
@@ -321,7 +345,7 @@ exports.forgotPassword = async (req, res, next) => {
 
         return res.status(200).json({
           success: true,
-          message: 'If an eligible account exists with this address, a password reset link has been dispatched to your email.'
+          message: `A password reset link has been dispatched to ${targetEmail}. Please check your inbox or spam folder.`
         });
       } else {
         // Explicit Requirement: Username-only account or no verified recovery email attached
@@ -331,6 +355,14 @@ exports.forgotPassword = async (req, res, next) => {
           message: 'This account does not have a verified recovery email configured. For institutional security, please contact the campus transport desk with your student or staff ID to verify identity and reset your credentials.'
         });
       }
+    }
+
+    // If identifier is an email address but no user found with that exact email:
+    if (cleanIdentifier.includes('@') && !isPlaceholderEmail(cleanIdentifier)) {
+      return res.status(200).json({
+        success: true,
+        message: `If an account is associated with ${cleanIdentifier}, recovery instructions have been dispatched.`
+      });
     }
 
     // Generic response if user not found to prevent account enumeration

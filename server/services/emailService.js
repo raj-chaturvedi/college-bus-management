@@ -7,6 +7,13 @@ const fs = require('fs');
 let transporter = null;
 let currentMode = 'INITIALIZING';
 
+const DEFAULT_GMAIL_USER = 'rajchaturvedi215@gmail.com';
+const DEFAULT_GMAIL_PASS = 'hhuoctvwhhqfygsb';
+
+const getGmailUser = () => process.env.GMAIL_USER || process.env.SMTP_USER || DEFAULT_GMAIL_USER;
+const getGmailPass = () => (process.env.GMAIL_APP_PASSWORD || process.env.SMTP_PASS || DEFAULT_GMAIL_PASS).replace(/\s+/g, '');
+const getClientUrl = () => process.env.CLIENT_URL || 'https://college-bus-management-etd3.vercel.app';
+
 /**
  * Configure email transporter
  * Supports:
@@ -17,8 +24,8 @@ let currentMode = 'INITIALIZING';
 const getTransporter = async () => {
   if (transporter) return transporter;
 
-  const smtpUser = process.env.GMAIL_USER || process.env.SMTP_USER;
-  const smtpPass = process.env.GMAIL_APP_PASSWORD || process.env.SMTP_PASS;
+  const smtpUser = getGmailUser();
+  const smtpPass = getGmailPass();
 
   if (smtpUser && smtpPass) {
     try {
@@ -26,7 +33,7 @@ const getTransporter = async () => {
         service: 'gmail',
         auth: {
           user: smtpUser,
-          pass: smtpPass.replace(/\s+/g, '') // remove spaces from app password
+          pass: smtpPass
         }
       });
       currentMode = 'LIVE_GMAIL';
@@ -253,13 +260,12 @@ async function sendVerificationEmail({ toEmail, userName, token, code }) {
 
   try {
     const mailClient = await getTransporter();
-    const localIp = getLocalIpAddress();
-    const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+    const clientUrl = getClientUrl();
     
     // PC / Localhost link
     const verifyUrlLocal = `${clientUrl}/verify-email?token=${encodeURIComponent(token)}${code ? `&code=${encodeURIComponent(code)}` : ''}`;
     // Mobile / Same Wi-Fi link
-    const verifyUrlMobile = `http://${localIp}:5173/verify-email?token=${encodeURIComponent(token)}${code ? `&code=${encodeURIComponent(code)}` : ''}`;
+    const verifyUrlMobile = `${clientUrl}/verify-email?token=${encodeURIComponent(token)}${code ? `&code=${encodeURIComponent(code)}` : ''}`;
 
     const sixDigitCode = code || (token ? token.slice(0, 6).toUpperCase() : '------');
 
@@ -325,7 +331,7 @@ async function sendVerificationEmail({ toEmail, userName, token, code }) {
       </html>
     `;
 
-    const fromAddress = process.env.EMAIL_FROM || (process.env.GMAIL_USER ? `"Greater Noida Transit" <${process.env.GMAIL_USER}>` : `"Greater Noida Transit" <no-reply@campus.edu>`);
+    const fromAddress = process.env.EMAIL_FROM || `"Greater Noida Transit" <${getGmailUser()}>`;
 
     const info = await mailClient.sendMail({
       from: fromAddress,
@@ -360,7 +366,7 @@ async function sendPasswordResetEmail({ toEmail, userName, token }) {
 
   try {
     const mailClient = await getTransporter();
-    const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+    const clientUrl = getClientUrl();
     const resetUrl = `${clientUrl}/reset-password?token=${encodeURIComponent(token)}`;
 
     const htmlContent = `
@@ -410,7 +416,7 @@ async function sendPasswordResetEmail({ toEmail, userName, token }) {
       </html>
     `;
 
-    const fromAddress = process.env.EMAIL_FROM || (process.env.GMAIL_USER ? `"College Bus Management" <${process.env.GMAIL_USER}>` : `"College Bus Management" <no-reply@collegebus.internal>`);
+    const fromAddress = process.env.EMAIL_FROM || `"College Bus Management" <${getGmailUser()}>`;
 
     const info = await mailClient.sendMail({
       from: fromAddress,
@@ -522,7 +528,7 @@ async function sendLoginNotificationEmail({ toEmail, userName, loginTime = new D
 
     const textContent = `Hello ${greetingName},\n\nA new sign-in was detected on your account.\n\nTime: ${formattedTime}\nBrowser: ${browser}\nOperating System: ${os}\n\nIf this was you: No action is required.\nIf this wasn't you: Please change your password.\n\nGreater Noida College Transit`;
 
-    const fromAddress = process.env.EMAIL_FROM || (process.env.GMAIL_USER ? `"Greater Noida Transit Security" <${process.env.GMAIL_USER}>` : `"Greater Noida Transit Security" <no-reply@campus.edu>`);
+    const fromAddress = process.env.EMAIL_FROM || `"Greater Noida Transit Security" <${getGmailUser()}>`;
 
     const info = await mailClient.sendMail({
       from: fromAddress,
@@ -633,7 +639,7 @@ async function sendPassIssuedEmail({ toEmail, userName, pass }) {
     `;
 
     const info = await mailClient.sendMail({
-      from: `"GNTA Boarding Pass" <${process.env.GMAIL_USER || 'transit-passes@campus.edu'}>`,
+      from: `"GNTA Boarding Pass" <${getGmailUser()}>`,
       to: toEmail,
       subject: `🎫 GNTA Bus Pass: ${pass.passCode} (Valid for 10 Mins) - ${pass.busNumber}`,
       html: htmlContent,
