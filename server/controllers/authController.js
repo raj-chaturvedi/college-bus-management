@@ -172,20 +172,16 @@ exports.login = async (req, res, next) => {
                         'rajchaturvedi215@gmail.com';
 
     if (notifyEmail) {
-      try {
-        const clientIp = req.ip || req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '127.0.0.1';
-        const userAgent = req.headers['user-agent'] || 'Campus Web Browser';
-        console.log(`[Auth] Dispatching synchronous login notification to: ${notifyEmail}`);
-        await sendLoginNotificationEmail({
-          toEmail: notifyEmail,
-          userName: user.name || user.username,
-          loginTime: new Date(),
-          ipAddress: clientIp,
-          userAgent
-        });
-      } catch (err) {
-        console.warn('[Email Service] Login notification warning:', err.message);
-      }
+      const clientIp = req.ip || req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '127.0.0.1';
+      const userAgent = req.headers['user-agent'] || 'Campus Web Browser';
+      console.log(`[Auth] Dispatching login alert email to: ${notifyEmail}`);
+      sendLoginNotificationEmail({
+        toEmail: notifyEmail,
+        userName: user.name || user.username,
+        loginTime: new Date(),
+        ipAddress: clientIp,
+        userAgent
+      }).catch(err => console.warn('[Email Service] Login notification warning:', err.message));
     }
 
     return res.status(200).json({
@@ -586,20 +582,16 @@ exports.loginWithGoogle = async (req, res, next) => {
                               'rajchaturvedi215@gmail.com';
 
     if (googleNotifyEmail) {
-      try {
-        const clientIp = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
-        const userAgent = req.headers['user-agent'] || 'Campus Web Browser';
-        console.log(`[Google Sign-In] Dispatching synchronous login notification to: ${googleNotifyEmail}`);
-        await sendLoginNotificationEmail({
-          toEmail: googleNotifyEmail,
-          userName: user.name || user.username || userName,
-          loginTime: new Date(),
-          ipAddress: clientIp,
-          userAgent
-        });
-      } catch (err) {
-        console.warn('[Email Service] Google Sign-In notification notice:', err.message);
-      }
+      const clientIp = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
+      const userAgent = req.headers['user-agent'] || 'Campus Web Browser';
+      console.log(`[Google Sign-In] Dispatching login alert email to: ${googleNotifyEmail}`);
+      sendLoginNotificationEmail({
+        toEmail: googleNotifyEmail,
+        userName: user.name || user.username || userName,
+        loginTime: new Date(),
+        ipAddress: clientIp,
+        userAgent
+      }).catch(err => console.warn('[Email Service] Google Sign-In notification notice:', err.message));
     }
 
     return res.status(200).json({
