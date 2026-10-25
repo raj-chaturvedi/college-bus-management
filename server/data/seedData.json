@@ -5,7 +5,7 @@
       "username": "rajchaturvedi",
       "name": "Raj Chaturvedi",
       "email": "rajchaturvedi215@gmail.com",
-      "password": "$2a$10$q.G6uctDxhQ/uGeS8pX6wug4zhAbM3nQU9RhwSx.NYCD9VqF7vy3m",
+      "password": "$2a$10$ek0b33/ltlOGbxOYasm3MejkN6NrBkue8mNwutxt08GAKngk5uY82",
       "role": "student",
       "authProvider": "local",
       "preferences": {
@@ -78,7 +78,7 @@
       "username": "student",
       "name": "Alex Rivera (Campus Student)",
       "email": "student@college.edu",
-      "password": "$2a$10$q.G6uctDxhQ/uGeS8pX6wug4zhAbM3nQU9RhwSx.NYCD9VqF7vy3m",
+      "password": "$2a$10$ek0b33/ltlOGbxOYasm3MejkN6NrBkue8mNwutxt08GAKngk5uY82",
       "role": "student",
       "authProvider": "local",
       "preferences": {
