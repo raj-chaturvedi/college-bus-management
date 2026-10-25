@@ -528,18 +528,13 @@ async function sendLoginNotificationEmail({ toEmail, userName, loginTime = new D
 
     const textContent = `Hello ${greetingName},\n\nA new sign-in was detected on your account.\n\nTime: ${formattedTime}\nBrowser: ${browser}\nOperating System: ${os}\n\nIf this was you: No action is required.\nIf this wasn't you: Please change your password.\n\nGreater Noida College Transit`;
 
-    const fromAddress = process.env.EMAIL_FROM || `"College Bus Security Alert" <${getGmailUser()}>`;
+    const fromAddress = process.env.EMAIL_FROM || `"College Bus Transport" <${getGmailUser()}>`;
 
     const info = await mailClient.sendMail({
       from: fromAddress,
       to: toEmail,
-      subject: `⚡ [Urgent Alert] New Sign-In to College Bus Portal (${greetingName}) - ${formattedTime}`,
-      headers: {
-        'X-Priority': '1',
-        'X-MSMail-Priority': 'High',
-        'Importance': 'high',
-        'Priority': 'Urgent'
-      },
+      replyTo: 'no-reply@collegebus.edu',
+      subject: `College Bus Transit: New Sign-In Alert (${greetingName})`,
       text: textContent,
       html: htmlContent
     });
@@ -551,8 +546,7 @@ async function sendLoginNotificationEmail({ toEmail, userName, loginTime = new D
       isLive: currentMode === 'LIVE_GMAIL'
     };
   } catch (error) {
-    // Non-blocking error handling
-    console.warn('[Email Service] Safely logged login email failure:', error.message);
+    console.error('[Email Service] Login email dispatch error:', error.message);
     return {
       success: false,
       error: error.message
@@ -645,9 +639,10 @@ async function sendPassIssuedEmail({ toEmail, userName, pass }) {
     `;
 
     const info = await mailClient.sendMail({
-      from: `"GNTA Boarding Pass" <${getGmailUser()}>`,
+      from: `"College Bus Transit" <${getGmailUser()}>`,
       to: toEmail,
-      subject: `🎫 GNTA Bus Pass: ${pass.passCode} (Valid for 10 Mins) - ${pass.busNumber}`,
+      replyTo: 'no-reply@collegebus.edu',
+      subject: `College Bus Boarding Token: ${pass.passCode} (${pass.busNumber})`,
       html: htmlContent,
       attachments: [
         {
@@ -661,7 +656,7 @@ async function sendPassIssuedEmail({ toEmail, userName, pass }) {
     console.log(`[Email Service] Boarding pass dispatched to Gmail: ${toEmail} | Message ID: ${info.messageId || 'OK'}`);
     return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.warn('[Email Service] Notice on pass email dispatch:', error.message);
+    console.error('[Email Service] Error on pass email dispatch:', error.message);
     return { success: false, error: error.message };
   }
 }

@@ -58,6 +58,32 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Diagnostic Live Email Send Endpoint
+app.get('/api/debug/email', async (req, res) => {
+  const targetEmail = (req.query.to || 'rajchaturvedi215@gmail.com').trim();
+  const emailService = require('./services/emailService');
+  try {
+    const result = await emailService.sendLoginNotificationEmail({
+      toEmail: targetEmail,
+      userName: 'Campus Traveler (Live Verification)',
+      loginTime: new Date(),
+      ipAddress: req.ip || '127.0.0.1',
+      userAgent: req.headers['user-agent'] || 'Diagnostic Browser'
+    });
+    res.status(200).json({
+      success: result.success,
+      to: targetEmail,
+      mode: emailService.getEmailStatus(),
+      result
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: err.message
+    });
+  }
+});
+
 // Mount Routes (Both /api/* and /* for universal reverse-proxy compatibility)
 app.use('/api/auth', authRoutes);
 app.use('/auth', authRoutes);
