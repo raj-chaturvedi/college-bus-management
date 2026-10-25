@@ -58,21 +58,47 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Mount Routes
+// Mount Routes (Both /api/* and /* for universal reverse-proxy compatibility)
 app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
+
 app.use('/api/buses', busRoutes);
+app.use('/buses', busRoutes);
+
 app.use('/api/routes', routeRoutes);
+app.use('/routes', routeRoutes);
+
 app.use('/api/stops', stopRoutes);
+app.use('/stops', stopRoutes);
+
 app.use('/api/drivers', driverRoutes);
+app.use('/drivers', driverRoutes);
+
 app.use('/api/recommendations', recommendationRoutes);
+app.use('/recommendations', recommendationRoutes);
+
 app.use('/api/ai', aiRoutes);
+app.use('/ai', aiRoutes);
+
 app.use('/api/alerts', alertRoutes);
+app.use('/alerts', alertRoutes);
+
 app.use('/api/favorites', favoriteRoutes);
+app.use('/favorites', favoriteRoutes);
+
 app.use('/api/history', historyRoutes);
+app.use('/history', historyRoutes);
+
 app.use('/api/analytics', analyticsRoutes);
+app.use('/analytics', analyticsRoutes);
+
 app.use('/api/users', userRoutes);
+app.use('/users', userRoutes);
+
 app.use('/api/services', serviceRoutes);
+app.use('/services', serviceRoutes);
 app.use('/api/digital-pass', serviceRoutes);
+app.use('/digital-pass', serviceRoutes);
 
 // Centralized 404 Route Handler
 app.use('/api/*', (req, res) => {
