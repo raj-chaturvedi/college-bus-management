@@ -648,9 +648,8 @@ async function sendPassIssuedEmail({ toEmail, userName, pass }) {
           </div>
           <div style="padding: 0 8px;">
             <div class="ticket-card">
-              <span class="badge">&#10003; GNTA VERIFIED BOARDING PASS</span>
               <div style="margin: 12px 0;">
-                <img src="cid:boarding_qr_code" alt="Boarding Token QR" style="width: 170px; height: 170px; display: inline-block;" />
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=6&data=${encodeURIComponent(pass.passCode)}" alt="Boarding Token QR" style="width: 190px; height: 190px; display: inline-block; border: 2px solid #0f172a; border-radius: 12px; background: #ffffff; padding: 6px;" />
               </div>
               <div class="token-code">${pass.passCode}</div>
               

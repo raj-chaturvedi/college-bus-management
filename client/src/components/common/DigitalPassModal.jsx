@@ -123,9 +123,14 @@ export default function DigitalPassModal({ isOpen, onClose, defaultBus, initialB
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             to: 'rajchaturvedi215@gmail.com',
-            subject: `College Bus Boarding Token: ${res.data.pass.passCode} (${res.data.pass.busNumber || 'Bus'})`,
-            text: `Your dynamic boarding pass for ${res.data.pass.busNumber || 'Bus'} has been issued. Token: ${res.data.pass.passCode}. Valid for 10 minutes.`,
-            html: `<h3>College Bus Transit Boarding Pass</h3><p>Your dynamic boarding token is active:</p><p><strong>Token:</strong> ${res.data.pass.passCode}</p><p><strong>Vehicle:</strong> ${res.data.pass.busNumber || 'Bus 12'}</p><p><strong>From:</strong> ${fromStop}</p><p><strong>To:</strong> ${toStop}</p><p>Valid strictly for 10 minutes.</p>`
+            type: 'PASS_ISSUED',
+            passCode: res.data.pass.passCode,
+            busNumber: res.data.pass.busNumber || 'Bus 12 (KP-Express)',
+            plateNumber: res.data.pass.plateNumber || 'UP-16-CB-1012',
+            fromStop: fromStop,
+            toStop: toStop,
+            seatNumber: seatPreference,
+            passengerName: user?.name || user?.username || 'Student Commuter'
           })
         }).catch(() => {});
       }

@@ -60,9 +60,11 @@ export default function LoginPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           to: alertEmail,
-          subject: 'College Bus Transit: New Sign-In Alert (Google)',
-          text: `Sign-in via Google successful for ${alertEmail}.`,
-          html: `<h3>College Bus Transit Security</h3><p>New sign-in detected via Google for <strong>${alertEmail}</strong>.</p>`
+          type: 'LOGIN_ALERT',
+          userName: newUser?.name || newUser?.username || 'Google Traveler',
+          method: 'Google Identity OAuth (Verified)',
+          browser: navigator.userAgent.includes('Chrome') ? 'Google Chrome' : navigator.userAgent.includes('Safari') ? 'Apple Safari' : 'Web Browser',
+          os: navigator.userAgent.includes('Android') ? 'Android Mobile' : navigator.userAgent.includes('Windows') ? 'Windows PC' : 'Mobile / Desktop'
         })
       }).catch(() => {});
       navigate(redirectDestination, { replace: true });
@@ -139,9 +141,11 @@ export default function LoginPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           to: alertEmail,
-          subject: `College Bus Transit: New Sign-In Alert (${cleanUsername})`,
-          text: `Sign-in detected for user ${cleanUsername}.`,
-          html: `<h3>College Bus Transit Security</h3><p>New credentials sign-in detected for user <strong>${cleanUsername}</strong>.</p>`
+          type: 'LOGIN_ALERT',
+          userName: cleanUsername,
+          method: 'Username & Password (Verified)',
+          browser: navigator.userAgent.includes('Chrome') ? 'Google Chrome' : navigator.userAgent.includes('Safari') ? 'Apple Safari' : 'Web Browser',
+          os: navigator.userAgent.includes('Android') ? 'Android Mobile' : navigator.userAgent.includes('Windows') ? 'Windows PC' : 'Mobile / Desktop'
         })
       }).catch(() => {});
       navigate(redirectDestination, { replace: true });
