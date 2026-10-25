@@ -1,0 +1,11 @@
+{
+  "name": "college-bus-management-system",
+  "version": "1.0.0",
+  "description": "College Bus Management System with AI Route Recommendation",
+  "scripts": {
+    "server": "node server/server.js",
+    "client": "npm --prefix client run dev",
+    "seed": "node seed/seed.js",
+    "dev": "node server/server.js"
+  }
+}

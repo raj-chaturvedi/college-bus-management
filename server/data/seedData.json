@@ -1,0 +1,2294 @@
+{
+  "users": [
+    {
+      "_id": "65e000000000000000000001",
+      "username": "rajchaturvedi",
+      "name": "Raj Chaturvedi",
+      "email": "rajchaturvedi215@gmail.com",
+      "password": "$2a$10$q.G6uctDxhQ/uGeS8pX6wug4zhAbM3nQU9RhwSx.NYCD9VqF7vy3m",
+      "role": "student",
+      "authProvider": "local",
+      "preferences": {
+        "mode": "BALANCED",
+        "travelTimePriority": "MEDIUM",
+        "walkingPriority": "HIGH",
+        "crowdPriority": "HIGH",
+        "waitingPriority": "MEDIUM",
+        "reliabilityPriority": "HIGH",
+        "maxWalkingMeters": 800,
+        "maxWaitMinutes": 20,
+        "avoidTransfers": false
+      },
+      "isActive": true,
+      "isVerified": true,
+      "googleId": "105831409515792028388",
+      "updatedAt": "2026-10-25T14:10:34.508Z"
+    },
+    {
+      "_id": "65e000000000000000000002",
+      "username": "priyasharma",
+      "name": "Priya Sharma (Sharda Univ)",
+      "email": "priya.sharma@gmail.com",
+      "password": "$2a$10$q.G6uctDxhQ/uGeS8pX6wug4zhAbM3nQU9RhwSx.NYCD9VqF7vy3m",
+      "role": "student",
+      "authProvider": "local",
+      "preferences": {
+        "mode": "LEAST_CROWDED",
+        "travelTimePriority": "LOW",
+        "walkingPriority": "MEDIUM",
+        "crowdPriority": "HIGH",
+        "waitingPriority": "MEDIUM",
+        "reliabilityPriority": "HIGH",
+        "maxWalkingMeters": 600,
+        "maxWaitMinutes": 15,
+        "avoidTransfers": true
+      },
+      "isActive": true,
+      "isVerified": true
+    },
+    {
+      "_id": "65e000000000000000000003",
+      "username": "admin",
+      "name": "Dr. Marcus Vance (Director of Greater Noida Transit)",
+      "email": "admin@college.edu",
+      "password": "$2a$10$q.G6uctDxhQ/uGeS8pX6wuLgKax5OCZHT1dPvPvCdSvJ2fnHh6ccC",
+      "role": "admin",
+      "authProvider": "local",
+      "preferences": {
+        "mode": "FASTEST",
+        "travelTimePriority": "HIGH",
+        "walkingPriority": "LOW",
+        "crowdPriority": "MEDIUM",
+        "waitingPriority": "HIGH",
+        "reliabilityPriority": "HIGH",
+        "maxWalkingMeters": 1000,
+        "maxWaitMinutes": 10,
+        "avoidTransfers": false
+      },
+      "isActive": true,
+      "isVerified": true
+    },
+    {
+      "_id": "65e000000000000000000004",
+      "username": "student",
+      "name": "Alex Rivera (Campus Student)",
+      "email": "student@college.edu",
+      "password": "$2a$10$q.G6uctDxhQ/uGeS8pX6wug4zhAbM3nQU9RhwSx.NYCD9VqF7vy3m",
+      "role": "student",
+      "authProvider": "local",
+      "preferences": {
+        "mode": "BALANCED",
+        "travelTimePriority": "MEDIUM",
+        "walkingPriority": "HIGH",
+        "crowdPriority": "HIGH",
+        "waitingPriority": "MEDIUM",
+        "reliabilityPriority": "HIGH",
+        "maxWalkingMeters": 800,
+        "maxWaitMinutes": 20,
+        "avoidTransfers": false
+      },
+      "isActive": true,
+      "isVerified": true
+    },
+    {
+      "_id": "6addfbdde97db389802961fe",
+      "createdAt": "2026-10-25T12:53:49.186Z",
+      "updatedAt": "2026-10-25T12:53:49.186Z",
+      "isActive": true,
+      "favoriteRoutes": [],
+      "favoriteBuses": [],
+      "preferences": {
+        "mode": "BALANCED",
+        "travelTimePriority": "MEDIUM",
+        "walkingPriority": "HIGH",
+        "crowdPriority": "HIGH",
+        "waitingPriority": "MEDIUM",
+        "reliabilityPriority": "HIGH",
+        "maxWalkingMeters": 800,
+        "maxWaitMinutes": 20,
+        "avoidTransfers": false
+      },
+      "username": "newstudent",
+      "name": "newstudent",
+      "email": null,
+      "recoveryEmail": null,
+      "password": "$2a$10$ZOOWEduvOn6TNMgrwIazBuZtWxocIgDTcrqqKQeLB6bob5Y4JvHba",
+      "role": "student",
+      "authProvider": "local",
+      "isVerified": true
+    },
+    {
+      "_id": "6addfc0d38877333baabe100",
+      "createdAt": "2026-10-25T12:54:37.501Z",
+      "updatedAt": "2026-10-25T12:54:37.501Z",
+      "isActive": true,
+      "favoriteRoutes": [],
+      "favoriteBuses": [],
+      "preferences": {
+        "mode": "BALANCED",
+        "travelTimePriority": "MEDIUM",
+        "walkingPriority": "HIGH",
+        "crowdPriority": "HIGH",
+        "waitingPriority": "MEDIUM",
+        "reliabilityPriority": "HIGH",
+        "maxWalkingMeters": 800,
+        "maxWaitMinutes": 20,
+        "avoidTransfers": false
+      },
+      "username": "secondstudent",
+      "name": "secondstudent",
+      "email": null,
+      "recoveryEmail": null,
+      "password": "$2a$10$zGN2ID7WVvUiBEQBOXv6SuhWlxxpiK70pqEblY3GiR36SWiOuqf8.",
+      "role": "student",
+      "authProvider": "local",
+      "isVerified": true
+    },
+    {
+      "_id": "6addfebb168fabc8b0e5f136",
+      "createdAt": "2026-10-25T13:06:03.688Z",
+      "updatedAt": "2026-10-25T13:06:03.688Z",
+      "isActive": true,
+      "favoriteRoutes": [],
+      "favoriteBuses": [],
+      "preferences": {
+        "mode": "BALANCED",
+        "travelTimePriority": "MEDIUM",
+        "walkingPriority": "HIGH",
+        "crowdPriority": "HIGH",
+        "waitingPriority": "MEDIUM",
+        "reliabilityPriority": "HIGH",
+        "maxWalkingMeters": 800,
+        "maxWaitMinutes": 20,
+        "avoidTransfers": false
+      },
+      "username": "commuter_1792933563571",
+      "name": "commuter_1792933563571",
+      "password": "$2a$10$r5SNRnUe842bvYknqi/FOeugHMnQ2KZtcEFn6nnq9J3gsd7hEpcW.",
+      "role": "student",
+      "authProvider": "local",
+      "isVerified": true
+    },
+    {
+      "_id": "6addff20b6bb6bc968724a14",
+      "createdAt": "2026-10-25T13:07:44.079Z",
+      "updatedAt": "2026-10-25T13:07:44.079Z",
+      "isActive": true,
+      "favoriteRoutes": [],
+      "favoriteBuses": [],
+      "preferences": {
+        "mode": "BALANCED",
+        "travelTimePriority": "MEDIUM",
+        "walkingPriority": "HIGH",
+        "crowdPriority": "HIGH",
+        "waitingPriority": "MEDIUM",
+        "reliabilityPriority": "HIGH",
+        "maxWalkingMeters": 800,
+        "maxWaitMinutes": 20,
+        "avoidTransfers": false
+      },
+      "username": "commuter_1792933663969",
+      "name": "commuter_1792933663969",
+      "password": "$2a$10$Ox3wFs0G2JtBqoSjAQ43FOlzEc27aXZeKDU.rNPkwQX71FrgM1fM2",
+      "role": "student",
+      "authProvider": "local",
+      "isVerified": true
+    },
+    {
+      "_id": "6ade00741a2e3527059c62a5",
+      "createdAt": "2026-10-25T13:13:24.075Z",
+      "updatedAt": "2026-10-25T13:13:24.075Z",
+      "isActive": true,
+      "favoriteRoutes": [],
+      "favoriteBuses": [],
+      "preferences": {
+        "mode": "BALANCED",
+        "travelTimePriority": "MEDIUM",
+        "walkingPriority": "HIGH",
+        "crowdPriority": "HIGH",
+        "waitingPriority": "MEDIUM",
+        "reliabilityPriority": "HIGH",
+        "maxWalkingMeters": 800,
+        "maxWaitMinutes": 20,
+        "avoidTransfers": false
+      },
+      "username": "devil_1",
+      "name": "devil_1",
+      "password": "$2a$10$BkyxjAk5/CkE1DgmdYmcquhXepBpJd5CGm6cdEKqwKZXjvqvb/BUC",
+      "role": "student",
+      "authProvider": "local",
+      "isVerified": true
+    },
+    {
+      "_id": "6ade049cec18d6aa81fd6593",
+      "createdAt": "2026-10-25T13:31:08.436Z",
+      "updatedAt": "2026-10-25T13:31:08.436Z",
+      "isActive": true,
+      "favoriteRoutes": [],
+      "favoriteBuses": [],
+      "preferences": {
+        "mode": "BALANCED",
+        "travelTimePriority": "MEDIUM",
+        "walkingPriority": "HIGH",
+        "crowdPriority": "HIGH",
+        "waitingPriority": "MEDIUM",
+        "reliabilityPriority": "HIGH",
+        "maxWalkingMeters": 800,
+        "maxWaitMinutes": 20,
+        "avoidTransfers": false
+      },
+      "username": "testuser_1792935068321",
+      "name": "testuser_1792935068321",
+      "password": "$2a$10$9lMsdjeZbzhzQuV1i1fNV.WJXObMLqgK25g234dyS7RY6.56wd4c2",
+      "role": "student",
+      "authProvider": "local",
+      "isVerified": true
+    },
+    {
+      "_id": "6ade086f2177c7e37573ca34",
+      "createdAt": "2026-10-25T13:47:27.330Z",
+      "updatedAt": "2026-10-25T13:47:27.330Z",
+      "isActive": true,
+      "favoriteRoutes": [],
+      "favoriteBuses": [],
+      "preferences": {
+        "mode": "BALANCED",
+        "travelTimePriority": "MEDIUM",
+        "walkingPriority": "HIGH",
+        "crowdPriority": "HIGH",
+        "waitingPriority": "MEDIUM",
+        "reliabilityPriority": "HIGH",
+        "maxWalkingMeters": 800,
+        "maxWaitMinutes": 20,
+        "avoidTransfers": false
+      },
+      "username": "testuser_7197",
+      "name": "testuser_7197",
+      "password": "$2a$10$ES9Zj8ztKialb3idVExh3ubBbfliwsGDa310EchgKHSt4uMZo0vvu",
+      "role": "student",
+      "authProvider": "local",
+      "isVerified": true
+    },
+    {
+      "_id": "6ade088b591426cc73558a43",
+      "createdAt": "2026-10-25T13:47:55.891Z",
+      "updatedAt": "2026-10-25T13:47:55.891Z",
+      "isActive": true,
+      "favoriteRoutes": [],
+      "favoriteBuses": [],
+      "preferences": {
+        "mode": "BALANCED",
+        "travelTimePriority": "MEDIUM",
+        "walkingPriority": "HIGH",
+        "crowdPriority": "HIGH",
+        "waitingPriority": "MEDIUM",
+        "reliabilityPriority": "HIGH",
+        "maxWalkingMeters": 800,
+        "maxWaitMinutes": 20,
+        "avoidTransfers": false
+      },
+      "username": "testuser_5779",
+      "name": "testuser_5779",
+      "password": "$2a$10$xR4Fuhdhd1vPtIRT8ygo4OGViiFC7ZDkSHQZskhDjZoIpToS1onii",
+      "role": "student",
+      "authProvider": "local",
+      "isVerified": true
+    },
+    {
+      "_id": "6ade08aa12c39f3f6a434500",
+      "createdAt": "2026-10-25T13:48:26.671Z",
+      "updatedAt": "2026-10-25T13:48:26.671Z",
+      "isActive": true,
+      "favoriteRoutes": [],
+      "favoriteBuses": [],
+      "preferences": {
+        "mode": "BALANCED",
+        "travelTimePriority": "MEDIUM",
+        "walkingPriority": "HIGH",
+        "crowdPriority": "HIGH",
+        "waitingPriority": "MEDIUM",
+        "reliabilityPriority": "HIGH",
+        "maxWalkingMeters": 800,
+        "maxWaitMinutes": 20,
+        "avoidTransfers": false
+      },
+      "username": "testuser_6564",
+      "name": "testuser_6564",
+      "password": "$2a$10$sTR0QCKHofzsioKnCBLKueMmL6OEov6mxRcztS/b.Sk/pxP3ZTYxa",
+      "role": "student",
+      "authProvider": "local",
+      "isVerified": true
+    }
+  ],
+  "stops": [
+    {
+      "_id": "65e100000000000000000001",
+      "name": "Pari Chowk Central Interchange",
+      "code": "PCK",
+      "latitude": 28.4682,
+      "longitude": 77.5098,
+      "zone": "Pari Chowk Central"
+    },
+    {
+      "_id": "65e100000000000000000002",
+      "name": "Knowledge Park II (KP-2 Metro)",
+      "code": "KP2",
+      "latitude": 28.4615,
+      "longitude": 77.4985,
+      "zone": "Knowledge Park Corridor"
+    },
+    {
+      "_id": "65e100000000000000000003",
+      "name": "GL Bajaj & Knowledge Park III",
+      "code": "GLB",
+      "latitude": 28.4727,
+      "longitude": 77.489,
+      "zone": "Knowledge Park Corridor"
+    },
+    {
+      "_id": "65e100000000000000000004",
+      "name": "Gautam Buddha University (GBU Main Gate)",
+      "code": "GBU",
+      "latitude": 28.4215,
+      "longitude": 77.527,
+      "zone": "GBU University Campus"
+    },
+    {
+      "_id": "65e100000000000000000005",
+      "name": "Bennett University (Tech Zone 2)",
+      "code": "BNT",
+      "latitude": 28.451,
+      "longitude": 77.5835,
+      "zone": "Tech Zone Corridor"
+    },
+    {
+      "_id": "65e100000000000000000006",
+      "name": "Alpha 1 Commercial & Metro",
+      "code": "AL1",
+      "latitude": 28.476,
+      "longitude": 77.511,
+      "zone": "Alpha Sector"
+    },
+    {
+      "_id": "65e100000000000000000007",
+      "name": "Alpha 2 Commercial Centre",
+      "code": "AL2",
+      "latitude": 28.4795,
+      "longitude": 77.519,
+      "zone": "Alpha Sector"
+    },
+    {
+      "_id": "65e100000000000000000008",
+      "name": "Beta 1 Central Market",
+      "code": "BT1",
+      "latitude": 28.484,
+      "longitude": 77.508,
+      "zone": "Beta Sector"
+    },
+    {
+      "_id": "65e100000000000000000009",
+      "name": "Beta 2 Omaxe NRI City Center",
+      "code": "BT2",
+      "latitude": 28.489,
+      "longitude": 77.502,
+      "zone": "Beta Sector"
+    },
+    {
+      "_id": "65e100000000000000000010",
+      "name": "Gamma 1 & 2 Green Avenue",
+      "code": "GM1",
+      "latitude": 28.48,
+      "longitude": 77.501,
+      "zone": "Gamma Sector"
+    },
+    {
+      "_id": "65e100000000000000000011",
+      "name": "Delta 1 Metro Station (Aqua Line)",
+      "code": "DL1",
+      "latitude": 28.4975,
+      "longitude": 77.518,
+      "zone": "Delta Sector"
+    },
+    {
+      "_id": "65e100000000000000000012",
+      "name": "Delta 2 Senior Citizen Park",
+      "code": "DL2",
+      "latitude": 28.494,
+      "longitude": 77.526,
+      "zone": "Delta Sector"
+    },
+    {
+      "_id": "65e100000000000000000013",
+      "name": "Surajpur Police Lines & Collectorate",
+      "code": "SPJ",
+      "latitude": 28.525,
+      "longitude": 77.485,
+      "zone": "Surajpur Corridor"
+    },
+    {
+      "_id": "65e100000000000000000014",
+      "name": "Greater Noida West (Gaur City / Gaur Chowk)",
+      "code": "GNW",
+      "latitude": 28.598,
+      "longitude": 77.428,
+      "zone": "Gr. Noida West"
+    },
+    {
+      "_id": "65e100000000000000000015",
+      "name": "Ecotech III Industrial & Tech Hub",
+      "code": "ECO",
+      "latitude": 28.552,
+      "longitude": 77.472,
+      "zone": "Ecotech Zone"
+    },
+    {
+      "_id": "65e100000000000000000016",
+      "name": "Kasna Transit Terminal & Heritage Village",
+      "code": "KSN",
+      "latitude": 28.441,
+      "longitude": 77.542,
+      "zone": "Kasna Junction"
+    },
+    {
+      "_id": "65e100000000000000000017",
+      "name": "Yamuna Expressway Zero Point",
+      "code": "YEX",
+      "latitude": 28.452,
+      "longitude": 77.518,
+      "zone": "Expressway Corridor"
+    },
+    {
+      "_id": "65e100000000000000000018",
+      "name": "Wipro Knowledge Park IV Campus",
+      "code": "WPR",
+      "latitude": 28.455,
+      "longitude": 77.485,
+      "zone": "Knowledge Park Corridor"
+    },
+    {
+      "_id": "65e100000000000000000019",
+      "name": "India Expo Mart & Convention Centre",
+      "code": "IEM",
+      "latitude": 28.46,
+      "longitude": 77.503,
+      "zone": "Expo Mart Corridor"
+    },
+    {
+      "_id": "65e100000000000000000020",
+      "name": "Aqua Line Metro Depot & Sector 148",
+      "code": "DEP",
+      "latitude": 28.485,
+      "longitude": 77.525,
+      "zone": "Metro Depot Junction"
+    },
+    {
+      "_id": "65e100000000000000000021",
+      "name": "Greater Noida Sector 62 Link",
+      "code": "S62",
+      "latitude": 28.6255,
+      "longitude": 77.3725,
+      "zone": "Sector 62 Transit Corridor"
+    }
+  ],
+  "routes": [
+    {
+      "_id": "65e300000000000000000001",
+      "name": "KP-3 University Express (Sharda & Galgotias -> Pari Chowk -> Alpha 1)",
+      "code": "ROUTE-101",
+      "description": "Major student corridor connecting Knowledge Park 3 universities, KP-2 Metro, Pari Chowk, and Alpha 1.",
+      "color": "#0284c7",
+      "distance": 8.5,
+      "estimatedTime": 18,
+      "frequencyMinutes": 10,
+      "stops": [
+        {
+          "stop": "65e100000000000000000003",
+          "order": 1,
+          "scheduledMinutesFromStart": 0
+        },
+        {
+          "stop": "65e100000000000000000002",
+          "order": 2,
+          "scheduledMinutesFromStart": 5
+        },
+        {
+          "stop": "65e100000000000000000019",
+          "order": 3,
+          "scheduledMinutesFromStart": 9
+        },
+        {
+          "stop": "65e100000000000000000001",
+          "order": 4,
+          "scheduledMinutesFromStart": 13
+        },
+        {
+          "stop": "65e100000000000000000006",
+          "order": 5,
+          "scheduledMinutesFromStart": 18
+        }
+      ],
+      "buses": [
+        "65e400000000000000000001",
+        "65e400000000000000000002",
+        "65e400000000000000000009",
+        "65e400000000000000000010"
+      ]
+    },
+    {
+      "_id": "65e300000000000000000002",
+      "name": "Sector 62 - Greater Noida West Express (Sector 62 -> Gaur City -> Pari Chowk -> GL Bajaj)",
+      "code": "ROUTE-102",
+      "description": "Direct transit corridor connecting Sector 62, Greater Noida West, Surajpur, Pari Chowk, and GL Bajaj Institute.",
+      "color": "#059669",
+      "distance": 24.5,
+      "estimatedTime": 42,
+      "frequencyMinutes": 15,
+      "stops": [
+        {
+          "stop": "65e100000000000000000021",
+          "order": 1,
+          "scheduledMinutesFromStart": 0
+        },
+        {
+          "stop": "65e100000000000000000014",
+          "order": 2,
+          "scheduledMinutesFromStart": 12
+        },
+        {
+          "stop": "65e100000000000000000015",
+          "order": 3,
+          "scheduledMinutesFromStart": 20
+        },
+        {
+          "stop": "65e100000000000000000013",
+          "order": 4,
+          "scheduledMinutesFromStart": 28
+        },
+        {
+          "stop": "65e100000000000000000001",
+          "order": 5,
+          "scheduledMinutesFromStart": 36
+        },
+        {
+          "stop": "65e100000000000000000003",
+          "order": 6,
+          "scheduledMinutesFromStart": 42
+        }
+      ],
+      "buses": [
+        "65e400000000000000000003",
+        "65e400000000000000000012"
+      ]
+    },
+    {
+      "_id": "65e300000000000000000003",
+      "name": "Aqua Line Metro Orbit (KP-2 Metro -> Alpha 2 -> Delta 1)",
+      "code": "ROUTE-103",
+      "description": "Feeder shuttle along Greater Noida Aqua Line metro corridor and residential sectors.",
+      "color": "#8b5cf6",
+      "distance": 11.2,
+      "estimatedTime": 24,
+      "frequencyMinutes": 12,
+      "stops": [
+        {
+          "stop": "65e100000000000000000002",
+          "order": 1,
+          "scheduledMinutesFromStart": 0
+        },
+        {
+          "stop": "65e100000000000000000001",
+          "order": 2,
+          "scheduledMinutesFromStart": 7
+        },
+        {
+          "stop": "65e100000000000000000007",
+          "order": 3,
+          "scheduledMinutesFromStart": 12
+        },
+        {
+          "stop": "65e100000000000000000008",
+          "order": 4,
+          "scheduledMinutesFromStart": 17
+        },
+        {
+          "stop": "65e100000000000000000011",
+          "order": 5,
+          "scheduledMinutesFromStart": 24
+        }
+      ],
+      "buses": [
+        "65e400000000000000000004",
+        "65e400000000000000000005",
+        "65e400000000000000000014"
+      ]
+    },
+    {
+      "_id": "65e300000000000000000004",
+      "name": "Yamuna Expressway - GBU Campus Shuttle (Zero Point -> GBU -> Kasna)",
+      "code": "ROUTE-104",
+      "description": "Express highway corridor catering to Gautam Buddha University, Kasna terminal, and Zero Point.",
+      "color": "#f59e0b",
+      "distance": 14.5,
+      "estimatedTime": 28,
+      "frequencyMinutes": 20,
+      "stops": [
+        {
+          "stop": "65e100000000000000000017",
+          "order": 1,
+          "scheduledMinutesFromStart": 0
+        },
+        {
+          "stop": "65e100000000000000000001",
+          "order": 2,
+          "scheduledMinutesFromStart": 8
+        },
+        {
+          "stop": "65e100000000000000000004",
+          "order": 3,
+          "scheduledMinutesFromStart": 18
+        },
+        {
+          "stop": "65e100000000000000000016",
+          "order": 4,
+          "scheduledMinutesFromStart": 28
+        }
+      ],
+      "buses": [
+        "65e400000000000000000006",
+        "65e400000000000000000011"
+      ]
+    },
+    {
+      "_id": "65e300000000000000000005",
+      "name": "Bennett University Tech Link (Bennett -> Wipro KP4 -> Pari Chowk)",
+      "code": "ROUTE-105",
+      "description": "Direct transit line connecting Bennett University in Tech Zone 2 with Knowledge Park 4 and Pari Chowk.",
+      "color": "#f43f5e",
+      "distance": 12.8,
+      "estimatedTime": 25,
+      "frequencyMinutes": 15,
+      "stops": [
+        {
+          "stop": "65e100000000000000000005",
+          "order": 1,
+          "scheduledMinutesFromStart": 0
+        },
+        {
+          "stop": "65e100000000000000000018",
+          "order": 2,
+          "scheduledMinutesFromStart": 11
+        },
+        {
+          "stop": "65e100000000000000000002",
+          "order": 3,
+          "scheduledMinutesFromStart": 18
+        },
+        {
+          "stop": "65e100000000000000000001",
+          "order": 4,
+          "scheduledMinutesFromStart": 25
+        }
+      ],
+      "buses": [
+        "65e400000000000000000007",
+        "65e400000000000000000013",
+        "65e400000000000000000015"
+      ]
+    },
+    {
+      "_id": "65e300000000000000000006",
+      "name": "Delta - Gamma Residential Shuttle (Delta 2 -> Gamma 2 -> Pari Chowk)",
+      "code": "ROUTE-106",
+      "description": "Internal residential link serving Greater Noida central sectors and markets.",
+      "color": "#06b6d4",
+      "distance": 9.6,
+      "estimatedTime": 20,
+      "frequencyMinutes": 15,
+      "stops": [
+        {
+          "stop": "65e100000000000000000012",
+          "order": 1,
+          "scheduledMinutesFromStart": 0
+        },
+        {
+          "stop": "65e100000000000000000010",
+          "order": 2,
+          "scheduledMinutesFromStart": 6
+        },
+        {
+          "stop": "65e100000000000000000009",
+          "order": 3,
+          "scheduledMinutesFromStart": 11
+        },
+        {
+          "stop": "65e100000000000000000006",
+          "order": 4,
+          "scheduledMinutesFromStart": 15
+        },
+        {
+          "stop": "65e100000000000000000001",
+          "order": 5,
+          "scheduledMinutesFromStart": 20
+        }
+      ],
+      "buses": [
+        "65e400000000000000000008",
+        "65e400000000000000000016"
+      ]
+    }
+  ],
+  "buses": [
+    {
+      "_id": "65e400000000000000000001",
+      "busNumber": "Bus 12 (KP-Express)",
+      "plateNumber": "UP-16-CB-1012",
+      "busType": "college",
+      "operatorName": "Campus Transit Fleet",
+      "fare": 0,
+      "capacity": 50,
+      "currentPassengers": 35,
+      "currentLocation": {
+        "latitude": 28.461968,
+        "longitude": 77.504632,
+        "heading": 36,
+        "speed": 37
+      },
+      "route": "65e300000000000000000001",
+      "driver": "65e200000000000000000001",
+      "status": "active",
+      "currentStopIndex": 2,
+      "delayMinutes": 0,
+      "nextStopEtaMinutes": 5,
+      "direction": "outbound",
+      "updatedAt": "2026-10-25T14:10:32.467Z"
+    },
+    {
+      "_id": "65e400000000000000000002",
+      "busNumber": "Bus 4 (Sharda-Galgotias)",
+      "plateNumber": "UP-16-CB-1004",
+      "busType": "college",
+      "operatorName": "Campus Transit Fleet",
+      "fare": 0,
+      "capacity": 50,
+      "currentPassengers": 45,
+      "currentLocation": {
+        "latitude": 28.473504,
+        "longitude": 77.510616,
+        "heading": 188,
+        "speed": 30
+      },
+      "route": "65e300000000000000000001",
+      "driver": "65e200000000000000000002",
+      "status": "active",
+      "currentStopIndex": 4,
+      "delayMinutes": 2,
+      "nextStopEtaMinutes": 4,
+      "direction": "inbound",
+      "updatedAt": "2026-10-25T14:10:32.467Z"
+    },
+    {
+      "_id": "65e400000000000000000003",
+      "busNumber": "UPSRTC City Bus 102 (Govt)",
+      "plateNumber": "UP-16-GB-2107",
+      "busType": "government",
+      "operatorName": "UPSRTC City Transport",
+      "fare": 25,
+      "capacity": 50,
+      "currentPassengers": 22,
+      "currentLocation": {
+        "latitude": 28.5412,
+        "longitude": 77.4772,
+        "heading": 157,
+        "speed": 31
+      },
+      "route": "65e300000000000000000002",
+      "driver": "65e200000000000000000003",
+      "status": "active",
+      "currentStopIndex": 2,
+      "delayMinutes": 3,
+      "nextStopEtaMinutes": 4,
+      "direction": "outbound",
+      "updatedAt": "2026-10-25T14:10:32.467Z"
+    },
+    {
+      "_id": "65e400000000000000000004",
+      "busNumber": "NMRC Metro Feeder 9 (Govt)",
+      "plateNumber": "UP-16-GB-2109",
+      "busType": "government",
+      "operatorName": "NMRC Aqua Line Feeder",
+      "fare": 15,
+      "capacity": 50,
+      "currentPassengers": 19,
+      "currentLocation": {
+        "latitude": 28.48616,
+        "longitude": 77.5096,
+        "heading": 33,
+        "speed": 39
+      },
+      "route": "65e300000000000000000003",
+      "driver": "65e200000000000000000004",
+      "status": "active",
+      "currentStopIndex": 3,
+      "delayMinutes": 0,
+      "nextStopEtaMinutes": 5,
+      "direction": "outbound",
+      "updatedAt": "2026-10-25T14:10:32.467Z"
+    },
+    {
+      "_id": "65e400000000000000000005",
+      "busNumber": "StarLine Pvt Shuttle 15",
+      "plateNumber": "UP-16-PB-3015",
+      "busType": "private",
+      "operatorName": "StarLine Charters Pvt",
+      "fare": 30,
+      "capacity": 50,
+      "currentPassengers": 41,
+      "currentLocation": {
+        "latitude": 28.48886,
+        "longitude": 77.5116,
+        "heading": 213,
+        "speed": 29
+      },
+      "route": "65e300000000000000000003",
+      "driver": "65e200000000000000000005",
+      "status": "active",
+      "currentStopIndex": 4,
+      "delayMinutes": 0,
+      "nextStopEtaMinutes": 2,
+      "direction": "inbound",
+      "updatedAt": "2026-10-25T14:10:32.467Z"
+    },
+    {
+      "_id": "65e400000000000000000006",
+      "busNumber": "UPSRTC Express 104 (Govt)",
+      "plateNumber": "UP-16-GB-2121",
+      "busType": "government",
+      "operatorName": "UPSRTC Intercity Services",
+      "fare": 30,
+      "capacity": 50,
+      "currentPassengers": 9,
+      "currentLocation": {
+        "latitude": 28.43788,
+        "longitude": 77.5396,
+        "heading": 214,
+        "speed": 30
+      },
+      "route": "65e300000000000000000004",
+      "driver": "65e200000000000000000006",
+      "status": "active",
+      "currentStopIndex": 3,
+      "delayMinutes": 0,
+      "nextStopEtaMinutes": 5,
+      "direction": "inbound",
+      "updatedAt": "2026-10-25T14:10:32.467Z"
+    },
+    {
+      "_id": "65e400000000000000000007",
+      "busNumber": "Bus 3 (Bennett Tech Shuttle)",
+      "plateNumber": "UP-16-CB-1003",
+      "busType": "college",
+      "operatorName": "Campus Transit Fleet",
+      "fare": 0,
+      "capacity": 50,
+      "currentPassengers": 20,
+      "currentLocation": {
+        "latitude": 28.4518,
+        "longitude": 77.5638,
+        "heading": 93,
+        "speed": 28
+      },
+      "route": "65e300000000000000000005",
+      "driver": "65e200000000000000000007",
+      "status": "active",
+      "currentStopIndex": 1,
+      "delayMinutes": 1,
+      "nextStopEtaMinutes": 1,
+      "direction": "inbound",
+      "updatedAt": "2026-10-25T14:10:32.467Z"
+    },
+    {
+      "_id": "65e400000000000000000008",
+      "busNumber": "CityShuttle Pvt Express 18",
+      "plateNumber": "UP-16-PB-3018",
+      "busType": "private",
+      "operatorName": "CityShuttle Mobility Pvt Ltd",
+      "fare": 35,
+      "capacity": 50,
+      "currentPassengers": 25,
+      "currentLocation": {
+        "latitude": 28.471944,
+        "longitude": 77.510376,
+        "heading": 8,
+        "speed": 34
+      },
+      "route": "65e300000000000000000006",
+      "driver": "65e200000000000000000008",
+      "status": "active",
+      "currentStopIndex": 4,
+      "delayMinutes": 0,
+      "nextStopEtaMinutes": 3,
+      "direction": "inbound",
+      "updatedAt": "2026-10-25T14:10:32.467Z"
+    },
+    {
+      "_id": "65e400000000000000000009",
+      "busNumber": "Bus 5 (KP3-Alpha Direct)",
+      "plateNumber": "UP-16-CB-1005",
+      "busType": "college",
+      "operatorName": "Campus Transit Fleet",
+      "fare": 0,
+      "capacity": 52,
+      "currentPassengers": 10,
+      "currentLocation": {
+        "latitude": 28.46138,
+        "longitude": 77.49886,
+        "heading": 111,
+        "speed": 32
+      },
+      "route": "65e300000000000000000001",
+      "driver": "65e200000000000000000009",
+      "status": "active",
+      "currentStopIndex": 1,
+      "delayMinutes": 0,
+      "nextStopEtaMinutes": 6,
+      "direction": "outbound",
+      "updatedAt": "2026-10-25T14:10:32.467Z"
+    },
+    {
+      "_id": "65e400000000000000000010",
+      "busNumber": "Bus 8 (Knowledge Park Campus Cruiser)",
+      "plateNumber": "UP-16-CB-1008",
+      "busType": "college",
+      "operatorName": "Campus Transit Fleet",
+      "fare": 0,
+      "capacity": 48,
+      "currentPassengers": 43,
+      "currentLocation": {
+        "latitude": 28.46656,
+        "longitude": 77.50844,
+        "heading": 36,
+        "speed": 31
+      },
+      "route": "65e300000000000000000001",
+      "driver": "65e200000000000000000010",
+      "status": "active",
+      "currentStopIndex": 2,
+      "delayMinutes": 1,
+      "nextStopEtaMinutes": 1,
+      "direction": "outbound",
+      "updatedAt": "2026-10-25T14:10:32.467Z"
+    },
+    {
+      "_id": "65e400000000000000000011",
+      "busNumber": "Bus 11 (GBU Expressway Swift)",
+      "plateNumber": "UP-16-CB-1011",
+      "busType": "college",
+      "operatorName": "Campus Transit Fleet",
+      "fare": 0,
+      "capacity": 55,
+      "currentPassengers": 13,
+      "currentLocation": {
+        "latitude": 28.425236,
+        "longitude": 77.525624,
+        "heading": 342,
+        "speed": 35
+      },
+      "route": "65e300000000000000000004",
+      "driver": "65e200000000000000000011",
+      "status": "active",
+      "currentStopIndex": 2,
+      "delayMinutes": 0,
+      "nextStopEtaMinutes": 6,
+      "direction": "inbound",
+      "updatedAt": "2026-10-25T14:10:32.467Z"
+    },
+    {
+      "_id": "65e400000000000000000012",
+      "busNumber": "FastTrack Pvt Shuttle 14",
+      "plateNumber": "UP-16-PB-3014",
+      "busType": "private",
+      "operatorName": "FastTrack Commuters Pvt",
+      "fare": 25,
+      "capacity": 50,
+      "currentPassengers": 20,
+      "currentLocation": {
+        "latitude": 28.6057,
+        "longitude": 77.41246,
+        "heading": 119,
+        "speed": 35
+      },
+      "route": "65e300000000000000000002",
+      "driver": "65e200000000000000000012",
+      "status": "active",
+      "currentStopIndex": 0,
+      "delayMinutes": 0,
+      "nextStopEtaMinutes": 2,
+      "direction": "outbound",
+      "updatedAt": "2026-10-25T14:10:32.467Z"
+    },
+    {
+      "_id": "65e400000000000000000013",
+      "busNumber": "Bus 16 (Bennett-Pari Chowk FastTrack)",
+      "plateNumber": "UP-16-CB-1016",
+      "busType": "college",
+      "operatorName": "Campus Transit Fleet",
+      "fare": 0,
+      "capacity": 50,
+      "currentPassengers": 39,
+      "currentLocation": {
+        "latitude": 28.463912,
+        "longitude": 77.502568,
+        "heading": 236,
+        "speed": 39
+      },
+      "route": "65e300000000000000000005",
+      "driver": "65e200000000000000000013",
+      "status": "active",
+      "currentStopIndex": 3,
+      "delayMinutes": 0,
+      "nextStopEtaMinutes": 2,
+      "direction": "inbound",
+      "updatedAt": "2026-10-25T14:10:32.467Z"
+    },
+    {
+      "_id": "65e400000000000000000014",
+      "busNumber": "NMRC Aqua Feeder 20 (Govt)",
+      "plateNumber": "UP-16-GB-2120",
+      "busType": "government",
+      "operatorName": "NMRC Metro Feeder",
+      "fare": 15,
+      "capacity": 45,
+      "currentPassengers": 16,
+      "currentLocation": {
+        "latitude": 28.474528,
+        "longitude": 77.514952,
+        "heading": 36,
+        "speed": 32
+      },
+      "route": "65e300000000000000000003",
+      "driver": "65e200000000000000000014",
+      "status": "active",
+      "currentStopIndex": 1,
+      "delayMinutes": 0,
+      "nextStopEtaMinutes": 3,
+      "direction": "outbound",
+      "updatedAt": "2026-10-25T14:10:32.467Z"
+    },
+    {
+      "_id": "65e400000000000000000015",
+      "busNumber": "Bus 22 (Expo Mart & Tech Zone Link)",
+      "plateNumber": "UP-16-CB-1022",
+      "busType": "college",
+      "operatorName": "Campus Transit Fleet",
+      "fare": 0,
+      "capacity": 50,
+      "currentPassengers": 24,
+      "currentLocation": {
+        "latitude": 28.4563,
+        "longitude": 77.4877,
+        "heading": 241,
+        "speed": 31
+      },
+      "route": "65e300000000000000000005",
+      "driver": "65e200000000000000000015",
+      "status": "active",
+      "currentStopIndex": 2,
+      "delayMinutes": 0,
+      "nextStopEtaMinutes": 1,
+      "direction": "inbound",
+      "updatedAt": "2026-10-25T14:10:32.467Z"
+    },
+    {
+      "_id": "65e400000000000000000016",
+      "busNumber": "Metro CityLink Pvt 25",
+      "plateNumber": "UP-16-PB-3025",
+      "busType": "private",
+      "operatorName": "Metro CityLink Charters",
+      "fare": 20,
+      "capacity": 50,
+      "currentPassengers": 16,
+      "currentLocation": {
+        "latitude": 28.470696,
+        "longitude": 77.510184,
+        "heading": 8,
+        "speed": 35
+      },
+      "route": "65e300000000000000000006",
+      "driver": "65e200000000000000000016",
+      "status": "active",
+      "currentStopIndex": 4,
+      "delayMinutes": 0,
+      "nextStopEtaMinutes": 4,
+      "direction": "inbound",
+      "updatedAt": "2026-10-25T14:10:32.467Z"
+    }
+  ],
+  "drivers": [
+    {
+      "_id": "65e200000000000000000001",
+      "name": "Rajesh Kumar (Noida Depot)",
+      "phone": "+91 98451 22341",
+      "licenseNumber": "UP-16-2018-8831",
+      "experienceYears": 7,
+      "safetyRating": 4.9
+    },
+    {
+      "_id": "65e200000000000000000002",
+      "name": "Suresh Bhati (Pari Chowk)",
+      "phone": "+91 97412 88472",
+      "licenseNumber": "UP-16-2016-1942",
+      "experienceYears": 9,
+      "safetyRating": 4.8
+    },
+    {
+      "_id": "65e200000000000000000003",
+      "name": "Mohammed Irfan (Knowledge Park)",
+      "phone": "+91 99014 33921",
+      "licenseNumber": "UP-16-2019-4821",
+      "experienceYears": 6,
+      "safetyRating": 4.7
+    },
+    {
+      "_id": "65e200000000000000000004",
+      "name": "Anil Sharma (Gaur City)",
+      "phone": "+91 94481 99234",
+      "licenseNumber": "UP-16-2015-3029",
+      "experienceYears": 10,
+      "safetyRating": 5
+    },
+    {
+      "_id": "65e200000000000000000005",
+      "name": "Ramesh Gurjar (Surajpur)",
+      "phone": "+91 96112 00192",
+      "licenseNumber": "UP-16-2020-7712",
+      "experienceYears": 5,
+      "safetyRating": 4.6
+    },
+    {
+      "_id": "65e200000000000000000006",
+      "name": "Vikram Singh (Kasna Hub)",
+      "phone": "+91 98860 44812",
+      "licenseNumber": "UP-16-2017-9104",
+      "experienceYears": 8,
+      "safetyRating": 4.8
+    },
+    {
+      "_id": "65e200000000000000000007",
+      "name": "Manoj Nagar (Beta 2)",
+      "phone": "+91 97391 66201",
+      "licenseNumber": "UP-16-2021-3918",
+      "experienceYears": 4,
+      "safetyRating": 4.9
+    },
+    {
+      "_id": "65e200000000000000000008",
+      "name": "Devendra Yadav (Ecotech)",
+      "phone": "+91 94821 77319",
+      "licenseNumber": "UP-16-2014-6629",
+      "experienceYears": 12,
+      "safetyRating": 4.9
+    },
+    {
+      "_id": "65e200000000000000000009",
+      "name": "Pawan Verma (Alpha Depot)",
+      "phone": "+91 98112 34567",
+      "licenseNumber": "UP-16-2016-5541",
+      "experienceYears": 11,
+      "safetyRating": 4.9
+    },
+    {
+      "_id": "65e200000000000000000010",
+      "name": "Satish Chand (KP-3 Terminal)",
+      "phone": "+91 97188 23411",
+      "licenseNumber": "UP-16-2019-2189",
+      "experienceYears": 6,
+      "safetyRating": 4.8
+    },
+    {
+      "_id": "65e200000000000000000011",
+      "name": "Arun Kumar Kasana (GBU Gate)",
+      "phone": "+91 99531 88412",
+      "licenseNumber": "UP-16-2017-7723",
+      "experienceYears": 8,
+      "safetyRating": 4.9
+    },
+    {
+      "_id": "65e200000000000000000012",
+      "name": "Deepak Bhati (Tech Zone 2)",
+      "phone": "+91 98711 44521",
+      "licenseNumber": "UP-16-2020-6619",
+      "experienceYears": 5,
+      "safetyRating": 4.7
+    },
+    {
+      "_id": "65e200000000000000000013",
+      "name": "Rajendra Prasad (Gaur City)",
+      "phone": "+91 98102 99431",
+      "licenseNumber": "UP-16-2015-8842",
+      "experienceYears": 13,
+      "safetyRating": 5
+    },
+    {
+      "_id": "65e200000000000000000014",
+      "name": "Mohit Rawat (Sector 148)",
+      "phone": "+91 96541 33219",
+      "licenseNumber": "UP-16-2021-1102",
+      "experienceYears": 4,
+      "safetyRating": 4.8
+    },
+    {
+      "_id": "65e200000000000000000015",
+      "name": "Kuldeep Bhati (Surajpur)",
+      "phone": "+91 97115 66782",
+      "licenseNumber": "UP-16-2018-3490",
+      "experienceYears": 7,
+      "safetyRating": 4.9
+    },
+    {
+      "_id": "65e200000000000000000016",
+      "name": "Sunil Chauhan (Yamuna Exp)",
+      "phone": "+91 99991 22841",
+      "licenseNumber": "UP-16-2013-9012",
+      "experienceYears": 14,
+      "safetyRating": 5
+    }
+  ],
+  "trips": [
+    {
+      "_id": "65e600000000000000000001",
+      "student": "65e000000000000000000001",
+      "source": "65e100000000000000000003",
+      "destination": "65e100000000000000000001",
+      "bus": "65e400000000000000000001",
+      "route": "65e300000000000000000001",
+      "travelTime": 18,
+      "walkingDistance": 220,
+      "status": "completed",
+      "timestamp": "2026-10-24T17:12:51.468Z"
+    },
+    {
+      "_id": "65e600000000000000000002",
+      "student": "65e000000000000000000001",
+      "source": "65e100000000000000000014",
+      "destination": "65e100000000000000000001",
+      "bus": "65e400000000000000000003",
+      "route": "65e300000000000000000002",
+      "travelTime": 34,
+      "walkingDistance": 280,
+      "status": "completed",
+      "timestamp": "2026-10-23T19:12:51.468Z"
+    }
+  ],
+  "favorites": [
+    {
+      "_id": "65e500000000000000000001",
+      "student": "65e000000000000000000001",
+      "itemType": "route",
+      "route": "65e300000000000000000001",
+      "label": "KP3 Universities to Pari Chowk"
+    },
+    {
+      "_id": "65e500000000000000000002",
+      "student": "65e000000000000000000001",
+      "itemType": "bus",
+      "bus": "65e400000000000000000001",
+      "label": "Bus 12 (KP-Express)"
+    }
+  ],
+  "occupancyRecords": [
+    {
+      "_id": "65e700000000000000000001",
+      "bus": "65e400000000000000000001",
+      "timestamp": "2026-10-24T19:12:51.468Z",
+      "passengerCount": 18,
+      "occupancyPercentage": 35,
+      "hourOfDay": 7,
+      "dayOfWeek": 1
+    },
+    {
+      "_id": "65e700000000000000000002",
+      "bus": "65e400000000000000000002",
+      "timestamp": "2026-10-24T18:12:51.468Z",
+      "passengerCount": 38,
+      "occupancyPercentage": 76,
+      "hourOfDay": 8,
+      "dayOfWeek": 2
+    },
+    {
+      "_id": "65e700000000000000000003",
+      "bus": "65e400000000000000000003",
+      "timestamp": "2026-10-24T17:12:51.468Z",
+      "passengerCount": 39,
+      "occupancyPercentage": 77,
+      "hourOfDay": 9,
+      "dayOfWeek": 3
+    },
+    {
+      "_id": "65e700000000000000000004",
+      "bus": "65e400000000000000000004",
+      "timestamp": "2026-10-24T16:12:51.468Z",
+      "passengerCount": 19,
+      "occupancyPercentage": 38,
+      "hourOfDay": 10,
+      "dayOfWeek": 4
+    },
+    {
+      "_id": "65e700000000000000000005",
+      "bus": "65e400000000000000000005",
+      "timestamp": "2026-10-24T15:12:51.468Z",
+      "passengerCount": 20,
+      "occupancyPercentage": 39,
+      "hourOfDay": 11,
+      "dayOfWeek": 5
+    },
+    {
+      "_id": "65e700000000000000000006",
+      "bus": "65e400000000000000000006",
+      "timestamp": "2026-10-24T14:12:51.468Z",
+      "passengerCount": 20,
+      "occupancyPercentage": 40,
+      "hourOfDay": 12,
+      "dayOfWeek": 1
+    },
+    {
+      "_id": "65e700000000000000000007",
+      "bus": "65e400000000000000000007",
+      "timestamp": "2026-10-24T13:12:51.468Z",
+      "passengerCount": 21,
+      "occupancyPercentage": 41,
+      "hourOfDay": 13,
+      "dayOfWeek": 2
+    },
+    {
+      "_id": "65e700000000000000000008",
+      "bus": "65e400000000000000000008",
+      "timestamp": "2026-10-24T12:12:51.468Z",
+      "passengerCount": 21,
+      "occupancyPercentage": 42,
+      "hourOfDay": 14,
+      "dayOfWeek": 3
+    },
+    {
+      "_id": "65e700000000000000000009",
+      "bus": "65e400000000000000000009",
+      "timestamp": "2026-10-24T11:12:51.468Z",
+      "passengerCount": 22,
+      "occupancyPercentage": 43,
+      "hourOfDay": 15,
+      "dayOfWeek": 4
+    },
+    {
+      "_id": "65e700000000000000000010",
+      "bus": "65e400000000000000000010",
+      "timestamp": "2026-10-24T10:12:51.468Z",
+      "passengerCount": 40,
+      "occupancyPercentage": 84,
+      "hourOfDay": 16,
+      "dayOfWeek": 5
+    },
+    {
+      "_id": "65e700000000000000000011",
+      "bus": "65e400000000000000000011",
+      "timestamp": "2026-10-24T09:12:51.468Z",
+      "passengerCount": 47,
+      "occupancyPercentage": 85,
+      "hourOfDay": 17,
+      "dayOfWeek": 1
+    },
+    {
+      "_id": "65e700000000000000000012",
+      "bus": "65e400000000000000000012",
+      "timestamp": "2026-10-24T08:12:51.468Z",
+      "passengerCount": 23,
+      "occupancyPercentage": 46,
+      "hourOfDay": 18,
+      "dayOfWeek": 2
+    },
+    {
+      "_id": "65e700000000000000000013",
+      "bus": "65e400000000000000000013",
+      "timestamp": "2026-10-24T07:12:51.468Z",
+      "passengerCount": 24,
+      "occupancyPercentage": 47,
+      "hourOfDay": 19,
+      "dayOfWeek": 3
+    },
+    {
+      "_id": "65e700000000000000000014",
+      "bus": "65e400000000000000000014",
+      "timestamp": "2026-10-24T06:12:51.468Z",
+      "passengerCount": 22,
+      "occupancyPercentage": 48,
+      "hourOfDay": 7,
+      "dayOfWeek": 4
+    },
+    {
+      "_id": "65e700000000000000000015",
+      "bus": "65e400000000000000000015",
+      "timestamp": "2026-10-24T05:12:51.468Z",
+      "passengerCount": 45,
+      "occupancyPercentage": 89,
+      "hourOfDay": 8,
+      "dayOfWeek": 5
+    },
+    {
+      "_id": "65e700000000000000000016",
+      "bus": "65e400000000000000000016",
+      "timestamp": "2026-10-24T04:12:51.468Z",
+      "passengerCount": 45,
+      "occupancyPercentage": 90,
+      "hourOfDay": 9,
+      "dayOfWeek": 1
+    },
+    {
+      "_id": "65e700000000000000000017",
+      "bus": "65e400000000000000000001",
+      "timestamp": "2026-10-24T03:12:51.468Z",
+      "passengerCount": 26,
+      "occupancyPercentage": 51,
+      "hourOfDay": 10,
+      "dayOfWeek": 2
+    },
+    {
+      "_id": "65e700000000000000000018",
+      "bus": "65e400000000000000000002",
+      "timestamp": "2026-10-24T02:12:51.468Z",
+      "passengerCount": 26,
+      "occupancyPercentage": 52,
+      "hourOfDay": 11,
+      "dayOfWeek": 3
+    },
+    {
+      "_id": "65e700000000000000000019",
+      "bus": "65e400000000000000000003",
+      "timestamp": "2026-10-24T01:12:51.468Z",
+      "passengerCount": 27,
+      "occupancyPercentage": 53,
+      "hourOfDay": 12,
+      "dayOfWeek": 4
+    },
+    {
+      "_id": "65e700000000000000000020",
+      "bus": "65e400000000000000000004",
+      "timestamp": "2026-10-24T00:12:51.468Z",
+      "passengerCount": 27,
+      "occupancyPercentage": 54,
+      "hourOfDay": 13,
+      "dayOfWeek": 5
+    },
+    {
+      "_id": "65e700000000000000000021",
+      "bus": "65e400000000000000000005",
+      "timestamp": "2026-10-23T23:12:51.468Z",
+      "passengerCount": 28,
+      "occupancyPercentage": 55,
+      "hourOfDay": 14,
+      "dayOfWeek": 1
+    },
+    {
+      "_id": "65e700000000000000000022",
+      "bus": "65e400000000000000000006",
+      "timestamp": "2026-10-23T22:12:51.468Z",
+      "passengerCount": 28,
+      "occupancyPercentage": 56,
+      "hourOfDay": 15,
+      "dayOfWeek": 2
+    },
+    {
+      "_id": "65e700000000000000000023",
+      "bus": "65e400000000000000000007",
+      "timestamp": "2026-10-23T21:12:51.468Z",
+      "passengerCount": 39,
+      "occupancyPercentage": 77,
+      "hourOfDay": 16,
+      "dayOfWeek": 3
+    },
+    {
+      "_id": "65e700000000000000000024",
+      "bus": "65e400000000000000000008",
+      "timestamp": "2026-10-23T20:12:51.468Z",
+      "passengerCount": 39,
+      "occupancyPercentage": 78,
+      "hourOfDay": 17,
+      "dayOfWeek": 4
+    },
+    {
+      "_id": "65e700000000000000000025",
+      "bus": "65e400000000000000000009",
+      "timestamp": "2026-10-23T19:12:51.468Z",
+      "passengerCount": 31,
+      "occupancyPercentage": 59,
+      "hourOfDay": 18,
+      "dayOfWeek": 5
+    },
+    {
+      "_id": "65e700000000000000000026",
+      "bus": "65e400000000000000000010",
+      "timestamp": "2026-10-23T18:12:51.468Z",
+      "passengerCount": 29,
+      "occupancyPercentage": 60,
+      "hourOfDay": 19,
+      "dayOfWeek": 1
+    },
+    {
+      "_id": "65e700000000000000000027",
+      "bus": "65e400000000000000000011",
+      "timestamp": "2026-10-23T17:12:51.468Z",
+      "passengerCount": 34,
+      "occupancyPercentage": 61,
+      "hourOfDay": 7,
+      "dayOfWeek": 2
+    },
+    {
+      "_id": "65e700000000000000000028",
+      "bus": "65e400000000000000000012",
+      "timestamp": "2026-10-23T16:12:51.468Z",
+      "passengerCount": 41,
+      "occupancyPercentage": 82,
+      "hourOfDay": 8,
+      "dayOfWeek": 3
+    },
+    {
+      "_id": "65e700000000000000000029",
+      "bus": "65e400000000000000000013",
+      "timestamp": "2026-10-23T15:12:51.468Z",
+      "passengerCount": 42,
+      "occupancyPercentage": 83,
+      "hourOfDay": 9,
+      "dayOfWeek": 4
+    },
+    {
+      "_id": "65e700000000000000000030",
+      "bus": "65e400000000000000000014",
+      "timestamp": "2026-10-23T14:12:51.468Z",
+      "passengerCount": 29,
+      "occupancyPercentage": 64,
+      "hourOfDay": 10,
+      "dayOfWeek": 5
+    },
+    {
+      "_id": "65e700000000000000000031",
+      "bus": "65e400000000000000000015",
+      "timestamp": "2026-10-23T13:12:51.468Z",
+      "passengerCount": 18,
+      "occupancyPercentage": 35,
+      "hourOfDay": 11,
+      "dayOfWeek": 1
+    },
+    {
+      "_id": "65e700000000000000000032",
+      "bus": "65e400000000000000000016",
+      "timestamp": "2026-10-23T12:12:51.468Z",
+      "passengerCount": 18,
+      "occupancyPercentage": 36,
+      "hourOfDay": 12,
+      "dayOfWeek": 2
+    },
+    {
+      "_id": "65e700000000000000000033",
+      "bus": "65e400000000000000000001",
+      "timestamp": "2026-10-23T11:12:51.468Z",
+      "passengerCount": 19,
+      "occupancyPercentage": 37,
+      "hourOfDay": 13,
+      "dayOfWeek": 3
+    },
+    {
+      "_id": "65e700000000000000000034",
+      "bus": "65e400000000000000000002",
+      "timestamp": "2026-10-23T10:12:51.468Z",
+      "passengerCount": 19,
+      "occupancyPercentage": 38,
+      "hourOfDay": 14,
+      "dayOfWeek": 4
+    },
+    {
+      "_id": "65e700000000000000000035",
+      "bus": "65e400000000000000000003",
+      "timestamp": "2026-10-23T09:12:51.468Z",
+      "passengerCount": 20,
+      "occupancyPercentage": 39,
+      "hourOfDay": 15,
+      "dayOfWeek": 5
+    },
+    {
+      "_id": "65e700000000000000000036",
+      "bus": "65e400000000000000000004",
+      "timestamp": "2026-10-23T08:12:51.468Z",
+      "passengerCount": 45,
+      "occupancyPercentage": 90,
+      "hourOfDay": 16,
+      "dayOfWeek": 1
+    },
+    {
+      "_id": "65e700000000000000000037",
+      "bus": "65e400000000000000000005",
+      "timestamp": "2026-10-23T07:12:51.468Z",
+      "passengerCount": 46,
+      "occupancyPercentage": 91,
+      "hourOfDay": 17,
+      "dayOfWeek": 2
+    },
+    {
+      "_id": "65e700000000000000000038",
+      "bus": "65e400000000000000000006",
+      "timestamp": "2026-10-23T06:12:51.468Z",
+      "passengerCount": 21,
+      "occupancyPercentage": 42,
+      "hourOfDay": 18,
+      "dayOfWeek": 3
+    },
+    {
+      "_id": "65e700000000000000000039",
+      "bus": "65e400000000000000000007",
+      "timestamp": "2026-10-23T05:12:51.468Z",
+      "passengerCount": 22,
+      "occupancyPercentage": 43,
+      "hourOfDay": 19,
+      "dayOfWeek": 4
+    },
+    {
+      "_id": "65e700000000000000000040",
+      "bus": "65e400000000000000000008",
+      "timestamp": "2026-10-23T04:12:51.468Z",
+      "passengerCount": 22,
+      "occupancyPercentage": 44,
+      "hourOfDay": 7,
+      "dayOfWeek": 5
+    },
+    {
+      "_id": "65e700000000000000000041",
+      "bus": "65e400000000000000000009",
+      "timestamp": "2026-10-23T03:12:51.468Z",
+      "passengerCount": 39,
+      "occupancyPercentage": 75,
+      "hourOfDay": 8,
+      "dayOfWeek": 1
+    },
+    {
+      "_id": "65e700000000000000000042",
+      "bus": "65e400000000000000000010",
+      "timestamp": "2026-10-23T02:12:51.468Z",
+      "passengerCount": 36,
+      "occupancyPercentage": 76,
+      "hourOfDay": 9,
+      "dayOfWeek": 2
+    },
+    {
+      "_id": "65e700000000000000000043",
+      "bus": "65e400000000000000000011",
+      "timestamp": "2026-10-23T01:12:51.468Z",
+      "passengerCount": 26,
+      "occupancyPercentage": 47,
+      "hourOfDay": 10,
+      "dayOfWeek": 3
+    },
+    {
+      "_id": "65e700000000000000000044",
+      "bus": "65e400000000000000000012",
+      "timestamp": "2026-10-23T00:12:51.468Z",
+      "passengerCount": 24,
+      "occupancyPercentage": 48,
+      "hourOfDay": 11,
+      "dayOfWeek": 4
+    },
+    {
+      "_id": "65e700000000000000000045",
+      "bus": "65e400000000000000000013",
+      "timestamp": "2026-10-22T23:12:51.468Z",
+      "passengerCount": 25,
+      "occupancyPercentage": 49,
+      "hourOfDay": 12,
+      "dayOfWeek": 5
+    },
+    {
+      "_id": "65e700000000000000000046",
+      "bus": "65e400000000000000000014",
+      "timestamp": "2026-10-22T22:12:51.468Z",
+      "passengerCount": 23,
+      "occupancyPercentage": 50,
+      "hourOfDay": 13,
+      "dayOfWeek": 1
+    },
+    {
+      "_id": "65e700000000000000000047",
+      "bus": "65e400000000000000000015",
+      "timestamp": "2026-10-22T21:12:51.468Z",
+      "passengerCount": 26,
+      "occupancyPercentage": 51,
+      "hourOfDay": 14,
+      "dayOfWeek": 2
+    },
+    {
+      "_id": "65e700000000000000000048",
+      "bus": "65e400000000000000000016",
+      "timestamp": "2026-10-22T20:12:51.468Z",
+      "passengerCount": 26,
+      "occupancyPercentage": 52,
+      "hourOfDay": 15,
+      "dayOfWeek": 3
+    },
+    {
+      "_id": "65e700000000000000000049",
+      "bus": "65e400000000000000000001",
+      "timestamp": "2026-10-22T19:12:51.468Z",
+      "passengerCount": 42,
+      "occupancyPercentage": 83,
+      "hourOfDay": 16,
+      "dayOfWeek": 4
+    },
+    {
+      "_id": "65e700000000000000000050",
+      "bus": "65e400000000000000000002",
+      "timestamp": "2026-10-22T18:12:51.468Z",
+      "passengerCount": 42,
+      "occupancyPercentage": 84,
+      "hourOfDay": 17,
+      "dayOfWeek": 5
+    }
+  ],
+  "reliabilityRecords": [
+    {
+      "_id": "65e800000000000000000001",
+      "bus": "65e400000000000000000001",
+      "route": "65e300000000000000000001",
+      "delay": 4,
+      "onTime": false,
+      "tripStatus": "delayed",
+      "timestamp": "2026-10-24T19:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000002",
+      "bus": "65e400000000000000000002",
+      "route": "65e300000000000000000002",
+      "delay": 1,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-24T17:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000003",
+      "bus": "65e400000000000000000003",
+      "route": "65e300000000000000000003",
+      "delay": 2,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-24T15:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000004",
+      "bus": "65e400000000000000000004",
+      "route": "65e300000000000000000004",
+      "delay": 0,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-24T13:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000005",
+      "bus": "65e400000000000000000005",
+      "route": "65e300000000000000000005",
+      "delay": 1,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-24T11:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000006",
+      "bus": "65e400000000000000000006",
+      "route": "65e300000000000000000006",
+      "delay": 2,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-24T09:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000007",
+      "bus": "65e400000000000000000007",
+      "route": "65e300000000000000000001",
+      "delay": 0,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-24T07:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000008",
+      "bus": "65e400000000000000000008",
+      "route": "65e300000000000000000002",
+      "delay": 1,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-24T05:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000009",
+      "bus": "65e400000000000000000009",
+      "route": "65e300000000000000000003",
+      "delay": 6,
+      "onTime": false,
+      "tripStatus": "delayed",
+      "timestamp": "2026-10-24T03:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000010",
+      "bus": "65e400000000000000000010",
+      "route": "65e300000000000000000004",
+      "delay": 0,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-24T01:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000011",
+      "bus": "65e400000000000000000011",
+      "route": "65e300000000000000000005",
+      "delay": 1,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-23T23:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000012",
+      "bus": "65e400000000000000000012",
+      "route": "65e300000000000000000006",
+      "delay": 2,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-23T21:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000013",
+      "bus": "65e400000000000000000013",
+      "route": "65e300000000000000000001",
+      "delay": 0,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-23T19:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000014",
+      "bus": "65e400000000000000000014",
+      "route": "65e300000000000000000002",
+      "delay": 1,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-23T17:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000015",
+      "bus": "65e400000000000000000015",
+      "route": "65e300000000000000000003",
+      "delay": 2,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-23T15:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000016",
+      "bus": "65e400000000000000000016",
+      "route": "65e300000000000000000004",
+      "delay": 0,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-23T13:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000017",
+      "bus": "65e400000000000000000001",
+      "route": "65e300000000000000000005",
+      "delay": 8,
+      "onTime": false,
+      "tripStatus": "delayed",
+      "timestamp": "2026-10-23T11:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000018",
+      "bus": "65e400000000000000000002",
+      "route": "65e300000000000000000006",
+      "delay": 2,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-23T09:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000019",
+      "bus": "65e400000000000000000003",
+      "route": "65e300000000000000000001",
+      "delay": 0,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-23T07:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000020",
+      "bus": "65e400000000000000000004",
+      "route": "65e300000000000000000002",
+      "delay": 1,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-23T05:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000021",
+      "bus": "65e400000000000000000005",
+      "route": "65e300000000000000000003",
+      "delay": 2,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-23T03:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000022",
+      "bus": "65e400000000000000000006",
+      "route": "65e300000000000000000004",
+      "delay": 0,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-23T01:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000023",
+      "bus": "65e400000000000000000007",
+      "route": "65e300000000000000000005",
+      "delay": 1,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-22T23:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000024",
+      "bus": "65e400000000000000000008",
+      "route": "65e300000000000000000006",
+      "delay": 2,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-22T21:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000025",
+      "bus": "65e400000000000000000009",
+      "route": "65e300000000000000000001",
+      "delay": 4,
+      "onTime": false,
+      "tripStatus": "delayed",
+      "timestamp": "2026-10-22T19:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000026",
+      "bus": "65e400000000000000000010",
+      "route": "65e300000000000000000002",
+      "delay": 1,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-22T17:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000027",
+      "bus": "65e400000000000000000011",
+      "route": "65e300000000000000000003",
+      "delay": 2,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-22T15:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000028",
+      "bus": "65e400000000000000000012",
+      "route": "65e300000000000000000004",
+      "delay": 0,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-22T13:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000029",
+      "bus": "65e400000000000000000013",
+      "route": "65e300000000000000000005",
+      "delay": 1,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-22T11:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000030",
+      "bus": "65e400000000000000000014",
+      "route": "65e300000000000000000006",
+      "delay": 2,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-22T09:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000031",
+      "bus": "65e400000000000000000015",
+      "route": "65e300000000000000000001",
+      "delay": 0,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-22T07:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000032",
+      "bus": "65e400000000000000000016",
+      "route": "65e300000000000000000002",
+      "delay": 1,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-22T05:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000033",
+      "bus": "65e400000000000000000001",
+      "route": "65e300000000000000000003",
+      "delay": 6,
+      "onTime": false,
+      "tripStatus": "delayed",
+      "timestamp": "2026-10-22T03:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000034",
+      "bus": "65e400000000000000000002",
+      "route": "65e300000000000000000004",
+      "delay": 0,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-22T01:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000035",
+      "bus": "65e400000000000000000003",
+      "route": "65e300000000000000000005",
+      "delay": 1,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-21T23:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000036",
+      "bus": "65e400000000000000000004",
+      "route": "65e300000000000000000006",
+      "delay": 2,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-21T21:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000037",
+      "bus": "65e400000000000000000005",
+      "route": "65e300000000000000000001",
+      "delay": 0,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-21T19:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000038",
+      "bus": "65e400000000000000000006",
+      "route": "65e300000000000000000002",
+      "delay": 1,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-21T17:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000039",
+      "bus": "65e400000000000000000007",
+      "route": "65e300000000000000000003",
+      "delay": 2,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-21T15:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000040",
+      "bus": "65e400000000000000000008",
+      "route": "65e300000000000000000004",
+      "delay": 0,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-21T13:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000041",
+      "bus": "65e400000000000000000009",
+      "route": "65e300000000000000000005",
+      "delay": 8,
+      "onTime": false,
+      "tripStatus": "delayed",
+      "timestamp": "2026-10-21T11:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000042",
+      "bus": "65e400000000000000000010",
+      "route": "65e300000000000000000006",
+      "delay": 2,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-21T09:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000043",
+      "bus": "65e400000000000000000011",
+      "route": "65e300000000000000000001",
+      "delay": 0,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-21T07:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000044",
+      "bus": "65e400000000000000000012",
+      "route": "65e300000000000000000002",
+      "delay": 1,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-21T05:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000045",
+      "bus": "65e400000000000000000013",
+      "route": "65e300000000000000000003",
+      "delay": 2,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-21T03:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000046",
+      "bus": "65e400000000000000000014",
+      "route": "65e300000000000000000004",
+      "delay": 0,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-21T01:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000047",
+      "bus": "65e400000000000000000015",
+      "route": "65e300000000000000000005",
+      "delay": 1,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-20T23:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000048",
+      "bus": "65e400000000000000000016",
+      "route": "65e300000000000000000006",
+      "delay": 2,
+      "onTime": false,
+      "tripStatus": "cancelled",
+      "timestamp": "2026-10-20T21:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000049",
+      "bus": "65e400000000000000000001",
+      "route": "65e300000000000000000001",
+      "delay": 4,
+      "onTime": false,
+      "tripStatus": "delayed",
+      "timestamp": "2026-10-20T19:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000050",
+      "bus": "65e400000000000000000002",
+      "route": "65e300000000000000000002",
+      "delay": 1,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-20T17:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000051",
+      "bus": "65e400000000000000000003",
+      "route": "65e300000000000000000003",
+      "delay": 2,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-20T15:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000052",
+      "bus": "65e400000000000000000004",
+      "route": "65e300000000000000000004",
+      "delay": 0,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-20T13:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000053",
+      "bus": "65e400000000000000000005",
+      "route": "65e300000000000000000005",
+      "delay": 1,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-20T11:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000054",
+      "bus": "65e400000000000000000006",
+      "route": "65e300000000000000000006",
+      "delay": 2,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-20T09:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000055",
+      "bus": "65e400000000000000000007",
+      "route": "65e300000000000000000001",
+      "delay": 0,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-20T07:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000056",
+      "bus": "65e400000000000000000008",
+      "route": "65e300000000000000000002",
+      "delay": 1,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-20T05:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000057",
+      "bus": "65e400000000000000000009",
+      "route": "65e300000000000000000003",
+      "delay": 6,
+      "onTime": false,
+      "tripStatus": "delayed",
+      "timestamp": "2026-10-20T03:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000058",
+      "bus": "65e400000000000000000010",
+      "route": "65e300000000000000000004",
+      "delay": 0,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-20T01:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000059",
+      "bus": "65e400000000000000000011",
+      "route": "65e300000000000000000005",
+      "delay": 1,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-19T23:12:51.468Z"
+    },
+    {
+      "_id": "65e800000000000000000060",
+      "bus": "65e400000000000000000012",
+      "route": "65e300000000000000000006",
+      "delay": 2,
+      "onTime": true,
+      "tripStatus": "on_time",
+      "timestamp": "2026-10-19T21:12:51.468Z"
+    }
+  ],
+  "passes": [],
+  "incidents": []
+}

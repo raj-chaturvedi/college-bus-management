@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: college-bus-ai-backend
+    env: node
+    plan: free
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        value: college_bus_ai_super_secure_jwt_token_secret_key_2026
+      - key: GOOGLE_CLIENT_ID
+        value: 73675269967-lfa9pvdffpl8gf5nfd8bm1ro6va1bmc0.apps.googleusercontent.com

@@ -1,0 +1,17 @@
+{
+  "name": "CollegeBus.AI — Greater Noida Transit",
+  "short_name": "CollegeBus",
+  "description": "Real-Time Campus Transit, 10-Minute Dynamic Boarding Passes, and AI Assistant",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090d16",
+  "theme_color": "#0284c7",
+  "icons": [
+    {
+      "src": "/bus-icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
