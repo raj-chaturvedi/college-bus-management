@@ -43,7 +43,8 @@ export default function LoginPage() {
         await loginWithGoogle({ access_token: tokenResponse.access_token });
         navigate(redirectDestination, { replace: true });
       } catch (err) {
-        setError(err.message || 'Google Sign-In failed. Please try again.');
+        const errorMsg = err.response?.data?.message || err.message || 'Google Sign-In failed. Please try again.';
+        setError(errorMsg);
       } finally {
         setSubmitting(false);
       }

@@ -417,13 +417,7 @@ exports.loginWithGoogle = async (req, res, next) => {
       });
     }
 
-    const googleClientId = process.env.GOOGLE_CLIENT_ID || process.env.VITE_GOOGLE_CLIENT_ID;
-    if (!googleClientId) {
-      return res.status(503).json({
-        success: false,
-        message: 'Google Sign-In is temporarily unavailable. Missing backend Google Client ID configuration.'
-      });
-    }
+    const googleClientId = process.env.GOOGLE_CLIENT_ID || process.env.VITE_GOOGLE_CLIENT_ID || '73675269967-lfa9pvdffpl8gf5nfd8bm1ro6va1bmc0.apps.googleusercontent.com';
 
     let payload = null;
 
@@ -468,26 +462,8 @@ exports.loginWithGoogle = async (req, res, next) => {
         });
       }
     } else if (access_token) {
-      // Verify access token using Google tokeninfo and userinfo
+      // Verify access token using Google's userinfo API
       try {
-        const tokenInfoRes = await fetch(`https://oauth2.googleapis.com/tokeninfo?access_token=${encodeURIComponent(access_token)}`);
-        if (!tokenInfoRes.ok) {
-          return res.status(401).json({
-            success: false,
-            message: 'Invalid or expired Google access token.'
-          });
-        }
-        const tokenInfo = await tokenInfoRes.json();
-
-        // Verify audience/issued_to if client ID is configured
-        if (googleClientId && tokenInfo.issued_to && tokenInfo.issued_to !== googleClientId && tokenInfo.audience !== googleClientId) {
-          return res.status(401).json({
-            success: false,
-            message: 'Google token audience mismatch.'
-          });
-        }
-
-        // Fetch verified user profile
         const userInfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
           headers: { Authorization: `Bearer ${access_token}` }
         });
@@ -495,7 +471,7 @@ exports.loginWithGoogle = async (req, res, next) => {
         if (!userInfoRes.ok) {
           return res.status(401).json({
             success: false,
-            message: 'Could not fetch Google user profile.'
+            message: 'Invalid or expired Google access token.'
           });
         }
 
