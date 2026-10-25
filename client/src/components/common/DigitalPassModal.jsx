@@ -21,7 +21,7 @@ import {
 import { transitAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { transitAudio } from '../../utils/audio';
-import { notifyUser } from '../../utils/notification';
+import { notifyUser, requestNotificationPermission } from '../../utils/notification';
 
 export default function DigitalPassModal({ isOpen, onClose, defaultBus, initialBus, defaultRoute }) {
   const { user } = useAuth();
@@ -104,6 +104,7 @@ export default function DigitalPassModal({ isOpen, onClose, defaultBus, initialB
   const handleGenerate = async (e) => {
     e.preventDefault();
     setLoading(true);
+    requestNotificationPermission();
     try {
       const res = await transitAPI.generatePass({
         busId: selectedBusId,
@@ -278,7 +279,28 @@ export default function DigitalPassModal({ isOpen, onClose, defaultBus, initialB
           </form>
         ) : (
           /* Realistic Transit Boarding Pass Ticket */
-          <div className="pt-3 space-y-3.5 text-center">
+          <div className="pt-2 space-y-3 text-center">
+            {/* Real-time Token Notification Alert Card */}
+            <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/80 border-2 border-emerald-500/40 text-left flex items-start gap-3 shadow-md shadow-emerald-500/10 animate-in fade-in zoom-in-95 duration-300">
+              <div className="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-md shadow-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 animate-pulse" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                    Token Notification Alert
+                  </span>
+                  <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                </div>
+                <div className="text-xs font-bold text-slate-900 dark:text-white mt-0.5">
+                  Token: <span className="font-mono text-emerald-600 dark:text-emerald-400 font-extrabold">{generatedPass.passCode}</span>
+                </div>
+                <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5 leading-snug">
+                  Active for 10 mins. Security alert &amp; QR boarding pass dispatched to <strong>rajchaturvedi215@gmail.com</strong>.
+                </p>
+              </div>
+            </div>
+
             {/* The Physical-Style Digital Ticket Card */}
             <div className="relative rounded-2xl bg-white dark:bg-slate-900 text-slate-950 dark:text-white shadow-2xl overflow-hidden border border-slate-300 dark:border-slate-700 text-left">
               {/* Anti-Screenshot Dynamic Security Ribbon (Moving Laser Bar) */}
