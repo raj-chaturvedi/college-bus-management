@@ -304,36 +304,36 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
   return (
     <div className="max-w-6xl mx-auto space-y-5 pb-12">
       {/* 1. Header / Real-Time Operations Telemetry Bar */}
-      <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="font-bold text-slate-900 text-lg">
+            <h1 className="font-bold text-slate-900 dark:text-white text-lg">
               {timeGreeting}, {greetingName}
             </h1>
-            <span className="text-[11px] font-semibold text-sky-800 bg-sky-50 px-2 py-0.5 rounded border border-sky-100">
+            <span className="text-[11px] font-semibold text-sky-800 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/50 px-2 py-0.5 rounded border border-sky-100 dark:border-sky-800">
               Greater Noida Transit
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Knowledge Park &bull; Pari Chowk &bull; Sector 62 Link &bull; Campus Transit Corridors
           </p>
         </div>
 
         {/* Real Dynamic Telemetry Indicators */}
-        <div className="flex flex-wrap items-center gap-2.5 sm:gap-4 text-xs text-slate-600 border-t md:border-t-0 pt-2 md:pt-0">
-          <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-1 rounded-md font-semibold text-[11px]">
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-4 text-xs text-slate-600 dark:text-slate-300 border-t md:border-t-0 pt-2 md:pt-0 border-slate-200 dark:border-slate-800">
+          <div className="flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-2.5 py-1 rounded-md font-semibold text-[11px]">
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
             <span>SERVICE: ON TIME</span>
           </div>
-          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-md">
-            <span className="font-semibold text-slate-900">{buses.length || 16}</span>
-            <span className="text-slate-500">Active Buses</span>
+          <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 py-1 rounded-md">
+            <span className="font-semibold text-slate-900 dark:text-white">{buses.length || 16}</span>
+            <span className="text-slate-500 dark:text-slate-400">Active Buses</span>
           </div>
-          <div className="flex items-center gap-1.5 text-slate-500 text-[11px]">
+          <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-[11px]">
             <span className="h-1.5 w-1.5 rounded-full bg-sky-500"></span>
             <span>GPS sync: {syncCountdown} seconds ago</span>
           </div>
-          <div className="flex items-center gap-1.5 text-slate-700 font-mono text-[11px] bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-md">
+          <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300 font-mono text-[11px] bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 py-1 rounded-md">
             <span>{liveClock}</span>
           </div>
         </div>
@@ -397,21 +397,21 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
       </div>
 
       {/* 2. Hero Search Area */}
-      <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-card space-y-4">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-card space-y-4 transition-colors">
         <div>
-          <h1 className="text-base font-bold text-slate-900">
+          <h1 className="text-base font-bold text-slate-900 dark:text-white">
             Find the best way to reach your destination.
           </h1>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Select your departure and arrival points to get live bus options with real road routing.
           </p>
         </div>
 
         {/* Service area warning if user location is outside Greater Noida */}
         {locationWarning && (
-          <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-center justify-between gap-2">
+          <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs text-amber-900 dark:text-amber-200 flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0" />
+              <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
               <span>{locationWarning}</span>
             </div>
             <button
@@ -421,7 +421,7 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
                 const defaultStop = stops.find(s => s.code === 'PCK') || stops[0];
                 if (defaultStop) setSourceStopId(defaultStop._id || defaultStop.id);
               }}
-              className="px-2.5 py-1 rounded bg-white border border-amber-300 text-amber-900 font-semibold text-[11px] hover:bg-amber-100/50 transition-colors shrink-0"
+              className="px-2.5 py-1 rounded bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 font-semibold text-[11px] hover:bg-amber-100/50 dark:hover:bg-slate-700 transition-colors shrink-0"
             >
               Use Greater Noida Center
             </button>
@@ -429,8 +429,8 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
         )}
 
         {errorMessage && (
-          <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-800 flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-red-600 shrink-0" />
+          <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-xs text-red-800 dark:text-red-200 flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400 shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
@@ -439,16 +439,16 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
         <div className="grid grid-cols-1 md:grid-cols-11 gap-3 items-end">
           {/* Origin / Current Location */}
           <div className="md:col-span-5 space-y-1.5">
-            <div className="flex items-center justify-between text-xs font-semibold text-slate-700">
+            <div className="flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-300">
               <label className="flex items-center gap-1.5">
-                <MapPin className="h-3.5 w-3.5 text-teal-600" />
+                <MapPin className="h-3.5 w-3.5 text-teal-600 dark:text-teal-400" />
                 <span>Your Current Location / Boarding Stop</span>
               </label>
               <button
                 type="button"
                 onClick={handleDetectLocation}
                 disabled={isLocating}
-                className="text-[11px] font-medium text-sky-700 hover:text-sky-800 flex items-center gap-1"
+                className="text-[11px] font-medium text-sky-700 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 flex items-center gap-1"
               >
                 <Crosshair className={`h-3 w-3 ${isLocating ? 'animate-spin' : ''}`} />
                 <span>{isLocating ? 'Detecting...' : 'Detect Location'}</span>
@@ -457,7 +457,7 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
             <select
               value={sourceStopId}
               onChange={(e) => setSourceStopId(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-lg bg-slate-50 border border-slate-300 text-xs text-slate-900 focus:bg-white focus:border-sky-600"
+              className="w-full px-3 py-2.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:border-sky-600"
             >
               {stops.map((stop) => (
                 <option key={stop._id || stop.id} value={stop._id || stop.id}>
@@ -472,7 +472,7 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
             <button
               type="button"
               onClick={handleSwap}
-              className="p-2.5 rounded-lg border border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-600 transition-colors"
+              className="p-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors"
               title="Swap departure and destination"
             >
               <RotateCcw className="h-4 w-4" />
@@ -481,14 +481,14 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
 
           {/* Destination */}
           <div className="md:col-span-5 space-y-1.5">
-            <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-700">
-              <Navigation className="h-3.5 w-3.5 text-sky-600" />
+            <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <Navigation className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
               <span>Where do you want to go?</span>
             </label>
             <select
               value={destinationStopId}
               onChange={(e) => setDestinationStopId(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-lg bg-slate-50 border border-slate-300 text-xs text-slate-900 focus:bg-white focus:border-sky-600"
+              className="w-full px-3 py-2.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:border-sky-600"
             >
               {stops.map((stop) => (
                 <option key={stop._id || stop.id} value={stop._id || stop.id}>
@@ -500,9 +500,9 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
         </div>
 
         {/* Action Controls & Preference Modes */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-100">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-            <span className="text-xs font-medium text-slate-500 mr-1">Optimize:</span>
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 mr-1">Optimize:</span>
             {PREFERENCE_MODES.map((m) => (
               <button
                 key={m.id}
@@ -513,7 +513,7 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
                 className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors whitespace-nowrap ${
                   activeMode === m.id
                     ? 'bg-sky-600 text-white'
-                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                    : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-transparent dark:border-slate-700'
                 }`}
                 title={m.desc}
               >
@@ -534,7 +534,7 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
 
         {/* Popular Destinations Quick Pick */}
         <div className="pt-2">
-          <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+          <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
             Popular Destinations in Greater Noida:
           </p>
           <div className="flex items-center gap-1.5 flex-wrap">
@@ -542,7 +542,7 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
               <button
                 key={dest.id}
                 onClick={() => handleSelectQuickDestination(dest)}
-                className="px-2.5 py-1 rounded bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-[11px] transition-colors"
+                className="px-2.5 py-1 rounded bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-[11px] transition-colors"
               >
                 {dest.isCollege ? '🎓 ' : '📍 '}
                 {dest.name.split(' (')[0]}
@@ -557,24 +557,24 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
         {/* Left Column: Route Options & Recommendations */}
         <div className="lg:col-span-5 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold text-slate-900">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white">
               Available Route Options
             </h2>
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-slate-500 dark:text-slate-400">
               Ranked by {PREFERENCE_MODES.find(m => m.id === activeMode)?.label || 'Balanced'}
             </span>
           </div>
 
           {loadingRecommendation ? (
-            <div className="p-8 bg-white border border-slate-200 rounded-xl text-center space-y-2">
+            <div className="p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-center space-y-2">
               <span className="h-4 w-4 border-2 border-sky-600 border-t-transparent rounded-full animate-spin inline-block"></span>
-              <p className="text-xs text-slate-600">Calculating road distances and telemetry...</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400">Calculating road distances and telemetry...</p>
             </div>
           ) : !bestMatch ? (
-            <div className="p-8 bg-white border border-slate-200 rounded-xl text-center space-y-2">
+            <div className="p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-center space-y-2">
               <Bus className="h-8 w-8 text-slate-400 mx-auto" />
-              <p className="text-xs font-semibold text-slate-800">No route computed yet</p>
-              <p className="text-xs text-slate-500">Select departure and destination to find buses.</p>
+              <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">No route computed yet</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Select departure and destination to find buses.</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -583,76 +583,76 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
                 onClick={() => setSelectedCandidate(bestMatch)}
                 className={`p-4 rounded-xl border transition-all cursor-pointer ${
                   activeCandidate?.candidateId === bestMatch.candidateId
-                    ? 'bg-sky-50/50 border-sky-600 shadow-sm'
-                    : 'bg-white border-slate-200 hover:border-slate-300'
+                    ? 'bg-sky-50/50 dark:bg-sky-950/40 border-sky-600 shadow-sm'
+                    : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">
+                    <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 px-2 py-0.5 rounded">
                       {bestMatch.badge || (activeMode === 'SHORTEST' ? 'SHORTEST ROUTE' : activeMode === 'FASTEST' ? 'FASTEST ROUTE' : 'BEST OPTION')}
                     </span>
-                    <span className="text-[10px] font-mono font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
+                    <span className="text-[10px] font-mono font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
                       {activeMode}
                     </span>
                   </div>
-                  <span className="text-xs font-bold text-sky-700">
+                  <span className="text-xs font-bold text-sky-700 dark:text-sky-400">
                     Match Score: {bestMatch.score}/100
                   </span>
                 </div>
 
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="font-bold text-slate-900 text-sm">
+                    <h3 className="font-bold text-slate-900 dark:text-white text-sm">
                       {bestMatch.bus?.busNumber}
                     </h3>
-                    <p className="text-xs text-slate-500 mt-0.5">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                       {bestMatch.route?.name}
                     </p>
                   </div>
                   <div className="text-right">
-                    <span className="text-lg font-bold text-slate-900 block leading-tight">
+                    <span className="text-lg font-bold text-slate-900 dark:text-white block leading-tight">
                       {bestMatch.metrics?.travelTimeMinutes} min
                     </span>
-                    <span className="text-xs font-semibold text-sky-700 font-mono">
+                    <span className="text-xs font-semibold text-sky-700 dark:text-sky-400 font-mono">
                       {bestMatch.metrics?.distanceKm} km road
                     </span>
                   </div>
                 </div>
 
                 {/* Practical Metric Row */}
-                <div className="grid grid-cols-4 gap-2 pt-3 mt-3 border-t border-slate-200/60 text-[11px]">
+                <div className="grid grid-cols-4 gap-2 pt-3 mt-3 border-t border-slate-200/60 dark:border-slate-800 text-[11px]">
                   <div>
-                    <span className="text-slate-500 block">Walking</span>
-                    <span className="font-semibold text-slate-800">{bestMatch.metrics?.walkingMeters} m</span>
+                    <span className="text-slate-500 dark:text-slate-400 block">Walking</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">{bestMatch.metrics?.walkingMeters} m</span>
                   </div>
                   <div>
-                    <span className="text-slate-500 block">Waiting</span>
-                    <span className="font-semibold text-slate-800">~{bestMatch.metrics?.etaMinutes} min</span>
+                    <span className="text-slate-500 dark:text-slate-400 block">Waiting</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">~{bestMatch.metrics?.etaMinutes} min</span>
                   </div>
                   <div>
-                    <span className="text-slate-500 block">Crowd</span>
-                    <span className="font-semibold text-slate-800">{bestMatch.metrics?.occupancyPercentage}%</span>
+                    <span className="text-slate-500 dark:text-slate-400 block">Crowd</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">{bestMatch.metrics?.occupancyPercentage}%</span>
                   </div>
                   <div>
-                    <span className="text-slate-500 block">On-Time</span>
-                    <span className="font-semibold text-slate-800">{bestMatch.metrics?.reliabilityPercentage}%</span>
+                    <span className="text-slate-500 dark:text-slate-400 block">On-Time</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">{bestMatch.metrics?.reliabilityPercentage}%</span>
                   </div>
                 </div>
 
                 {/* Microcopy Justification */}
-                <p className="text-xs text-slate-600 mt-2.5 pt-2 border-t border-slate-100">
+                <p className="text-xs text-slate-600 dark:text-slate-300 mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800">
                   {bestMatch.explanation}
                 </p>
 
                 {/* Card Actions */}
-                <div className="flex items-center justify-between pt-2.5 mt-2 border-t border-slate-100 text-xs">
+                <div className="flex items-center justify-between pt-2.5 mt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       setSelectedCandidateForWhy(bestMatch);
                     }}
-                    className="text-sky-700 hover:text-sky-800 font-medium flex items-center gap-1"
+                    className="text-sky-700 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 font-medium flex items-center gap-1"
                   >
                     <HelpCircle className="h-3.5 w-3.5" />
                     <span>Why this route?</span>
@@ -664,7 +664,7 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
                       setPassBus(bestMatch.bus);
                       setShowPassModal(true);
                     }}
-                    className="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium"
+                    className="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-medium border border-transparent dark:border-slate-700"
                   >
                     Get Boarding Pass
                   </button>
@@ -677,41 +677,41 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
                   onClick={() => setSelectedCandidate(secondBest)}
                   className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                     activeCandidate?.candidateId === secondBest.candidateId
-                      ? 'bg-sky-50/50 border-sky-600 shadow-sm'
-                      : 'bg-white border-slate-200 hover:border-slate-300'
+                      ? 'bg-sky-50/50 dark:bg-sky-950/40 border-sky-600 shadow-sm'
+                      : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
                       Alternative 1
                     </span>
-                    <span className="text-xs font-semibold text-slate-600">
+                    <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
                       Score: {secondBest.score}/100
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="font-bold text-slate-900 text-xs">
+                      <h4 className="font-bold text-slate-900 dark:text-white text-xs">
                         {secondBest.bus?.busNumber}
                       </h4>
-                      <p className="text-[11px] text-slate-500">{secondBest.route?.name}</p>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400">{secondBest.route?.name}</p>
                     </div>
                     <div className="text-right">
-                      <span className="text-sm font-bold text-slate-800 block leading-tight">
+                      <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block leading-tight">
                         {secondBest.metrics?.travelTimeMinutes} min
                       </span>
-                      <span className="text-[11px] font-medium text-slate-500 font-mono">
+                      <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 font-mono">
                         {secondBest.metrics?.distanceKm} km
                       </span>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-4 gap-2 pt-2 mt-2 border-t border-slate-100 text-[10px] text-slate-600">
-                    <div>Walk: <strong>{secondBest.metrics?.walkingMeters}m</strong></div>
-                    <div>Wait: <strong>{secondBest.metrics?.etaMinutes}m</strong></div>
-                    <div>Crowd: <strong>{secondBest.metrics?.occupancyPercentage}%</strong></div>
-                    <div>Reliable: <strong>{secondBest.metrics?.reliabilityPercentage}%</strong></div>
+                  <div className="grid grid-cols-4 gap-2 pt-2 mt-2 border-t border-slate-100 dark:border-slate-800 text-[10px] text-slate-600 dark:text-slate-400">
+                    <div>Walk: <strong className="text-slate-800 dark:text-slate-200">{secondBest.metrics?.walkingMeters}m</strong></div>
+                    <div>Wait: <strong className="text-slate-800 dark:text-slate-200">{secondBest.metrics?.etaMinutes}m</strong></div>
+                    <div>Crowd: <strong className="text-slate-800 dark:text-slate-200">{secondBest.metrics?.occupancyPercentage}%</strong></div>
+                    <div>Reliable: <strong className="text-slate-800 dark:text-slate-200">{secondBest.metrics?.reliabilityPercentage}%</strong></div>
                   </div>
                 </div>
               )}
@@ -722,41 +722,41 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
                   onClick={() => setSelectedCandidate(thirdBest)}
                   className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                     activeCandidate?.candidateId === thirdBest.candidateId
-                      ? 'bg-sky-50/50 border-sky-600 shadow-sm'
-                      : 'bg-white border-slate-200 hover:border-slate-300'
+                      ? 'bg-sky-50/50 dark:bg-sky-950/40 border-sky-600 shadow-sm'
+                      : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
                       Alternative 2
                     </span>
-                    <span className="text-xs font-semibold text-slate-600">
+                    <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
                       Score: {thirdBest.score}/100
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="font-bold text-slate-900 text-xs">
+                      <h4 className="font-bold text-slate-900 dark:text-white text-xs">
                         {thirdBest.bus?.busNumber}
                       </h4>
-                      <p className="text-[11px] text-slate-500">{thirdBest.route?.name}</p>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400">{thirdBest.route?.name}</p>
                     </div>
                     <div className="text-right">
-                      <span className="text-sm font-bold text-slate-800 block leading-tight">
+                      <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block leading-tight">
                         {thirdBest.metrics?.travelTimeMinutes} min
                       </span>
-                      <span className="text-[11px] font-medium text-slate-500 font-mono">
+                      <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 font-mono">
                         {thirdBest.metrics?.distanceKm} km
                       </span>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-4 gap-2 pt-2 mt-2 border-t border-slate-100 text-[10px] text-slate-600">
-                    <div>Walk: <strong>{thirdBest.metrics?.walkingMeters}m</strong></div>
-                    <div>Wait: <strong>{thirdBest.metrics?.etaMinutes}m</strong></div>
-                    <div>Crowd: <strong>{thirdBest.metrics?.occupancyPercentage}%</strong></div>
-                    <div>Reliable: <strong>{thirdBest.metrics?.reliabilityPercentage}%</strong></div>
+                  <div className="grid grid-cols-4 gap-2 pt-2 mt-2 border-t border-slate-100 dark:border-slate-800 text-[10px] text-slate-600 dark:text-slate-400">
+                    <div>Walk: <strong className="text-slate-800 dark:text-slate-200">{thirdBest.metrics?.walkingMeters}m</strong></div>
+                    <div>Wait: <strong className="text-slate-800 dark:text-slate-200">{thirdBest.metrics?.etaMinutes}m</strong></div>
+                    <div>Crowd: <strong className="text-slate-800 dark:text-slate-200">{thirdBest.metrics?.occupancyPercentage}%</strong></div>
+                    <div>Reliable: <strong className="text-slate-800 dark:text-slate-200">{thirdBest.metrics?.reliabilityPercentage}%</strong></div>
                   </div>
                 </div>
               )}
@@ -764,20 +764,20 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
           )}
 
           {/* Assistant Prompt Card */}
-          <div className="p-3.5 rounded-xl bg-slate-100 border border-slate-200 text-xs space-y-2">
+          <div className="p-3.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs space-y-2">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-slate-900 flex items-center gap-1.5">
-                <Sparkles className="h-3.5 w-3.5 text-sky-600" />
+              <span className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                <Sparkles className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
                 Ask College Bus Assistant
               </span>
               <button
                 onClick={onOpenAI}
-                className="text-sky-700 hover:text-sky-800 font-semibold"
+                className="text-sky-700 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 font-semibold"
               >
                 Open Assistant &rarr;
               </button>
             </div>
-            <p className="text-slate-600 text-[11px] leading-relaxed">
+            <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
               Have specific questions about this journey? The assistant knows your current search, arrival ETA, and crowding levels.
             </p>
           </div>
@@ -785,14 +785,14 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
 
         {/* Right Column: Road-Routing Map */}
         <div className="lg:col-span-7 space-y-2">
-          <div className="flex items-center justify-between text-xs text-slate-600">
+          <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
             <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-slate-900">Road Transit Map</span>
+              <span className="font-semibold text-slate-900 dark:text-white">Road Transit Map</span>
               <span>&bull;</span>
               <span>Real road network via OSRM</span>
             </div>
             {currentSourceStop && currentDestStop && (
-              <span className="text-[11px] text-slate-500 truncate max-w-[280px]">
+              <span className="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[280px]">
                 {currentSourceStop.name.split(' (')[0]} &rarr; {currentDestStop.name.split(' (')[0]}
               </span>
             )}

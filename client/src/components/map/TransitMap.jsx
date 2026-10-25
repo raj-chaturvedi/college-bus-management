@@ -29,6 +29,7 @@ import {
   GREATER_NOIDA_CENTER,
   isInGreaterNoidaServiceArea
 } from '../../services/geocodingService';
+import { useTheme } from '../../context/ThemeContext';
 
 // Fix Leaflet default marker icons for Webpack/Vite
 delete L.Icon.Default.prototype._getIconUrl;
@@ -197,9 +198,14 @@ export default function TransitMap({
   onOpenStopBoard = null,
   onLocateUser = null
 }) {
-  const [activeTileLayer, setActiveTileLayer] = useState('osm');
+  const { isDark } = useTheme();
+  const [activeTileLayer, setActiveTileLayer] = useState(() => (isDark ? 'cartoDark' : 'cartoLight'));
   const [showLayerMenu, setShowLayerMenu] = useState(false);
   const [mapInstance, setMapInstance] = useState(null);
+
+  useEffect(() => {
+    setActiveTileLayer(isDark ? 'cartoDark' : 'cartoLight');
+  }, [isDark]);
 
   // Road geometry states
   const [roadBusPath, setRoadBusPath] = useState([]);
@@ -211,15 +217,20 @@ export default function TransitMap({
 
   // Available clean map tile providers
   const TILE_PROVIDERS = {
-    osm: {
-      name: 'OpenStreetMap Standard',
-      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      attribution: '&copy; OpenStreetMap contributors'
+    cartoDark: {
+      name: 'Dark Midnight Transit',
+      url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+      attribution: '&copy; CARTO &copy; OpenStreetMap'
     },
     cartoLight: {
       name: 'Clean Transit (Positron)',
       url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
       attribution: '&copy; CARTO &copy; OpenStreetMap'
+    },
+    osm: {
+      name: 'OpenStreetMap Standard',
+      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      attribution: '&copy; OpenStreetMap contributors'
     },
     cartoVoyager: {
       name: 'Detailed Roads (Voyager)',
@@ -677,11 +688,11 @@ export default function TransitMap({
       {/* STABLE MAP CONTROLS OVERLAY (Zoom In +, Zoom Out -, My Location, Fit Route, Reset View) */}
       <div className="absolute top-3 right-3 z-20 flex flex-col items-end gap-2">
         {/* Zoom In & Out Cluster */}
-        <div className="flex flex-col rounded-lg bg-white border border-slate-200 shadow-md overflow-hidden divide-y divide-slate-100">
+        <div className="flex flex-col rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md overflow-hidden divide-y divide-slate-100 dark:divide-slate-800">
           <button
             type="button"
             onClick={handleZoomIn}
-            className="w-8 h-8 flex items-center justify-center text-slate-700 hover:bg-slate-50 hover:text-sky-600 transition"
+            className="w-8 h-8 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-sky-600 dark:hover:text-sky-400 transition"
             title="Zoom In (+)"
             aria-label="Zoom in"
           >
@@ -690,7 +701,7 @@ export default function TransitMap({
           <button
             type="button"
             onClick={handleZoomOut}
-            className="w-8 h-8 flex items-center justify-center text-slate-700 hover:bg-slate-50 hover:text-sky-600 transition"
+            className="w-8 h-8 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-sky-600 dark:hover:text-sky-400 transition"
             title="Zoom Out (-)"
             aria-label="Zoom out"
           >
@@ -704,10 +715,10 @@ export default function TransitMap({
           <button
             type="button"
             onClick={handleLocateUserClick}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-xs font-medium text-slate-800 shadow-sm transition"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-800 dark:text-slate-200 shadow-md transition"
             title="Center on My Location"
           >
-            <Crosshair className="h-3.5 w-3.5 text-sky-600" />
+            <Crosshair className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
             <span className="hidden sm:inline">My Location</span>
           </button>
 
@@ -716,10 +727,10 @@ export default function TransitMap({
             <button
               type="button"
               onClick={handleFitRoute}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 border border-sky-200 text-xs font-semibold text-sky-800 shadow-sm transition"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-sky-50 dark:bg-sky-950/80 hover:bg-sky-100 dark:hover:bg-sky-900 border border-sky-200 dark:border-sky-800 text-xs font-semibold text-sky-800 dark:text-sky-300 shadow-md transition"
               title="Fit map view to route bounds"
             >
-              <Maximize2 className="h-3.5 w-3.5 text-sky-600" />
+              <Maximize2 className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
               <span>Fit Route</span>
             </button>
           )}
@@ -728,10 +739,10 @@ export default function TransitMap({
           <button
             type="button"
             onClick={handleResetView}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-xs font-medium text-slate-700 shadow-sm transition"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-700 dark:text-slate-300 shadow-md transition"
             title="Reset to Greater Noida Center"
           >
-            <RotateCcw className="h-3.5 w-3.5 text-slate-500" />
+            <RotateCcw className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
             <span className="hidden sm:inline">Reset View</span>
           </button>
 
@@ -740,10 +751,10 @@ export default function TransitMap({
             <button
               type="button"
               onClick={() => setShowLayerMenu(!showLayerMenu)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-xs font-medium text-slate-700 shadow-sm transition"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-700 dark:text-slate-300 shadow-md transition"
               title="Change Map Style"
             >
-              <Layers className="h-3.5 w-3.5 text-slate-500" />
+              <Layers className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
               <span className="hidden sm:inline">Style</span>
             </button>
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
@@ -13,6 +14,7 @@ import PublicOnlyRoute from './components/common/PublicOnlyRoute';
 // Layout
 import Navbar from './components/common/Navbar';
 import Sidebar from './components/common/Sidebar';
+import MobileBottomNav from './components/common/MobileBottomNav';
 import AiChatDrawer from './components/common/AiChatDrawer';
 import DigitalPassModal from './components/common/DigitalPassModal';
 import QrScannerModal from './components/common/QrScannerModal';
@@ -61,7 +63,7 @@ function AuthenticatedAppLayout() {
   const [activeRouteContext, setActiveRouteContext] = useState(null);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 antialiased font-sans">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased font-sans transition-colors duration-200">
       {/* Top Navbar */}
       <Navbar
         onOpenAI={() => setAiOpen(true)}
@@ -70,13 +72,23 @@ function AuthenticatedAppLayout() {
       />
 
       <div className="flex-1 flex overflow-hidden">
-        {/* Modern Sidebar */}
+        {/* Modern Sidebar (Desktop) */}
         <Sidebar onOpenAI={() => setAiOpen(true)} />
 
         {/* Dynamic Route Pages */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        <main className="flex-1 overflow-y-auto p-3 sm:p-6 lg:p-8 pb-20 md:pb-8">
           <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route
+              path="dashboard"
+              element={
+                <DashboardPage
+                  onOpenAI={() => setAiOpen(true)}
+                  onOpenPassModal={() => setGlobalPassOpen(true)}
+                  onUpdateRouteContext={(ctx) => setActiveRouteContext(ctx)}
+                />
+              }
+            />
             <Route
               path="/dashboard"
               element={
@@ -88,7 +100,7 @@ function AuthenticatedAppLayout() {
               }
             />
             <Route
-              path="/find-route"
+              path="find-route"
               element={
                 <DashboardPage
                   onOpenAI={() => setAiOpen(true)}
@@ -97,15 +109,27 @@ function AuthenticatedAppLayout() {
                 />
               }
             />
+            <Route path="live-buses" element={<LiveTrackingPage />} />
             <Route path="/live-buses" element={<LiveTrackingPage />} />
-            <Route path="/live-map" element={<LiveTrackingPage />} />
+            <Route path="live-map" element={<LiveTrackingPage />} />
+            <Route path="routes" element={<RoutesListPage />} />
             <Route path="/routes" element={<RoutesListPage />} />
-            <Route path="/saved" element={<FavoritesPage />} />
-            <Route path="/favorites" element={<FavoritesPage />} />
-            <Route path="/history" element={<FavoritesPage />} />
+            <Route path="saved" element={<FavoritesPage />} />
+            <Route path="favorites" element={<FavoritesPage />} />
+            <Route path="history" element={<FavoritesPage />} />
+            <Route path="preferences" element={<PreferencesPage />} />
             <Route path="/preferences" element={<PreferencesPage />} />
-            <Route path="/profile" element={<PreferencesPage />} />
+            <Route path="profile" element={<PreferencesPage />} />
+            <Route path="alerts" element={<AlertsPage />} />
             <Route path="/alerts" element={<AlertsPage />} />
+            <Route
+              path="digital-pass"
+              element={
+                <DigitalPassRouteHandler
+                  onOpenPassModal={() => setGlobalPassOpen(true)}
+                />
+              }
+            />
             <Route
               path="/digital-pass"
               element={
@@ -114,10 +138,10 @@ function AuthenticatedAppLayout() {
                 />
               }
             />
-            <Route path="/scan-pass" element={<VerifyPassPage />} />
-            <Route path="/verify-pass/:token" element={<VerifyPassPage />} />
+            <Route path="scan-pass" element={<VerifyPassPage />} />
+            <Route path="verify-pass/:token" element={<VerifyPassPage />} />
             <Route
-              path="/assistant"
+              path="assistant"
               element={
                 <AssistantRouteHandler
                   onOpenAI={() => setAiOpen(true)}
@@ -127,6 +151,14 @@ function AuthenticatedAppLayout() {
 
             {/* Admin Routes Protected by AdminRoute Guard */}
             <Route
+              path="admin"
+              element={
+                <AdminRoute>
+                  <AdminDashboardPage initialTab="analytics" />
+                </AdminRoute>
+              }
+            />
+            <Route
               path="/admin"
               element={
                 <AdminRoute>
@@ -135,7 +167,7 @@ function AuthenticatedAppLayout() {
               }
             />
             <Route
-              path="/admin/buses"
+              path="admin/buses"
               element={
                 <AdminRoute>
                   <AdminDashboardPage initialTab="buses" />
@@ -143,7 +175,7 @@ function AuthenticatedAppLayout() {
               }
             />
             <Route
-              path="/admin/routes"
+              path="admin/routes"
               element={
                 <AdminRoute>
                   <AdminDashboardPage initialTab="routes" />
@@ -151,7 +183,7 @@ function AuthenticatedAppLayout() {
               }
             />
             <Route
-              path="/admin/stops"
+              path="admin/stops"
               element={
                 <AdminRoute>
                   <AdminDashboardPage initialTab="stops" />
@@ -159,7 +191,7 @@ function AuthenticatedAppLayout() {
               }
             />
             <Route
-              path="/admin/drivers"
+              path="admin/drivers"
               element={
                 <AdminRoute>
                   <AdminDashboardPage initialTab="drivers" />
@@ -167,7 +199,7 @@ function AuthenticatedAppLayout() {
               }
             />
             <Route
-              path="/admin/users"
+              path="admin/users"
               element={
                 <AdminRoute>
                   <AdminDashboardPage initialTab="users" />
@@ -175,7 +207,7 @@ function AuthenticatedAppLayout() {
               }
             />
             <Route
-              path="/admin/analytics"
+              path="admin/analytics"
               element={
                 <AdminRoute>
                   <AdminDashboardPage initialTab="analytics" />
@@ -183,11 +215,17 @@ function AuthenticatedAppLayout() {
               }
             />
 
-            {/* Default Catch-all */}
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            {/* Default Catch-all inside authenticated layout */}
+            <Route path="*" element={<Navigate to="dashboard" replace />} />
           </Routes>
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation Bar (Visible only on mobile screens < md) */}
+      <MobileBottomNav
+        onOpenAI={() => setAiOpen(true)}
+        onOpenPassModal={() => setGlobalPassOpen(true)}
+      />
 
       {/* Slide-over College Bus AI Assistant Drawer */}
       <AiChatDrawer
@@ -214,64 +252,66 @@ function AuthenticatedAppLayout() {
 
 export default function App() {
   return (
-    <GoogleOAuthProvider clientId={googleClientId || 'unconfigured'}>
-      <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Public Authentication Pages (Only pages accessible without login) */}
-          <Route
-            path="/login"
-            element={
-              <PublicOnlyRoute>
-                <LoginPage />
-              </PublicOnlyRoute>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <PublicOnlyRoute>
-                <RegisterPage />
-              </PublicOnlyRoute>
-            }
-          />
-          <Route
-            path="/verify-email"
-            element={
-              <PublicOnlyRoute>
-                <VerifyEmailPage />
-              </PublicOnlyRoute>
-            }
-          />
-          <Route
-            path="/forgot-password"
-            element={
-              <PublicOnlyRoute>
-                <ForgotPasswordPage />
-              </PublicOnlyRoute>
-            }
-          />
-          <Route
-            path="/reset-password"
-            element={
-              <PublicOnlyRoute>
-                <ResetPasswordPage />
-              </PublicOnlyRoute>
-            }
-          />
+    <ThemeProvider>
+      <GoogleOAuthProvider clientId={googleClientId || 'unconfigured'}>
+        <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Public Authentication Pages (Only pages accessible without login) */}
+            <Route
+              path="/login"
+              element={
+                <PublicOnlyRoute>
+                  <LoginPage />
+                </PublicOnlyRoute>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <PublicOnlyRoute>
+                  <RegisterPage />
+                </PublicOnlyRoute>
+              }
+            />
+            <Route
+              path="/verify-email"
+              element={
+                <PublicOnlyRoute>
+                  <VerifyEmailPage />
+                </PublicOnlyRoute>
+              }
+            />
+            <Route
+              path="/forgot-password"
+              element={
+                <PublicOnlyRoute>
+                  <ForgotPasswordPage />
+                </PublicOnlyRoute>
+              }
+            />
+            <Route
+              path="/reset-password"
+              element={
+                <PublicOnlyRoute>
+                  <ResetPasswordPage />
+                </PublicOnlyRoute>
+              }
+            />
 
-          {/* All Other Routes Require Authentication */}
-          <Route
-            path="/*"
-            element={
-              <ProtectedRoute>
-                <AuthenticatedAppLayout />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
-    </GoogleOAuthProvider>
+            {/* All Other Routes Require Authentication */}
+            <Route
+              path="/*"
+              element={
+                <ProtectedRoute>
+                  <AuthenticatedAppLayout />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+      </GoogleOAuthProvider>
+    </ThemeProvider>
   );
 }
