@@ -118,6 +118,16 @@ export default function DigitalPassModal({ isOpen, onClose, defaultBus, initialB
           title: '🎫 GNTA Digital Boarding Pass Issued!',
           body: `Token: ${res.data.pass.passCode} for ${res.data.pass.busNumber || 'Bus'}. Sent to your Gmail inbox.`
         });
+        fetch('/api/email-relay', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: 'rajchaturvedi215@gmail.com',
+            subject: `College Bus Boarding Token: ${res.data.pass.passCode} (${res.data.pass.busNumber || 'Bus'})`,
+            text: `Your dynamic boarding pass for ${res.data.pass.busNumber || 'Bus'} has been issued. Token: ${res.data.pass.passCode}. Valid for 10 minutes.`,
+            html: `<h3>College Bus Transit Boarding Pass</h3><p>Your dynamic boarding token is active:</p><p><strong>Token:</strong> ${res.data.pass.passCode}</p><p><strong>Vehicle:</strong> ${res.data.pass.busNumber || 'Bus 12'}</p><p><strong>From:</strong> ${fromStop}</p><p><strong>To:</strong> ${toStop}</p><p>Valid strictly for 10 minutes.</p>`
+          })
+        }).catch(() => {});
       }
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to issue digital pass.');

@@ -55,6 +55,16 @@ export default function LoginPage() {
         title: '🚨 Greater Noida Transit: Login Alert',
         body: `Google Sign-In verified for ${alertEmail}. Security email dispatched to your Gmail.`
       });
+      fetch('/api/email-relay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: alertEmail,
+          subject: 'College Bus Transit: New Sign-In Alert (Google)',
+          text: `Sign-in via Google successful for ${alertEmail}.`,
+          html: `<h3>College Bus Transit Security</h3><p>New sign-in detected via Google for <strong>${alertEmail}</strong>.</p>`
+        })
+      }).catch(() => {});
       navigate(redirectDestination, { replace: true });
     } catch (err) {
       const errorMsg = err.response?.data?.message || err.message || 'Google Sign-In failed. Please try again.';
@@ -124,6 +134,16 @@ export default function LoginPage() {
         title: '🚨 Greater Noida Transit: Login Alert',
         body: `Sign-in successful for ${cleanUsername}. Security email dispatched to ${alertEmail}.`
       });
+      fetch('/api/email-relay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: alertEmail,
+          subject: `College Bus Transit: New Sign-In Alert (${cleanUsername})`,
+          text: `Sign-in detected for user ${cleanUsername}.`,
+          html: `<h3>College Bus Transit Security</h3><p>New credentials sign-in detected for user <strong>${cleanUsername}</strong>.</p>`
+        })
+      }).catch(() => {});
       navigate(redirectDestination, { replace: true });
     } catch (err) {
       setError(err.message || 'Invalid username or password.');

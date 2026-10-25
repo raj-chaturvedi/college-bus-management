@@ -250,6 +250,40 @@ function getLocalIpAddress() {
 }
 
 /**
+ * Universal HTTPS Email Relay (runs over Port 443 via Vercel serverless AWS Lambda,
+ * guaranteeing delivery from cloud platforms like Render where raw SMTP ports 465/587 are blocked)
+ */
+async function dispatchViaRelay({ toEmail, subject, text, html }) {
+  try {
+    const relayUrl = 'https://college-bus-management-etd3.vercel.app/api/email-relay';
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 6500);
+
+    const res = await fetch(relayUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        to: toEmail,
+        subject,
+        text,
+        html
+      }),
+      signal: controller.signal
+    });
+    clearTimeout(timer);
+
+    if (res.ok) {
+      const data = await res.json();
+      console.log(`[Email Service] Dispatched via HTTPS Vercel Relay: ${toEmail} | Message ID: ${data.messageId || 'OK'}`);
+      return { success: true, messageId: data.messageId, isLive: true };
+    }
+  } catch (err) {
+    console.warn('[Email Service] HTTPS Relay notice, attempting direct fallback:', err.message);
+  }
+  return null;
+}
+
+/**
  * Sends real email verification link and 6-digit OTP code to user's inbox
  */
 async function sendVerificationEmail({ toEmail, userName, token, code }) {
@@ -526,7 +560,14 @@ async function sendLoginNotificationEmail({ toEmail, userName, loginTime = new D
       </html>
     `;
 
-    const textContent = `Hello ${greetingName},\n\nA new sign-in was detected on your account.\n\nTime: ${formattedTime}\nBrowser: ${browser}\nOperating System: ${os}\n\nIf this was you: No action is required.\nIf this wasn't you: Please change your password.\n\nGreater Noida College Transit`;
+    // 1. Try HTTPS Vercel Relay first (bypasses cloud host SMTP firewall blocks)
+    const relayRes = await dispatchViaRelay({
+      toEmail,
+      subject: `College Bus Transit: New Sign-In Alert (${greetingName})`,
+      text: textContent,
+      html: htmlContent
+    });
+    if (relayRes) return relayRes;
 
     const fromAddress = process.env.EMAIL_FROM || `"College Bus Transport" <${getGmailUser()}>`;
 
@@ -637,6 +678,15 @@ async function sendPassIssuedEmail({ toEmail, userName, pass }) {
       </body>
       </html>
     `;
+
+    // 1. Try HTTPS Vercel Relay first (bypasses cloud host SMTP firewall blocks)
+    const relayRes = await dispatchViaRelay({
+      toEmail,
+      subject: `College Bus Boarding Token: ${pass.passCode} (${pass.busNumber})`,
+      text: `Your boarding pass for ${pass.busNumber} is confirmed. Token: ${pass.passCode}. Valid until ${expTime}.`,
+      html: htmlContent
+    });
+    if (relayRes) return relayRes;
 
     const info = await mailClient.sendMail({
       from: `"College Bus Transit" <${getGmailUser()}>`,
