@@ -18,6 +18,7 @@ import MobileBottomNav from './components/common/MobileBottomNav';
 import AiChatDrawer from './components/common/AiChatDrawer';
 import DigitalPassModal from './components/common/DigitalPassModal';
 import QrScannerModal from './components/common/QrScannerModal';
+import GlobalToast from './components/common/GlobalToast';
 
 // Public Auth Pages
 import LoginPage from './pages/LoginPage';
@@ -277,6 +278,7 @@ export default function App() {
       <GoogleOAuthProvider clientId={googleClientId || 'unconfigured'}>
         <AuthProvider>
         <BrowserRouter>
+          <GlobalToast />
           <Routes>
             {/* Public Authentication Pages (Only pages accessible without login) */}
             <Route

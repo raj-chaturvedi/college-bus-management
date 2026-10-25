@@ -21,6 +21,7 @@ import {
 import { transitAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { transitAudio } from '../../utils/audio';
+import { notifyUser } from '../../utils/notification';
 
 export default function DigitalPassModal({ isOpen, onClose, defaultBus, initialBus, defaultRoute }) {
   const { user } = useAuth();
@@ -112,7 +113,10 @@ export default function DigitalPassModal({ isOpen, onClose, defaultBus, initialB
       });
       if (res.data?.success) {
         setGeneratedPass(res.data.pass);
-        transitAudio.playPassChime();
+        notifyUser({
+          title: '🎫 GNTA Digital Boarding Pass Issued!',
+          body: `Token: ${res.data.pass.passCode} for ${res.data.pass.busNumber || 'Bus'}. Sent to your Gmail inbox.`
+        });
       }
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to issue digital pass.');

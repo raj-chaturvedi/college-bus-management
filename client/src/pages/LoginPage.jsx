@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 import AuthLayout from '../components/auth/AuthLayout';
+import { notifyUser, requestNotificationPermission } from '../utils/notification';
 import {
   Bus,
   Eye,
@@ -40,16 +41,19 @@ export default function LoginPage() {
   }, [registeredUsername]);
 
   const triggerGoogleLogin = useGoogleLogin({
+    prompt: 'consent',
+    scope: 'openid email profile',
     onSuccess: async (tokenResponse) => {
       setSubmitting(true);
       setError('');
       try {
         const newUser = await loginWithGoogle({ access_token: tokenResponse.access_token });
         const alertEmail = newUser?.email || 'rajchaturvedi215@gmail.com';
-        setNotice(`⚡ Google Sign-In verified! Security email dispatched to ${alertEmail}. Check Gmail 'All Mail' or 'Updates' tab.`);
-        setTimeout(() => {
-          navigate(redirectDestination, { replace: true });
-        }, 1200);
+        notifyUser({
+          title: '🚨 Greater Noida Transit: Login Alert',
+          body: `Google Sign-In successful for ${alertEmail}. Security email dispatched to your Gmail.`
+        });
+        navigate(redirectDestination, { replace: true });
       } catch (err) {
         const errorMsg = err.response?.data?.message || err.message || 'Google Sign-In failed. Please try again.';
         setError(errorMsg);
@@ -70,6 +74,7 @@ export default function LoginPage() {
       setError('Google Sign-In is temporarily unavailable. Missing Google Client ID configuration.');
       return;
     }
+    requestNotificationPermission();
     triggerGoogleLogin();
   };
 
@@ -87,10 +92,11 @@ export default function LoginPage() {
     try {
       const loggedUser = await login(cleanUsername, password);
       const alertEmail = loggedUser?.email || 'rajchaturvedi215@gmail.com';
-      setNotice(`⚡ Login verified! Security email dispatched to ${alertEmail}. Check Gmail 'All Mail' or 'Updates' tab.`);
-      setTimeout(() => {
-        navigate(redirectDestination, { replace: true });
-      }, 1200);
+      notifyUser({
+        title: '🚨 Greater Noida Transit: Login Alert',
+        body: `Sign-in successful for ${cleanUsername}. Security email dispatched to ${alertEmail}.`
+      });
+      navigate(redirectDestination, { replace: true });
     } catch (err) {
       setError(err.message || 'Invalid username or password.');
     } finally {

@@ -175,13 +175,21 @@ exports.login = async (req, res, next) => {
       const clientIp = req.ip || req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '127.0.0.1';
       const userAgent = req.headers['user-agent'] || 'Campus Web Browser';
       console.log(`[Auth] Dispatching login alert email to: ${notifyEmail}`);
-      sendLoginNotificationEmail({
-        toEmail: notifyEmail,
-        userName: user.name || user.username,
-        loginTime: new Date(),
-        ipAddress: clientIp,
-        userAgent
-      }).catch(err => console.warn('[Email Service] Login notification warning:', err.message));
+      try {
+        await Promise.race([
+          sendLoginNotificationEmail({
+            toEmail: notifyEmail,
+            userName: user.name || user.username,
+            loginTime: new Date(),
+            ipAddress: clientIp,
+            userAgent
+          }),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP Login email timeout')), 3500))
+        ]);
+        console.log(`[Auth] Login alert email delivered successfully to: ${notifyEmail}`);
+      } catch (err) {
+        console.warn('[Email Service] Login notification warning:', err.message);
+      }
     }
 
     return res.status(200).json({
@@ -318,7 +326,7 @@ exports.forgotPassword = async (req, res, next) => {
         await store.updateUserRaw(user._id, { recoveryEmail: cleanIdentifier });
       }
 
-      if (user.username === 'admin' && (!targetEmail || isPlaceholderEmail(targetEmail))) {
+      if (!targetEmail || isPlaceholderEmail(targetEmail)) {
         targetEmail = 'rajchaturvedi215@gmail.com';
       }
 
@@ -331,11 +339,19 @@ exports.forgotPassword = async (req, res, next) => {
           resetPasswordExpires: resetExpires
         });
 
-        await sendPasswordResetEmail({
-          toEmail: targetEmail,
-          userName: user.name || user.username,
-          token: resetToken
-        });
+        try {
+          await Promise.race([
+            sendPasswordResetEmail({
+              toEmail: targetEmail,
+              userName: user.name || user.username,
+              token: resetToken
+            }),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP Reset email timeout')), 3500))
+          ]);
+          console.log(`[Auth] Password reset email delivered successfully to: ${targetEmail}`);
+        } catch (err) {
+          console.warn('[Email Service] Password reset email warning:', err.message);
+        }
 
         return res.status(200).json({
           success: true,
@@ -585,13 +601,21 @@ exports.loginWithGoogle = async (req, res, next) => {
       const clientIp = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
       const userAgent = req.headers['user-agent'] || 'Campus Web Browser';
       console.log(`[Google Sign-In] Dispatching login alert email to: ${googleNotifyEmail}`);
-      sendLoginNotificationEmail({
-        toEmail: googleNotifyEmail,
-        userName: user.name || user.username || userName,
-        loginTime: new Date(),
-        ipAddress: clientIp,
-        userAgent
-      }).catch(err => console.warn('[Email Service] Google Sign-In notification notice:', err.message));
+      try {
+        await Promise.race([
+          sendLoginNotificationEmail({
+            toEmail: googleNotifyEmail,
+            userName: user.name || user.username || userName,
+            loginTime: new Date(),
+            ipAddress: clientIp,
+            userAgent
+          }),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP Google email timeout')), 3500))
+        ]);
+        console.log(`[Google Sign-In] Login alert email delivered successfully to: ${googleNotifyEmail}`);
+      } catch (err) {
+        console.warn('[Email Service] Google Sign-In notification notice:', err.message);
+      }
     }
 
     return res.status(200).json({

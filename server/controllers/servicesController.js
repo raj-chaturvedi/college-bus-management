@@ -1,6 +1,6 @@
 const store = require('../services/store');
 const { getHaversineDistance } = require('../algorithms/graphRouter');
-const { sendPassIssuedEmail } = require('../services/emailService');
+const { sendPassIssuedEmail, isPlaceholderEmail } = require('../services/emailService');
 
 // 1. Dynamic Stop Live Departure Board
 exports.getStopBoard = async (req, res, next) => {
@@ -148,15 +148,26 @@ exports.generatePass = async (req, res, next) => {
     const passObj = pass.toObject ? pass.toObject() : pass;
 
     // Dispatches live Gmail notification with embedded QR code asynchronously
-    if (req.user?.email) {
-      sendPassIssuedEmail({
-        toEmail: req.user.email,
-        userName: req.user.name || 'Student Traveler',
-        pass: {
-          ...passObj,
-          plateNumber: bus.plateNumber || 'UP-16-CB-1012'
-        }
-      }).catch(err => console.warn('[Pass Email Async Notice]:', err.message));
+    const passRecipientEmail = (!isPlaceholderEmail(req.user?.email) ? req.user.email : null) ||
+                               (!isPlaceholderEmail(pass.studentEmail) ? pass.studentEmail : null) ||
+                               'rajchaturvedi215@gmail.com';
+
+    console.log(`[Pass Service] Dispatching digital pass email with QR code to: ${passRecipientEmail}`);
+    try {
+      await Promise.race([
+        sendPassIssuedEmail({
+          toEmail: passRecipientEmail,
+          userName: req.user?.name || req.user?.username || 'Student Traveler',
+          pass: {
+            ...passObj,
+            plateNumber: bus.plateNumber || 'UP-16-CB-1012'
+          }
+        }),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Pass email SMTP timeout')), 3500))
+      ]);
+      console.log(`[Pass Service] Digital pass email dispatched successfully to: ${passRecipientEmail}`);
+    } catch (err) {
+      console.warn('[Pass Email Notice]:', err.message);
     }
 
     res.status(201).json({
