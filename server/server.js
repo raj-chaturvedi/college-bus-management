@@ -37,6 +37,17 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Root API Status Endpoint
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'online',
+    service: 'College Bus AI Management System API',
+    version: '1.0.0',
+    health: '/api/health',
+    timestamp: new Date()
+  });
+});
+
 // Health Check API
 app.get('/api/health', (req, res) => {
   res.status(200).json({
