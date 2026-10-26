@@ -136,6 +136,7 @@ export default function AlertsPage() {
       <ReportIncidentModal
         isOpen={showIncidentModal}
         onClose={() => setShowIncidentModal(false)}
+        onIncidentReported={loadAlerts}
       />
     </div>
   );

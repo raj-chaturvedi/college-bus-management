@@ -166,36 +166,25 @@ async function calculateRecommendations(sourceStopId, destinationStopId, options
   const graph = new TransitGraph(stops, routes);
   let candidates = graph.findCandidateRoutes(normSourceId, normDestId);
 
-  // If no candidates found directly, create a fallback adjacent transit path
-  if (candidates.length === 0) {
-    // Pick the most central routes as a fallback transit suggestion
-    const firstRoute = routes[0];
-    if (firstRoute) {
-      candidates.push({
-        type: 'DIRECT',
-        transfers: 0,
-        legs: [
-          {
-            routeId: firstRoute._id.toString(),
-            routeName: firstRoute.name,
-            routeCode: firstRoute.code,
-            routeColor: firstRoute.color || '#0c87eb',
-            stopsCount: 4,
-            travelTimeMinutes: 24,
-            distanceKm: 8.5,
-            stopsList: firstRoute.stops ? firstRoute.stops.slice(0, 4) : []
-          }
-        ],
-        totalTravelTime: 24,
-        totalDistanceKm: 8.5,
-        walkingMeters: 450
-      });
-    }
-  }
-
   // Determine active preference mode and weights
   const activeMode = options.mode || (options.userPreferences && options.userPreferences.mode) || 'BALANCED';
   const weights = PREFERENCE_WEIGHTS[activeMode] || PREFERENCE_WEIGHTS.BALANCED;
+
+  // If no candidates found directly, return clean unavailable response
+  if (candidates.length === 0) {
+    return {
+      sourceStop,
+      destinationStop,
+      activeMode,
+      appliedWeights: weights,
+      bestMatch: null,
+      secondBest: null,
+      thirdBest: null,
+      allCandidates: [],
+      hasDirectConnection: false,
+      message: 'No direct bus available between selected stops.'
+    };
+  }
 
   // Enrich each candidate with real-time bus telemetry, reliability, and crowd stats
   const enrichedCandidates = candidates.map((cand, index) => {
@@ -207,7 +196,6 @@ async function calculateRecommendations(sourceStopId, destinationStopId, options
     let selectedBus = assignedBuses[index % (assignedBuses.length || 1)] || buses[index % buses.length];
 
     if (!selectedBus) {
-      // Mock bus fallback if no buses seeded yet
       selectedBus = {
         busNumber: `BUS-${10 + index}`,
         capacity: 50,
@@ -233,13 +221,22 @@ async function calculateRecommendations(sourceStopId, destinationStopId, options
       const totalDelay = routeReliabilityRecs.reduce((acc, r) => acc + (r.delay || 0), 0);
       averageDelay = Math.round((totalDelay / routeReliabilityRecs.length) * 10) / 10;
     } else {
-      // Variation for demo realism
       reliabilityPercentage = Math.max(82, 96 - (index * 4));
       averageDelay = 1.5 + (index * 1.2);
     }
 
-    // Waiting time (minutes to arrive at boarding stop)
-    const waitingTime = Math.max(2, (selectedBus.nextStopEtaMinutes || 6) + (index * 2));
+    // Calculate real ETA from bus's live GPS position to source boarding stop
+    let waitingTime = 6;
+    if (selectedBus.currentLocation?.latitude && selectedBus.currentLocation?.longitude && sourceStop.latitude && sourceStop.longitude) {
+      const dLat = (sourceStop.latitude - selectedBus.currentLocation.latitude) * 111;
+      const dLon = (sourceStop.longitude - selectedBus.currentLocation.longitude) * 111 * Math.cos((sourceStop.latitude * Math.PI) / 180);
+      const distKm = Math.hypot(dLat, dLon) * 1.25;
+      const busSpeed = Math.max(20, selectedBus.currentLocation.speed || selectedBus.speed || 30);
+      const stopsBetween = Math.abs((primaryLeg.fromStopIndex || 0) - (selectedBus.currentStopIndex || 0));
+      waitingTime = Math.max(1, Math.round((distKm / busSpeed) * 60 + stopsBetween * 1.2 + (selectedBus.delayMinutes || 0)));
+    } else {
+      waitingTime = Math.max(2, (selectedBus.nextStopEtaMinutes || 6) + (index * 2));
+    }
     const travelTime = cand.totalTravelTime;
     const walkingMeters = cand.walkingMeters;
 

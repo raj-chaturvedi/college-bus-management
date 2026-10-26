@@ -1,6 +1,6 @@
 const store = require('../services/store');
 const { getHaversineDistance } = require('../algorithms/graphRouter');
-const { sendPassIssuedEmail, isPlaceholderEmail } = require('../services/emailService');
+const { sendPassIssuedEmail, sendIssueReportEmail, isPlaceholderEmail } = require('../services/emailService');
 
 // 1. Dynamic Stop Live Departure Board
 exports.getStopBoard = async (req, res, next) => {
@@ -308,14 +308,24 @@ exports.reportIncident = async (req, res, next) => {
   try {
     const { title, description, type, busId, routeId, stopId, severity, delayAddedMinutes, location } = req.body;
 
-    const incidentTitle = title || (type ? `${type.replace(/_/g, ' ').toUpperCase()} Incident` : 'Campus Transit Alert');
-    const incidentDesc = description || `Reported ${type || 'incident'} near ${location || 'campus corridors'}.`;
+    // A. Validate required fields
+    if ((!title || !title.trim()) && (!description || !description.trim())) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed: Please provide an incident title or description.'
+      });
+    }
+
+    const incidentTitle = (title && title.trim()) || (type ? `${type.replace(/_/g, ' ').toUpperCase()} Incident` : 'Campus Transit Alert');
+    const incidentDesc = (description && description.trim()) || `Reported ${type || 'incident'} near ${location || 'campus corridors'}.`;
 
     let busNumber = '';
+    let routeName = '';
     if (busId) {
       const bus = await store.getBusById(busId);
       if (bus) {
         busNumber = bus.busNumber;
+        routeName = bus.route?.name || '';
         // Dynamically add delay to the bus
         const delayToAdd = delayAddedMinutes ? Number(delayAddedMinutes) : (severity === 'high' ? 6 : 3);
         await store.updateBus(bus._id, {
@@ -325,6 +335,12 @@ exports.reportIncident = async (req, res, next) => {
       }
     }
 
+    if (!routeName && routeId) {
+      const route = await store.getRouteById(routeId);
+      if (route) routeName = route.name;
+    }
+
+    // B. Save to Database
     const incident = await store.createIncident({
       reportedBy: req.user ? req.user._id : null,
       reporterName: req.user ? req.user.name : 'Campus Commuter',
@@ -339,10 +355,25 @@ exports.reportIncident = async (req, res, next) => {
       delayAddedMinutes: delayAddedMinutes ? Number(delayAddedMinutes) : 3
     });
 
+    // C. Dispatch Admin Email Notification (Safe minimal failure handling)
+    const reporterName = req.user ? req.user.name : 'Campus Commuter';
+    const reporterEmail = req.user ? req.user.email : null;
+    const emailResult = await sendIssueReportEmail({
+      incident,
+      reporterName,
+      reporterEmail,
+      busNumber,
+      routeName
+    });
+
     res.status(201).json({
       success: true,
-      message: 'Traffic alert reported and broadcasted to campus transit dispatch.',
-      incident
+      message: emailResult.success
+        ? 'Issue reported successfully! Transit dispatch alerted and notification email delivered.'
+        : 'Issue reported and recorded in transit dispatch. Email notification could not be delivered.',
+      incident,
+      emailDelivered: emailResult.success,
+      emailError: emailResult.error || null
     });
   } catch (error) {
     next(error);

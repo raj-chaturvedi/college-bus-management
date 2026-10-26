@@ -53,6 +53,13 @@ export default function LiveTrackingPage() {
         const res = await transitAPI.getLiveBuses();
         if (res.data?.success && isMounted) {
           setBuses(res.data.buses);
+          setSelectedBus(prev => {
+            if (!prev) return null;
+            const updated = res.data.buses.find(
+              b => (b._id || b.id)?.toString() === (prev._id || prev.id)?.toString()
+            );
+            return updated || prev;
+          });
         }
       } catch {}
     }, 3000);
@@ -67,13 +74,19 @@ export default function LiveTrackingPage() {
     setSelectedBus(bus);
     if (bus.currentLocation?.latitude && bus.currentLocation?.longitude) {
       setMapCenter([bus.currentLocation.latitude, bus.currentLocation.longitude]);
-      setMapZoom(15);
+      setMapZoom(14);
     }
   };
 
   const filteredBuses = buses.filter(b => {
     if (filterCrowd === 'ALL') return true;
-    return b.crowdLevel === filterCrowd;
+    const hasOcc = typeof b.occupancyPercentage === 'number' && typeof b.capacity === 'number';
+    if (!hasOcc) return false;
+    const occ = b.occupancyPercentage;
+    if (filterCrowd === 'LOW') return occ < 50;
+    if (filterCrowd === 'MEDIUM') return occ >= 50 && occ <= 80;
+    if (filterCrowd === 'HIGH') return occ > 80;
+    return true;
   });
 
   return (
@@ -119,6 +132,7 @@ export default function LiveTrackingPage() {
               buses={filteredBuses}
               stops={stops}
               routes={routes}
+              selectedBus={selectedBus}
               center={mapCenter}
               zoom={mapZoom}
               height="580px"
@@ -163,16 +177,32 @@ export default function LiveTrackingPage() {
 
           <div className="space-y-2.5 max-h-[640px] overflow-y-auto pr-1">
             {filteredBuses.map((bus) => {
-              const isSelected = selectedBus?._id === bus._id || selectedBus?.id === bus.id;
-              const occ = bus.occupancyPercentage || 50;
-              const crowd = bus.crowdLevel || 'MEDIUM';
+              const busIdStr = (bus._id || bus.id)?.toString();
+              const selectedBusIdStr = (selectedBus?._id || selectedBus?.id)?.toString();
+              const isSelected = !!selectedBus && (
+                (selectedBusIdStr && selectedBusIdStr === busIdStr) ||
+                (selectedBus.busNumber && selectedBus.busNumber === bus.busNumber)
+              );
 
-              const crowdBadgeClass =
-                crowd === 'LOW'
-                  ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
-                  : crowd === 'MEDIUM'
-                  ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800'
-                  : 'bg-red-50 dark:bg-red-950/60 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800';
+              const hasOcc = typeof bus.occupancyPercentage === 'number' && typeof bus.capacity === 'number';
+              const occ = hasOcc ? bus.occupancyPercentage : null;
+              const availableSeats = hasOcc ? Math.max(0, (bus.capacity || 0) - (bus.currentPassengers || 0)) : null;
+
+              let crowdBadgeClass = 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700';
+              let crowdLabel = 'Crowd data unavailable';
+
+              if (occ !== null) {
+                if (occ < 50) {
+                  crowdLabel = `Low (${occ}%)`;
+                  crowdBadgeClass = 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
+                } else if (occ <= 80) {
+                  crowdLabel = `Medium (${occ}%)`;
+                  crowdBadgeClass = 'bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800';
+                } else {
+                  crowdLabel = `High (${occ}%)`;
+                  crowdBadgeClass = 'bg-red-50 dark:bg-red-950/60 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800';
+                }
+              }
 
               return (
                 <div
@@ -180,7 +210,7 @@ export default function LiveTrackingPage() {
                   onClick={() => handleSelectBus(bus)}
                   className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                     isSelected
-                      ? 'bg-sky-50/60 dark:bg-sky-950/40 border-sky-600 shadow-sm'
+                      ? 'bg-sky-50/70 dark:bg-sky-950/50 border-sky-600 shadow-md ring-2 ring-sky-500/20'
                       : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
                   }`}
                 >
@@ -214,7 +244,7 @@ export default function LiveTrackingPage() {
                       </div>
                     </div>
                     <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border uppercase ${crowdBadgeClass}`}>
-                      {crowd} ({occ}%)
+                      {crowdLabel}
                     </span>
                   </div>
 
@@ -229,7 +259,13 @@ export default function LiveTrackingPage() {
                     </div>
                     <div className="flex items-center gap-1">
                       <Users className="h-3 w-3 text-indigo-600 dark:text-indigo-400" />
-                      <span>Seats: <strong>{bus.currentPassengers}/{bus.capacity}</strong></span>
+                      <span>
+                        {hasOcc ? (
+                          <>Seats: <strong>{bus.currentPassengers}/{bus.capacity}</strong> ({availableSeats} left)</>
+                        ) : (
+                          <span className="italic text-slate-400">Crowd n/a</span>
+                        )}
+                      </span>
                     </div>
                   </div>
 

@@ -13,6 +13,7 @@ import {
   GREATER_NOIDA_CENTER,
   POPULAR_GREATER_NOIDA_DESTINATIONS
 } from '../services/geocodingService';
+import { calculateBusArrivalInfo } from '../utils/etaCalculator';
 import {
   Search,
   MapPin,
@@ -291,10 +292,29 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
   const thirdBest = recommendation?.thirdBest;
 
   const activeCandidate = selectedCandidate || bestMatch;
+  const isDirectAvailable = !!activeCandidate;
 
-  const nextBus = activeCandidate?.bus || buses[0] || null;
-  const nextBusEta = nextBus?.nextStopEtaMinutes || 4;
-  const nextBusOcc = nextBus?.occupancyPercentage || 62;
+  // Derive active bus from active candidate and synchronize with latest telemetry
+  const candidateBusId = (activeCandidate?.bus?.id || activeCandidate?.bus?._id)?.toString();
+  const nextBus = candidateBusId
+    ? (buses.find(b => (b.id || b._id)?.toString() === candidateBusId) || activeCandidate?.bus)
+    : null;
+
+  const currentRoute = routes.find(r => (r._id || r.id)?.toString() === (activeCandidate?.route?.id || activeCandidate?.route?._id)?.toString());
+
+  // Calculate dynamic road-constrained arrival info
+  const arrivalInfo = calculateBusArrivalInfo(
+    nextBus,
+    currentSourceStop,
+    currentDestStop,
+    currentRoute,
+    isDirectAvailable
+  );
+
+  const nextBusOcc = typeof nextBus?.occupancyPercentage === 'number'
+    ? nextBus.occupancyPercentage
+    : (activeCandidate?.metrics?.occupancyPercentage ?? null);
+
   const nextBusReliability = activeCandidate?.reliabilityScore || (nextBus ? 92 : 94);
 
   const hour = new Date().getHours();
@@ -344,55 +364,69 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded bg-sky-950 border border-sky-800 text-sky-400 text-[10px] font-bold uppercase tracking-wider">
-                Your Next Journey
+              <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${arrivalInfo.badgeClass}`}>
+                {arrivalInfo.badge}
               </span>
-              <span className="text-xs text-slate-400 font-mono">
-                {nextBus?.busNumber || 'Bus 12'} &bull; {nextBus?.plateNumber || 'UP-16-CB-1012'}
-              </span>
+              {nextBus ? (
+                <span className="text-xs text-slate-400 font-mono">
+                  {nextBus.busNumber} &bull; {nextBus.plateNumber || 'UP-16-CB-1012'}
+                </span>
+              ) : (
+                <span className="text-xs text-slate-400">Campus Transit Service</span>
+              )}
             </div>
-            <div className="text-lg font-bold text-white flex items-center gap-2">
-              <span>Arriving in {nextBusEta} min</span>
-              <span className="text-xs font-normal text-slate-400">
-                at {currentSourceStop?.name || 'Boarding Stop'}
-              </span>
+            <div className="text-lg font-bold text-white flex flex-wrap items-center gap-2">
+              <span>{arrivalInfo.headline}</span>
+              {arrivalInfo.isAvailable && (
+                <span className="text-xs font-normal text-slate-400">
+                  {arrivalInfo.subtext}
+                </span>
+              )}
             </div>
             <p className="text-xs text-slate-400">
-              Corridor to: <strong className="text-slate-200">{currentDestStop?.name || 'GL Bajaj & Knowledge Park III'}</strong>
+              {arrivalInfo.isAvailable ? (
+                <>Corridor to: <strong className="text-slate-200">{currentDestStop?.name || 'Selected Destination'}</strong> {arrivalInfo.distanceKm && <span className="text-slate-500 font-mono ml-1">({arrivalInfo.distanceKm} km road distance)</span>}</>
+              ) : (
+                <span className="text-rose-300">{arrivalInfo.subtext}</span>
+              )}
             </p>
           </div>
 
-          <div className="flex items-center gap-4 sm:gap-6 border-t md:border-t-0 pt-3 md:pt-0 border-slate-800">
-            <div>
-              <div className="text-[11px] text-slate-400">Occupancy</div>
-              <div className="text-sm font-bold text-white flex items-center gap-2 mt-0.5">
-                <span>{nextBusOcc}%</span>
-                <div className="w-14 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full ${nextBusOcc > 80 ? 'bg-rose-500' : nextBusOcc > 50 ? 'bg-amber-500' : 'bg-emerald-500'}`}
-                    style={{ width: `${nextBusOcc}%` }}
-                  />
+          {arrivalInfo.isAvailable && nextBus && (
+            <div className="flex items-center gap-4 sm:gap-6 border-t md:border-t-0 pt-3 md:pt-0 border-slate-800">
+              <div>
+                <div className="text-[11px] text-slate-400">Occupancy</div>
+                <div className="text-sm font-bold text-white flex items-center gap-2 mt-0.5">
+                  <span>{nextBusOcc !== null ? `${nextBusOcc}%` : 'N/A'}</span>
+                  {nextBusOcc !== null && (
+                    <div className="w-14 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full ${nextBusOcc > 80 ? 'bg-rose-500' : nextBusOcc > 50 ? 'bg-amber-500' : 'bg-emerald-500'}`}
+                        style={{ width: `${nextBusOcc}%` }}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
 
-            <div className="border-l border-slate-800 pl-4 sm:pl-6">
-              <div className="text-[11px] text-slate-400">Reliability</div>
-              <div className="text-sm font-bold text-emerald-400 mt-0.5">{nextBusReliability}%</div>
-            </div>
+              <div className="border-l border-slate-800 pl-4 sm:pl-6">
+                <div className="text-[11px] text-slate-400">Reliability</div>
+                <div className="text-sm font-bold text-emerald-400 mt-0.5">{nextBusReliability}%</div>
+              </div>
 
-            <button
-              type="button"
-              onClick={() => {
-                setPassBus(nextBus);
-                setShowPassModal(true);
-              }}
-              className="px-3.5 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm transition"
-            >
-              <Ticket className="w-3.5 h-3.5 text-sky-200" />
-              <span>Issue Pass</span>
-            </button>
-          </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setPassBus(nextBus);
+                  setShowPassModal(true);
+                }}
+                className="px-3.5 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm transition"
+              >
+                <Ticket className="w-3.5 h-3.5 text-sky-200" />
+                <span>Issue Pass</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -802,6 +836,7 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
             buses={buses}
             stops={stops}
             routes={routes}
+            selectedBus={nextBus}
             recommendedRoute={activeCandidate}
             alternativeRoutes={
               recommendation

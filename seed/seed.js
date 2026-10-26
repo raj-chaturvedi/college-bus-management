@@ -137,7 +137,12 @@ async function seedData() {
     { _id: '65e100000000000000000018', name: 'Wipro Knowledge Park IV Campus', code: 'WPR', latitude: 28.4550, longitude: 77.4850, zone: 'Knowledge Park Corridor' },
     { _id: '65e100000000000000000019', name: 'India Expo Mart & Convention Centre', code: 'IEM', latitude: 28.4600, longitude: 77.5030, zone: 'Expo Mart Corridor' },
     { _id: '65e100000000000000000020', name: 'Aqua Line Metro Depot & Sector 148', code: 'DEP', latitude: 28.4850, longitude: 77.5250, zone: 'Metro Depot Junction' },
-    { _id: '65e100000000000000000021', name: 'Greater Noida Sector 62 Link', code: 'S62', latitude: 28.6255, longitude: 77.3725, zone: 'Sector 62 Transit Corridor' }
+    { _id: '65e100000000000000000021', name: 'Greater Noida Sector 62 Link', code: 'S62', latitude: 28.6255, longitude: 77.3725, zone: 'Sector 62 Transit Corridor' },
+    { _id: '65e100000000000000000022', name: 'Jagat Farm Commercial Hub', code: 'JGT', latitude: 28.4792, longitude: 77.5014, zone: 'Gamma Sector' },
+    { _id: '65e100000000000000000023', name: 'City Park & Alpha 2 Avenue', code: 'CPK', latitude: 28.4733, longitude: 77.5209, zone: 'Alpha Sector' },
+    { _id: '65e100000000000000000024', name: 'Knowledge Park I (KP-1 Hub)', code: 'KP1', latitude: 28.4650, longitude: 77.5020, zone: 'Knowledge Park Corridor' },
+    { _id: '65e100000000000000000025', name: 'Sharda University (KP-3 Campus Gate)', code: 'SHU', latitude: 28.4734, longitude: 77.4829, zone: 'Knowledge Park Corridor' },
+    { _id: '65e100000000000000000026', name: 'Galgotias University (Yamuna Expressway Campus)', code: 'GLU', latitude: 28.3671, longitude: 77.5405, zone: 'Yamuna Expressway Corridor' }
   ];
 
   // 3. Drivers (Greater Noida operators)
@@ -164,19 +169,24 @@ async function seedData() {
   const routesData = [
     {
       _id: '65e300000000000000000001',
-      name: 'KP-3 University Express (Sharda & Galgotias -> Pari Chowk -> Alpha 1)',
+      name: 'KP-3 University Express (Sharda & GL Bajaj -> Pari Chowk -> Jagat Farm)',
       code: 'ROUTE-101',
-      description: 'Major student corridor connecting Knowledge Park 3 universities, KP-2 Metro, Pari Chowk, and Alpha 1.',
+      description: 'Major student corridor connecting Knowledge Park 3 universities, KP-2 Metro, Pari Chowk, Alpha 1, City Park, and Jagat Farm.',
       color: '#0284c7',
-      distance: 8.5,
-      estimatedTime: 18,
+      distance: 12.5,
+      estimatedTime: 28,
       frequencyMinutes: 10,
       stops: [
-        { stop: '65e100000000000000000003', order: 1, scheduledMinutesFromStart: 0 },  // KP3
-        { stop: '65e100000000000000000002', order: 2, scheduledMinutesFromStart: 5 },  // KP2
-        { stop: '65e100000000000000000019', order: 3, scheduledMinutesFromStart: 9 },  // Expo Mart
-        { stop: '65e100000000000000000001', order: 4, scheduledMinutesFromStart: 13 }, // Pari Chowk
-        { stop: '65e100000000000000000006', order: 5, scheduledMinutesFromStart: 18 }  // Alpha 1
+        { stop: '65e100000000000000000025', order: 1, scheduledMinutesFromStart: 0 },  // SHU
+        { stop: '65e100000000000000000003', order: 2, scheduledMinutesFromStart: 3 },  // GLB
+        { stop: '65e100000000000000000002', order: 3, scheduledMinutesFromStart: 8 },  // KP2
+        { stop: '65e100000000000000000024', order: 4, scheduledMinutesFromStart: 11 }, // KP1
+        { stop: '65e100000000000000000019', order: 5, scheduledMinutesFromStart: 14 }, // Expo Mart
+        { stop: '65e100000000000000000001', order: 6, scheduledMinutesFromStart: 18 }, // Pari Chowk
+        { stop: '65e100000000000000000006', order: 7, scheduledMinutesFromStart: 22 }, // Alpha 1
+        { stop: '65e100000000000000000023', order: 8, scheduledMinutesFromStart: 25 }, // City Park
+        { stop: '65e100000000000000000007', order: 9, scheduledMinutesFromStart: 28 }, // Alpha 2
+        { stop: '65e100000000000000000022', order: 10, scheduledMinutesFromStart: 32 } // Jagat Farm
       ],
       buses: ['65e400000000000000000001', '65e400000000000000000002', '65e400000000000000000009', '65e400000000000000000010']
     },
@@ -201,36 +211,40 @@ async function seedData() {
     },
     {
       _id: '65e300000000000000000003',
-      name: 'Aqua Line Metro Orbit (KP-2 Metro -> Alpha 2 -> Delta 1)',
+      name: 'Aqua Line Metro Orbit (KP-2 Metro -> Jagat Farm -> City Park -> Delta 1)',
       code: 'ROUTE-103',
       description: 'Feeder shuttle along Greater Noida Aqua Line metro corridor and residential sectors.',
       color: '#8b5cf6',
-      distance: 11.2,
-      estimatedTime: 24,
+      distance: 13.5,
+      estimatedTime: 30,
       frequencyMinutes: 12,
       stops: [
         { stop: '65e100000000000000000002', order: 1, scheduledMinutesFromStart: 0 },  // KP2 Metro
         { stop: '65e100000000000000000001', order: 2, scheduledMinutesFromStart: 7 },  // Pari Chowk
-        { stop: '65e100000000000000000007', order: 3, scheduledMinutesFromStart: 12 }, // Alpha 2
-        { stop: '65e100000000000000000008', order: 4, scheduledMinutesFromStart: 17 }, // Beta 1
-        { stop: '65e100000000000000000011', order: 5, scheduledMinutesFromStart: 24 }  // Delta 1 Metro
+        { stop: '65e100000000000000000006', order: 3, scheduledMinutesFromStart: 12 }, // Alpha 1
+        { stop: '65e100000000000000000022', order: 4, scheduledMinutesFromStart: 16 }, // Jagat Farm
+        { stop: '65e100000000000000000023', order: 5, scheduledMinutesFromStart: 20 }, // City Park
+        { stop: '65e100000000000000000007', order: 6, scheduledMinutesFromStart: 23 }, // Alpha 2
+        { stop: '65e100000000000000000008', order: 7, scheduledMinutesFromStart: 27 }, // Beta 1
+        { stop: '65e100000000000000000011', order: 8, scheduledMinutesFromStart: 34 }  // Delta 1 Metro
       ],
       buses: ['65e400000000000000000004', '65e400000000000000000005', '65e400000000000000000014']
     },
     {
       _id: '65e300000000000000000004',
-      name: 'Yamuna Expressway - GBU Campus Shuttle (Zero Point -> GBU -> Kasna)',
+      name: 'Yamuna Expressway - GBU & Galgotias Campus Shuttle (Zero Point -> GBU -> Galgotias -> Kasna)',
       code: 'ROUTE-104',
-      description: 'Express highway corridor catering to Gautam Buddha University, Kasna terminal, and Zero Point.',
+      description: 'Express highway corridor catering to Gautam Buddha University, Galgotias University, Kasna terminal, and Zero Point.',
       color: '#f59e0b',
-      distance: 14.5,
-      estimatedTime: 28,
+      distance: 18.2,
+      estimatedTime: 35,
       frequencyMinutes: 20,
       stops: [
         { stop: '65e100000000000000000017', order: 1, scheduledMinutesFromStart: 0 },  // Zero Point
         { stop: '65e100000000000000000001', order: 2, scheduledMinutesFromStart: 8 },  // Pari Chowk
         { stop: '65e100000000000000000004', order: 3, scheduledMinutesFromStart: 18 }, // GBU
-        { stop: '65e100000000000000000016', order: 4, scheduledMinutesFromStart: 28 }  // Kasna
+        { stop: '65e100000000000000000026', order: 4, scheduledMinutesFromStart: 26 }, // Galgotias Univ
+        { stop: '65e100000000000000000016', order: 5, scheduledMinutesFromStart: 35 }  // Kasna
       ],
       buses: ['65e400000000000000000006', '65e400000000000000000011']
     },
@@ -253,19 +267,20 @@ async function seedData() {
     },
     {
       _id: '65e300000000000000000006',
-      name: 'Delta - Gamma Residential Shuttle (Delta 2 -> Gamma 2 -> Pari Chowk)',
+      name: 'Delta - Gamma Residential Shuttle (Delta 2 -> Jagat Farm -> Alpha 1 -> Pari Chowk)',
       code: 'ROUTE-106',
       description: 'Internal residential link serving Greater Noida central sectors and markets.',
       color: '#06b6d4',
-      distance: 9.6,
-      estimatedTime: 20,
+      distance: 10.4,
+      estimatedTime: 23,
       frequencyMinutes: 15,
       stops: [
         { stop: '65e100000000000000000012', order: 1, scheduledMinutesFromStart: 0 },  // Delta 2
         { stop: '65e100000000000000000010', order: 2, scheduledMinutesFromStart: 6 },  // Gamma 1
-        { stop: '65e100000000000000000009', order: 3, scheduledMinutesFromStart: 11 }, // Beta 2
-        { stop: '65e100000000000000000006', order: 4, scheduledMinutesFromStart: 15 }, // Alpha 1
-        { stop: '65e100000000000000000001', order: 5, scheduledMinutesFromStart: 20 }  // Pari Chowk
+        { stop: '65e100000000000000000022', order: 3, scheduledMinutesFromStart: 10 }, // Jagat Farm
+        { stop: '65e100000000000000000009', order: 4, scheduledMinutesFromStart: 14 }, // Beta 2
+        { stop: '65e100000000000000000006', order: 5, scheduledMinutesFromStart: 18 }, // Alpha 1
+        { stop: '65e100000000000000000001', order: 6, scheduledMinutesFromStart: 23 }  // Pari Chowk
       ],
       buses: ['65e400000000000000000008', '65e400000000000000000016']
     }

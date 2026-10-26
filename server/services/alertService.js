@@ -14,6 +14,30 @@ async function getSmartAlertsForUser(user) {
   const userFavBuses = (user?.favoriteBuses || []).map(b => (b._id || b).toString());
   const userFavRoutes = (user?.favoriteRoutes || []).map(r => (r._id || r).toString());
 
+  // 0. User-Reported Incidents & Road Issues (Persisted in DB)
+  try {
+    const incidents = await store.getAllIncidents();
+    for (const inc of (incidents || []).slice(0, 10)) {
+      const isCritical = inc.severity === 'critical' || inc.severity === 'high';
+      alerts.push({
+        id: `incident_${inc._id}`,
+        incidentId: inc._id,
+        type: isCritical ? 'error' : 'warning',
+        category: 'INCIDENT',
+        title: inc.title || `Reported Issue (${inc.type})`,
+        message: `${inc.description}${inc.busNumber ? ` • Bus: ${inc.busNumber}` : ''}`,
+        severity: inc.severity || 'medium',
+        busNumber: inc.busNumber || null,
+        status: inc.status || 'open',
+        reporterName: inc.reporterName || 'Commuter',
+        timestamp: inc.createdAt || new Date(),
+        read: false
+      });
+    }
+  } catch (err) {
+    console.warn('[Alert Service] Could not fetch incidents for alerts feed:', err.message);
+  }
+
   // 1. High Crowd Alerts
   for (const bus of buses) {
     if (bus.occupancyPercentage >= 80) {

@@ -102,7 +102,6 @@ function AuthenticatedAppLayout() {
       <Navbar
         onOpenAI={handleOpenAI}
         onOpenScanner={() => setScannerOpen(true)}
-        unreadAlertsCount={2}
       />
 
       <div className="flex-1 flex overflow-hidden">

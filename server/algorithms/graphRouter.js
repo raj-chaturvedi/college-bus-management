@@ -90,23 +90,28 @@ class TransitGraph {
     const srcStr = sourceStopId.toString();
     const dstStr = destinationStopId.toString();
 
-    // 1. Check direct bus routes serving both source and destination in correct order
+    // 1. Check direct bus routes serving both source and destination (both outbound & inbound)
     for (const route of this.routes) {
       const stops = route.stops || [];
       const srcIndex = stops.findIndex(s => (s.stop?._id || s.stop).toString() === srcStr);
       const dstIndex = stops.findIndex(s => (s.stop?._id || s.stop).toString() === dstStr);
 
-      if (srcIndex !== -1 && dstIndex !== -1 && srcIndex < dstIndex) {
+      if (srcIndex !== -1 && dstIndex !== -1 && srcIndex !== dstIndex) {
         // Direct route exists!
-        const intermediateStops = stops.slice(srcIndex, dstIndex + 1);
-        const startMin = intermediateStops[0].scheduledMinutesFromStart || 0;
-        const endMin = intermediateStops[intermediateStops.length - 1].scheduledMinutesFromStart || 25;
-        const travelTime = Math.max(8, endMin - startMin);
+        const isOutbound = srcIndex < dstIndex;
+        const intermediateStops = isOutbound
+          ? stops.slice(srcIndex, dstIndex + 1)
+          : stops.slice(dstIndex, srcIndex + 1).reverse();
+
+        const startMin = stops[srcIndex].scheduledMinutesFromStart || 0;
+        const endMin = stops[dstIndex].scheduledMinutesFromStart || 25;
+        const travelTime = Math.max(8, Math.abs(endMin - startMin));
         const distance = this.computeRoadDistanceKm(intermediateStops);
 
         candidates.push({
           type: 'DIRECT',
           transfers: 0,
+          direction: isOutbound ? 'outbound' : 'inbound',
           legs: [
             {
               routeId: route._id.toString(),
@@ -115,7 +120,8 @@ class TransitGraph {
               routeColor: route.color || '#0c87eb',
               fromStopIndex: srcIndex,
               toStopIndex: dstIndex,
-              stopsCount: dstIndex - srcIndex,
+              direction: isOutbound ? 'outbound' : 'inbound',
+              stopsCount: Math.abs(dstIndex - srcIndex),
               travelTimeMinutes: travelTime,
               distanceKm: distance,
               stopsList: intermediateStops

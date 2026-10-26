@@ -18,9 +18,13 @@ export default function ReportIncidentModal({ isOpen, onClose, onIncidentReporte
   const [delayMinutes, setDelayMinutes] = useState(5);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successDetails, setSuccessDetails] = useState({ message: '', emailDelivered: false });
 
   useEffect(() => {
     if (isOpen) {
+      setErrorMessage('');
+      setSuccess(false);
       transitAPI.getBuses()
         .then(res => {
           if (res.data?.success) setBuses(res.data.buses);
@@ -31,26 +35,49 @@ export default function ReportIncidentModal({ isOpen, onClose, onIncidentReporte
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage('');
+
+    // Pre-flight validation
+    if (!title.trim() && !description.trim()) {
+      setErrorMessage('Please provide an incident headline or description.');
+      return;
+    }
+
+    if (submitting) return; // Prevent duplicate clicks
     setSubmitting(true);
+
     try {
       const res = await transitAPI.reportIncident({
-        title,
-        description,
+        title: title.trim(),
+        description: description.trim(),
         type,
         busId: selectedBusId || null,
         severity,
         delayAddedMinutes: Number(delayMinutes)
       });
+
       if (res.data?.success) {
         setSuccess(true);
+        setSuccessDetails({
+          message: res.data.message || 'Incident successfully recorded in transit dispatch.',
+          emailDelivered: !!res.data.emailDelivered
+        });
+        
+        // Notify any listeners across the app
+        window.dispatchEvent(new CustomEvent('transit:incident-reported'));
         if (onIncidentReported) onIncidentReported();
+
         setTimeout(() => {
           setSuccess(false);
+          setTitle('');
+          setDescription('');
           onClose();
-        }, 1800);
+        }, 2200);
+      } else {
+        setErrorMessage(res.data?.message || 'Failed to record incident.');
       }
     } catch (err) {
-      alert(err.response?.data?.message || 'Error submitting report');
+      setErrorMessage(err.response?.data?.message || err.message || 'Error submitting report.');
     } finally {
       setSubmitting(false);
     }
@@ -76,12 +103,23 @@ export default function ReportIncidentModal({ isOpen, onClose, onIncidentReporte
           </button>
         </div>
 
+        {errorMessage && (
+          <div className="mt-3 p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs">
+            {errorMessage}
+          </div>
+        )}
+
         {success ? (
           <div className="py-8 text-center space-y-2">
             <CheckCircle2 className="h-10 w-10 text-emerald-600 mx-auto" />
             <h4 className="text-sm font-bold text-slate-900">Incident Broadcasted</h4>
-            <p className="text-xs text-slate-500">
-              Route schedules and delay telemetry have been updated.
+            <p className="text-xs text-slate-600 max-w-xs mx-auto">
+              {successDetails.message}
+            </p>
+            <p className="text-[11px] text-slate-400">
+              {successDetails.emailDelivered
+                ? '✓ Email dispatch delivered to transit admin.'
+                : 'ℹ Email notification unavailable (recorded to in-app dispatch).'}
             </p>
           </div>
         ) : (

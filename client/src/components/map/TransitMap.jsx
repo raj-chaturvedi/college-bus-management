@@ -30,6 +30,7 @@ import {
   isInGreaterNoidaServiceArea
 } from '../../services/geocodingService';
 import { useTheme } from '../../context/ThemeContext';
+import cachedRouteRoadGeometries from '../../data/routeRoadGeometries.json';
 
 // Fix Leaflet default marker icons for Webpack/Vite
 delete L.Icon.Default.prototype._getIconUrl;
@@ -78,41 +79,82 @@ const createStopIcon = (stop, isSource = false, isDest = false) => {
   });
 };
 
-// Custom Bus Marker with Occupancy Color Indicator
-const createBusIcon = (bus) => {
-  const occ = bus.occupancyPercentage || 50;
-  let statusBadge = '#16a34a'; // Green: Low crowd
-  if (occ > 80) statusBadge = '#dc2626'; // Red: Crowded
-  else if (occ >= 50) statusBadge = '#ea580c'; // Orange: Moderate
+// Realistic Bus Marker with SVG shape and Crowd-Based Color
+const createBusIcon = (bus, isSelected = false) => {
+  const hasOcc = typeof bus.occupancyPercentage === 'number' && typeof bus.capacity === 'number';
+  const occ = hasOcc ? bus.occupancyPercentage : null;
 
-  const busNo = (bus.busNumber || 'Bus').split(' ')[0] + ' ' + (bus.busNumber || '').split(' ')[1];
+  let crowdColor = '#16a34a'; // Green: Low crowd (<50%)
+  if (occ === null) {
+    crowdColor = '#64748b'; // Neutral Slate: Unavailable
+  } else if (occ > 80) {
+    crowdColor = '#dc2626'; // Red: Crowded (>80%)
+  } else if (occ >= 50) {
+    crowdColor = '#ea580c'; // Amber/Orange: Moderate (50-80%)
+  }
+
+  const busNo = (bus.busNumber || 'Bus').replace(/Bus\s*/i, 'B-').substring(0, 10);
+  const selectedStyle = isSelected
+    ? 'box-shadow: 0 0 0 4px #0284c7, 0 4px 12px rgba(0,0,0,0.45); transform: scale(1.12);'
+    : 'box-shadow: 0 2px 8px rgba(0,0,0,0.35);';
 
   return L.divIcon({
     className: 'custom-bus-marker',
     html: `
       <div style="
-        background: #0f172a;
-        color: white;
-        border: 2px solid ${statusBadge};
-        border-radius: 8px;
-        padding: 3px 6px;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: 4px;
-        font-size: 11px;
-        font-weight: 700;
-        font-family: ui-monospace, SFMono-Regular, monospace;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        white-space: nowrap;
+        transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
         cursor: pointer;
       ">
-        <span style="font-size: 12px;">🚌</span>
-        <span>${busNo}</span>
+        <div style="
+          background: #0f172a;
+          color: white;
+          border: 2px solid ${crowdColor};
+          border-radius: 16px;
+          padding: 2.5px 7px;
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          font-size: 11px;
+          font-weight: 700;
+          font-family: ui-monospace, SFMono-Regular, monospace;
+          white-space: nowrap;
+          ${selectedStyle}
+        ">
+          <!-- Realistic Bus SVG Icon -->
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${crowdColor}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="15" rx="3" fill="#1e293b"/>
+            <path d="M3 9h18" stroke="#94a3b8" stroke-width="1.5"/>
+            <circle cx="7" cy="14.5" r="1.5" fill="${crowdColor}"/>
+            <circle cx="17" cy="14.5" r="1.5" fill="${crowdColor}"/>
+            <path d="M5 18v2a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-2"/>
+            <path d="M16 18v2a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-2"/>
+          </svg>
+          <span style="color: #ffffff; font-weight: 800;">${busNo}</span>
+          <span style="
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: ${crowdColor};
+            display: inline-block;
+          "></span>
+        </div>
+        <!-- Little road-pointing notch -->
+        <div style="
+          width: 0;
+          height: 0;
+          border-left: 5px solid transparent;
+          border-right: 5px solid transparent;
+          border-top: 5px solid ${crowdColor};
+          margin-top: -1px;
+        "></div>
       </div>
     `,
-    iconSize: [60, 24],
-    iconAnchor: [30, 12],
-    popupAnchor: [0, -14]
+    iconSize: [68, 30],
+    iconAnchor: [34, 28],
+    popupAnchor: [0, -30]
   });
 };
 
@@ -156,6 +198,27 @@ function MapLifecycleController({
     }
   }, [map, onMapReady]);
 
+  // Handle container resizing and navigation tab restores
+  useEffect(() => {
+    if (!map) return;
+    const timer = setTimeout(() => {
+      try {
+        map.invalidateSize();
+      } catch {}
+    }, 150);
+
+    const handleResize = () => {
+      try {
+        map.invalidateSize();
+      } catch {}
+    };
+    window.addEventListener('resize', handleResize);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [map]);
+
   // Only fit route when routeKey changes (new route selected) - NEVER on bus/timer/occupancy updates
   useEffect(() => {
     if (routeKey && routeKey !== lastFittedRouteKey.current) {
@@ -184,6 +247,7 @@ export default function TransitMap({
   buses = [],
   stops = [],
   routes = [],
+  selectedBus = null,
   recommendedRoute = null,
   alternativeRoutes = [],
   sourceStop = null,
@@ -301,6 +365,16 @@ export default function TransitMap({
         } catch {
           setRoadBusPath([]);
         }
+      } else if (selectedBus) {
+        // Road geometry for selected bus corridor
+        const busRouteId = (selectedBus.route?._id || selectedBus.route)?.toString();
+        const cachedPath = cachedRouteRoadGeometries[busRouteId]?.positions || [];
+        if (cachedPath.length >= 2) {
+          setRoadBusPath(cachedPath);
+          allCollectedPoints.push(...cachedPath);
+        } else {
+          setRoadBusPath([]);
+        }
       } else {
         setRoadBusPath([]);
       }
@@ -412,8 +486,24 @@ export default function TransitMap({
     userLocation,
     destinationLocation,
     stops,
-    alternativeRoutes
+    alternativeRoutes,
+    selectedBus
   ]);
+
+  // Center / pan map on selected bus when changed
+  useEffect(() => {
+    if (mapInstance && selectedBus?.currentLocation?.latitude && selectedBus?.currentLocation?.longitude) {
+      try {
+        mapInstance.flyTo(
+          [selectedBus.currentLocation.latitude, selectedBus.currentLocation.longitude],
+          Math.max(mapInstance.getZoom(), 13),
+          { animate: true, duration: 0.8 }
+        );
+      } catch (err) {
+        console.warn('Error focusing selected bus:', err);
+      }
+    }
+  }, [selectedBus?.id, selectedBus?._id, mapInstance]);
 
   // Explicit User Control Handlers (Honors manual zoom stability)
   const handleZoomIn = () => {
@@ -613,17 +703,29 @@ export default function TransitMap({
         {/* Live Active Buses */}
         {buses.map((bus) => {
           if (!bus.currentLocation?.latitude || !bus.currentLocation?.longitude) return null;
-          const occ = bus.occupancyPercentage || 50;
-          const crowdLevel = occ < 50 ? 'Seats Available' : occ <= 80 ? 'Standing Available' : 'Crowded';
+          const busIdStr = (bus._id || bus.id)?.toString();
+          const selectedBusIdStr = (selectedBus?._id || selectedBus?.id)?.toString();
+          const isSelected = !!selectedBus && (
+            (selectedBusIdStr && selectedBusIdStr === busIdStr) ||
+            (selectedBus.busNumber && selectedBus.busNumber === bus.busNumber)
+          );
+
+          const hasOcc = typeof bus.occupancyPercentage === 'number' && typeof bus.capacity === 'number';
+          const occ = hasOcc ? bus.occupancyPercentage : null;
+          const availableSeats = hasOcc ? Math.max(0, (bus.capacity || 0) - (bus.currentPassengers || 0)) : null;
+          let crowdBadgeText = 'Crowd data unavailable';
+          if (occ !== null) {
+            crowdBadgeText = occ < 50 ? 'Low Crowd (Seats Available)' : occ <= 80 ? 'Moderate Crowd' : 'High Crowd';
+          }
 
           return (
             <Marker
               key={bus.id || bus._id}
               position={[bus.currentLocation.latitude, bus.currentLocation.longitude]}
-              icon={createBusIcon(bus)}
+              icon={createBusIcon(bus, isSelected)}
             >
               <Popup>
-                <div className="text-xs p-0.5 space-y-1.5 min-w-[200px] text-slate-800">
+                <div className="text-xs p-0.5 space-y-1.5 min-w-[210px] text-slate-800">
                   <div className="flex items-center justify-between border-b border-slate-100 pb-1">
                     <div>
                       <div className="flex items-center gap-1.5">
@@ -647,10 +749,21 @@ export default function TransitMap({
                   <div className="text-[11px] space-y-1 text-slate-600">
                     <p>Route: <strong className="text-slate-900">{bus.route?.name || 'Greater Noida Corridor'}</strong></p>
                     <p>
-                      Crowd: <strong className="text-slate-900">{bus.currentPassengers || 20}/{bus.capacity || 50}</strong> ({occ}% &bull; {crowdLevel})
+                      Crowd: {hasOcc ? (
+                        <>
+                          <strong className="text-slate-900">{bus.currentPassengers}/{bus.capacity}</strong> ({occ}% &bull; {crowdBadgeText})
+                          {availableSeats !== null && (
+                            <span className="block text-emerald-600 font-semibold mt-0.5">
+                              Available Seats: {availableSeats}
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <span className="text-slate-500 italic">Crowd data unavailable</span>
+                      )}
                     </p>
                     <p>
-                      Next Stop ETA: <strong className="text-sky-700">~{bus.nextStopEtaMinutes || 4} mins</strong>
+                      Next Stop ETA: <strong className="text-sky-700">~{bus.nextStopEtaMinutes ? `${bus.nextStopEtaMinutes} mins` : 'Calculating...'}</strong>
                     </p>
                     <p className="text-[10px] text-slate-400 font-mono">
                       Plate: {bus.plateNumber || 'UP-16-CB-1012'}

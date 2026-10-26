@@ -1,14 +1,8 @@
+const fs = require('fs');
+const path = require('path');
 const store = require('./store');
 
 let simulationInterval = null;
-
-// Interpolate between two coordinates
-function interpolate(p1, p2, fraction) {
-  return {
-    latitude: p1.latitude + (p2.latitude - p1.latitude) * fraction,
-    longitude: p1.longitude + (p2.longitude - p1.longitude) * fraction
-  };
-}
 
 // Calculate compass heading in degrees from coord 1 to coord 2
 function calculateBearing(lat1, lon1, lat2, lon2) {
@@ -21,16 +15,50 @@ function calculateBearing(lat1, lon1, lat2, lon2) {
   return Math.round((brng + 360) % 360);
 }
 
+// Haversine distance in meters
+function haversineMeters(lat1, lon1, lat2, lon2) {
+  const R = 6371e3;
+  const phi1 = (lat1 * Math.PI) / 180;
+  const phi2 = (lat2 * Math.PI) / 180;
+  const deltaPhi = ((lat2 - lat1) * Math.PI) / 180;
+  const deltaLambda = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+    Math.cos(phi1) * Math.cos(phi2) * Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
 class BusSimulationEngine {
   constructor() {
-    this.busProgress = new Map(); // busId -> { currentStopIdx, fraction, direction }
+    this.busProgress = new Map(); // busId -> { coordIndex, direction, speed }
+    this.routeGeometries = new Map(); // routeId -> [[lat, lon], ...]
     this.isRunning = false;
+    this.loadGeometries();
+  }
+
+  loadGeometries() {
+    try {
+      const geomPath = path.join(__dirname, '../data/routeRoadGeometries.json');
+      if (fs.existsSync(geomPath)) {
+        const raw = fs.readFileSync(geomPath, 'utf-8');
+        const parsed = JSON.parse(raw);
+        for (const [routeId, data] of Object.entries(parsed)) {
+          if (data && Array.isArray(data.positions) && data.positions.length > 1) {
+            this.routeGeometries.set(routeId.toString(), data.positions);
+          }
+        }
+        console.log(`[Simulation] Loaded road geometries for ${this.routeGeometries.size} Greater Noida transit corridors.`);
+      }
+    } catch (err) {
+      console.warn('[Simulation] Notice on loading road geometries cache:', err.message);
+    }
   }
 
   async start(intervalMs = 3000) {
     if (this.isRunning) return;
     this.isRunning = true;
-    console.log('[Simulation] Live Bus GPS Telemetry Simulator started (Interval: 3s).');
+    console.log('[Simulation] Road-Constrained Live Bus GPS Telemetry Simulator started (Interval: 3s).');
 
     simulationInterval = setInterval(async () => {
       try {
@@ -68,82 +96,124 @@ class BusSimulationEngine {
       const busId = bus._id.toString();
       let state = this.busProgress.get(busId);
 
+      // Get verified road path for this route
+      let roadPath = this.routeGeometries.get(routeId);
+
+      // Fallback: If road path not yet cached in map, build straight-edge segments from stops
+      if (!roadPath || roadPath.length < 2) {
+        roadPath = [];
+        for (const sRef of route.stops) {
+          const stId = (sRef.stop?._id || sRef.stop || '').toString();
+          const stopObj = stops.find(s => s._id.toString() === stId);
+          if (stopObj?.latitude && stopObj?.longitude) {
+            roadPath.push([stopObj.latitude, stopObj.longitude]);
+          }
+        }
+      }
+
+      if (!roadPath || roadPath.length < 2) continue;
+
       if (!state) {
+        // Initialize at a sensible spaced position along the route
+        const initialIndex = Math.floor(Math.random() * (roadPath.length - 5));
         state = {
-          stopIdx: Math.floor(Math.random() * (route.stops.length - 1)),
-          fraction: Math.random() * 0.8,
-          direction: 'outbound'
+          coordIndex: initialIndex,
+          direction: Math.random() > 0.4 ? 'outbound' : 'inbound',
+          speed: Math.round(26 + Math.random() * 12) // Realistic city bus speed 26-38 km/h
         };
         this.busProgress.set(busId, state);
       }
 
-      // Advance fraction
-      state.fraction += 0.08; // smooth step advance
+      // Progress along road geometry by 2-4 coordinate points per 3-second cycle (realistic bus progress ~25m)
+      const stepDelta = Math.max(1, Math.min(4, Math.round(state.speed / 10)));
 
-      if (state.fraction >= 1.0) {
-        state.fraction = 0;
-        if (state.direction === 'outbound') {
-          state.stopIdx++;
-          if (state.stopIdx >= route.stops.length - 1) {
-            state.direction = 'inbound';
-          }
-        } else {
-          state.stopIdx--;
-          if (state.stopIdx <= 0) {
-            state.direction = 'outbound';
+      if (state.direction === 'outbound') {
+        state.coordIndex += stepDelta;
+        if (state.coordIndex >= roadPath.length - 1) {
+          state.coordIndex = roadPath.length - 1;
+          state.direction = 'inbound';
+          // Slight turnaround delay
+          state.speed = Math.round(24 + Math.random() * 8);
+        }
+      } else {
+        state.coordIndex -= stepDelta;
+        if (state.coordIndex <= 0) {
+          state.coordIndex = 0;
+          state.direction = 'outbound';
+          state.speed = Math.round(26 + Math.random() * 10);
+        }
+      }
+
+      const currentCoord = roadPath[state.coordIndex];
+      const nextCoord = state.direction === 'outbound'
+        ? roadPath[Math.min(roadPath.length - 1, state.coordIndex + 1)]
+        : roadPath[Math.max(0, state.coordIndex - 1)];
+
+      const heading = calculateBearing(
+        currentCoord[0],
+        currentCoord[1],
+        nextCoord[0],
+        nextCoord[1]
+      );
+
+      // Find approaching stop along route
+      let nearestStopIdx = 0;
+      let minStopDist = Infinity;
+      const stopsInRoute = route.stops || [];
+
+      stopsInRoute.forEach((stRef, sIdx) => {
+        const sId = (stRef.stop?._id || stRef.stop || '').toString();
+        const stObj = stops.find(s => s._id.toString() === sId);
+        if (stObj?.latitude && stObj?.longitude) {
+          const d = haversineMeters(currentCoord[0], currentCoord[1], stObj.latitude, stObj.longitude);
+          if (d < minStopDist) {
+            minStopDist = d;
+            nearestStopIdx = sIdx;
           }
         }
+      });
 
-        // Passenger turnover at stops
-        const passengerShift = Math.floor((Math.random() - 0.45) * 6);
-        const newCount = Math.max(8, Math.min(bus.capacity, (bus.currentPassengers || 25) + passengerShift));
+      // Target the upcoming stop in current travel direction
+      let upcomingStopIdx = state.direction === 'outbound'
+        ? Math.min(stopsInRoute.length - 1, nearestStopIdx + 1)
+        : Math.max(0, nearestStopIdx - 1);
+
+      // If very close to a stop (<60m), simulate realistic passenger board/alight turnover
+      if (minStopDist < 60) {
+        const delta = Math.floor((Math.random() - 0.45) * 5);
+        const newCount = Math.max(6, Math.min(bus.capacity || 50, (bus.currentPassengers || 20) + delta));
         bus.currentPassengers = newCount;
       }
 
-      // Get stops for current leg
-      const stopsInRoute = route.stops;
-      let fromIdx = state.stopIdx;
-      let toIdx = state.direction === 'outbound' ? state.stopIdx + 1 : state.stopIdx - 1;
+      // Calculate realistic ETA to upcoming stop based on remaining road distance
+      const upcomingStopRef = stopsInRoute[upcomingStopIdx]?.stop;
+      const upcomingStop = stops.find(s => s._id.toString() === (upcomingStopRef?._id || upcomingStopRef || '').toString());
 
-      if (toIdx < 0) toIdx = 1;
-      if (toIdx >= stopsInRoute.length) toIdx = stopsInRoute.length - 2;
-
-      const fromStopRef = stopsInRoute[fromIdx]?.stop;
-      const toStopRef = stopsInRoute[toIdx]?.stop;
-
-      const fromStop = stops.find(s => s._id.toString() === (fromStopRef?._id || fromStopRef || '').toString());
-      const toStop = stops.find(s => s._id.toString() === (toStopRef?._id || toStopRef || '').toString());
-
-      if (fromStop && toStop) {
-        const nextLoc = interpolate(
-          { latitude: fromStop.latitude, longitude: fromStop.longitude },
-          { latitude: toStop.latitude, longitude: toStop.longitude },
-          state.fraction
-        );
-
-        const heading = calculateBearing(
-          fromStop.latitude,
-          fromStop.longitude,
-          toStop.latitude,
-          toStop.longitude
-        );
-
-        const eta = Math.max(1, Math.round((1 - state.fraction) * 6));
-
-        // Update bus
-        await store.updateBus(bus._id, {
-          currentLocation: {
-            latitude: Number(nextLoc.latitude.toFixed(6)),
-            longitude: Number(nextLoc.longitude.toFixed(6)),
-            heading,
-            speed: Math.round(28 + Math.random() * 12)
-          },
-          currentStopIndex: fromIdx,
-          nextStopEtaMinutes: eta,
-          direction: state.direction,
-          currentPassengers: bus.currentPassengers
-        });
+      let nextEtaMinutes = 4;
+      if (upcomingStop?.latitude && upcomingStop?.longitude) {
+        const distMeters = haversineMeters(currentCoord[0], currentCoord[1], upcomingStop.latitude, upcomingStop.longitude);
+        const speedMps = (state.speed * 1000) / 3600;
+        nextEtaMinutes = Math.max(1, Math.round(distMeters / (speedMps * 60)));
       }
+
+      // Add dynamic slight speed variation
+      state.speed = Math.max(20, Math.min(45, state.speed + Math.round((Math.random() - 0.5) * 4)));
+
+      // Update bus in store / DB
+      await store.updateBus(bus._id, {
+        currentLocation: {
+          latitude: Number(currentCoord[0].toFixed(6)),
+          longitude: Number(currentCoord[1].toFixed(6)),
+          heading,
+          speed: state.speed,
+          isSimulated: true
+        },
+        currentStopIndex: upcomingStopIdx,
+        nextStopEtaMinutes: nextEtaMinutes,
+        direction: state.direction,
+        currentPassengers: bus.currentPassengers,
+        delayMinutes: bus.delayMinutes || 0
+      });
     }
   }
 }

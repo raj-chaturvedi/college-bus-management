@@ -77,6 +77,41 @@ export const POPULAR_GREATER_NOIDA_DESTINATIONS = [
     isCollege: false
   },
   {
+    id: 'dest_jagatfarm',
+    name: 'Jagat Farm Commercial Hub',
+    zone: 'Gamma Sector',
+    coords: [28.4792, 77.5014],
+    isCollege: false
+  },
+  {
+    id: 'dest_sharda',
+    name: 'Sharda University',
+    zone: 'Knowledge Park III',
+    coords: [28.4734, 77.4829],
+    isCollege: true
+  },
+  {
+    id: 'dest_galgotias',
+    name: 'Galgotias University',
+    zone: 'Yamuna Expressway Corridor',
+    coords: [28.3671, 77.5405],
+    isCollege: true
+  },
+  {
+    id: 'dest_citypark',
+    name: 'City Park & Alpha 2 Avenue',
+    zone: 'Alpha Sector',
+    coords: [28.4733, 77.5209],
+    isCollege: false
+  },
+  {
+    id: 'dest_kp1',
+    name: 'Knowledge Park I (KP-1 Hub)',
+    zone: 'Knowledge Park Corridor',
+    coords: [28.4650, 77.5020],
+    isCollege: false
+  },
+  {
     id: 'dest_expomart',
     name: 'India Expo Mart & Convention Centre',
     zone: 'Expo Mart Corridor',

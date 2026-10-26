@@ -30,15 +30,31 @@ export default function Navbar({ onOpenAI, onOpenScanner, unreadAlertsCount = 0 
   const [profileOpen, setProfileOpen] = useState(false);
   const [alertsDropdown, setAlertsDropdown] = useState(false);
   const [recentAlerts, setRecentAlerts] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(unreadAlertsCount);
 
-  useEffect(() => {
+  const fetchAlerts = () => {
     transitAPI.getAlerts()
       .then(res => {
         if (res.data?.success) {
-          setRecentAlerts(res.data.alerts.slice(0, 4));
+          const list = res.data.alerts || [];
+          setRecentAlerts(list.slice(0, 6));
+          const activeAlerts = list.filter(a => a.id !== 'alert_normal_ops');
+          setUnreadCount(activeAlerts.length);
         }
       })
       .catch(() => {});
+  };
+
+  useEffect(() => {
+    fetchAlerts();
+
+    const handleIncidentReported = () => {
+      fetchAlerts();
+    };
+    window.addEventListener('transit:incident-reported', handleIncidentReported);
+    return () => {
+      window.removeEventListener('transit:incident-reported', handleIncidentReported);
+    };
   }, []);
 
   return (
@@ -126,13 +142,19 @@ export default function Navbar({ onOpenAI, onOpenScanner, unreadAlertsCount = 0 
           {/* Smart Alerts Bell */}
           <div className="relative">
             <button
-              onClick={() => setAlertsDropdown(!alertsDropdown)}
+              onClick={() => {
+                const nextState = !alertsDropdown;
+                setAlertsDropdown(nextState);
+                if (nextState) setUnreadCount(0);
+              }}
               className="relative rounded-xl p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               aria-label="Transit Alerts"
             >
               <Bell className="h-4 w-4" />
-              {unreadAlertsCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 flex h-2 w-2 rounded-full bg-red-500" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-[16px] px-1 items-center justify-center rounded-full bg-rose-600 text-[9px] font-bold text-white shadow-sm ring-1 ring-white dark:ring-slate-900">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
               )}
             </button>
 

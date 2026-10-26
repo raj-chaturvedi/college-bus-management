@@ -710,11 +710,134 @@ async function sendPassIssuedEmail({ toEmail, userName, pass }) {
   }
 }
 
+/**
+ * Send an email notification for a newly submitted transit incident / issue
+ */
+async function sendIssueReportEmail({ incident, reporterName, reporterEmail, busNumber, routeName }) {
+  try {
+    const adminEmail = process.env.ADMIN_EMAIL || process.env.SUPPORT_EMAIL || process.env.GMAIL_USER || 'rajchaturvedi215@gmail.com';
+
+    if (!adminEmail || isPlaceholderEmail(adminEmail)) {
+      console.warn(`[Email Service] Cannot send issue report: Admin email '${adminEmail}' is invalid or placeholder.`);
+      return { success: false, error: 'Admin email not configured or invalid placeholder.' };
+    }
+
+    const mailClient = await getTransporter();
+    if (!mailClient) {
+      return { success: false, error: 'Email transporter unavailable.' };
+    }
+
+    const issueId = incident._id ? incident._id.toString() : 'INC-' + Date.now();
+    const formattedDate = new Date(incident.createdAt || Date.now()).toLocaleString('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      dateStyle: 'medium',
+      timeStyle: 'short'
+    });
+
+    const severityColor =
+      incident.severity === 'critical' ? '#dc2626' :
+      incident.severity === 'high' ? '#ea580c' :
+      incident.severity === 'medium' ? '#d97706' : '#16a34a';
+
+    const subject = `[Transit Issue #${issueId.slice(-6)}] ${incident.title || 'New Incident Reported'}`;
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; color: #1e293b; margin: 0; padding: 24px; }
+          .container { max-width: 580px; margin: 0 auto; background: #ffffff; border-radius: 14px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+          .header { background: #0f172a; color: #ffffff; padding: 20px 24px; }
+          .header h2 { margin: 0; font-size: 16px; font-weight: 700; }
+          .content { padding: 24px; }
+          .badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; color: #ffffff; background: ${severityColor}; }
+          .field { margin-bottom: 12px; font-size: 13px; line-height: 1.5; }
+          .field-label { font-weight: 600; color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+          .field-value { color: #0f172a; font-size: 14px; }
+          .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin: 16px 0; }
+          .footer { text-align: center; padding: 16px; font-size: 11px; color: #94a3b8; background: #f1f5f9; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h2>College Bus Transit &bull; Dispatch Notice</h2>
+          </div>
+          <div class="content">
+            <div style="margin-bottom: 16px;">
+              <span class="badge">${(incident.severity || 'medium')} SEVERITY</span>
+              <span style="font-size: 12px; color: #64748b; margin-left: 8px;">Category: <strong>${incident.type || 'General'}</strong></span>
+            </div>
+            
+            <div class="field">
+              <div class="field-label">Headline</div>
+              <div class="field-value" style="font-size: 16px; font-weight: 700; color: #0f172a;">${incident.title}</div>
+            </div>
+
+            <div class="card">
+              <div class="field-label">Description / Road Conditions</div>
+              <div style="color: #334155; font-size: 13px; margin-top: 4px; white-space: pre-wrap;">${incident.description}</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div class="field">
+                <div class="field-label">Affected Bus</div>
+                <div class="field-value">${busNumber || incident.busNumber || 'Corridor General'}</div>
+              </div>
+              <div class="field">
+                <div class="field-label">Corridor / Route</div>
+                <div class="field-value">${routeName || 'Greater Noida Transit'}</div>
+              </div>
+              <div class="field">
+                <div class="field-label">Reported By</div>
+                <div class="field-value">${reporterName || incident.reporterName || 'Commuter'}</div>
+              </div>
+              <div class="field">
+                <div class="field-label">Logged At</div>
+                <div class="field-value">${formattedDate}</div>
+              </div>
+            </div>
+          </div>
+          <div class="footer">
+            Issue ID: ${issueId} &bull; College Bus Management Automated Dispatch System
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    // Try HTTPS Relay first
+    const relayRes = await dispatchViaRelay({
+      toEmail: adminEmail,
+      subject,
+      text: `[${(incident.severity || 'MEDIUM').toUpperCase()}] ${incident.title}\n\n${incident.description}\n\nBus: ${busNumber || 'N/A'}\nReported by: ${reporterName || 'Commuter'}\nTime: ${formattedDate}`,
+      html: htmlContent
+    });
+    if (relayRes && relayRes.success) return relayRes;
+
+    const info = await mailClient.sendMail({
+      from: `"College Bus Dispatch" <${getGmailUser()}>`,
+      to: adminEmail,
+      subject,
+      html: htmlContent
+    });
+
+    console.log(`[Email Service] Issue report email dispatched to: ${adminEmail} | Message ID: ${info.messageId || 'OK'}`);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error('[Email Service] Error on issue email dispatch:', error.message);
+    return { success: false, error: error.message };
+  }
+}
+
 module.exports = {
   sendLoginNotificationEmail,
   sendVerificationEmail,
   sendPasswordResetEmail,
   sendPassIssuedEmail,
+  sendIssueReportEmail,
   configureLiveGmail,
   getEmailStatus,
   isPlaceholderEmail
