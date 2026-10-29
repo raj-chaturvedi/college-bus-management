@@ -121,22 +121,38 @@ export default function ResetPasswordPage() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
-            {!tokenFromUrl && (
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="reset-token">
-                  Reset Token
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-slate-700" htmlFor="reset-token">
+                  Security Reset Token
                 </label>
-                <input
-                  id="reset-token"
-                  type="text"
-                  required
-                  value={token}
-                  onChange={(e) => setToken(e.target.value)}
-                  placeholder="Paste token from reset email"
-                  className="w-full px-3 py-2 bg-slate-50 hover:bg-white border border-slate-300 rounded-xl text-xs font-mono text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0F766E] transition"
-                />
+                <span className="text-[10px] text-slate-400">Received on your email</span>
               </div>
-            )}
+              <input
+                id="reset-token"
+                type="text"
+                required
+                value={token}
+                onChange={(e) => {
+                  const val = e.target.value.trim();
+                  // If user pasted the whole reset link, automatically extract token parameter
+                  if (val.includes('token=')) {
+                    try {
+                      const urlObj = new URL(val.startsWith('http') ? val : `http://localhost/${val}`);
+                      const extracted = urlObj.searchParams.get('token');
+                      setToken(extracted || val);
+                      return;
+                    } catch {}
+                  }
+                  setToken(val);
+                }}
+                placeholder="Paste the reset token or email link here"
+                className="w-full px-3 py-2.5 bg-slate-50 hover:bg-white border border-slate-300 rounded-xl text-xs font-mono text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0F766E] transition shadow-2xs"
+              />
+              <span className="text-[10px] text-slate-400 mt-1 block">
+                Copy the token from your reset email and paste it above to unlock password creation.
+              </span>
+            </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="new-password">

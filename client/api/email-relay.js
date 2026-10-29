@@ -288,13 +288,21 @@ export default async function handler(req, res) {
           <div class="content">
             <p style="font-size: 15px; margin-top: 0; color: #f8fafc;">Hello <strong>${userName}</strong>,</p>
             <p style="font-size: 14px; color: #cbd5e1;">
-              We received a request to reset your College Bus Management account password. Click the button below to establish a new secure password.
+              We received a request to reset your College Bus Management account password. You can either click the button below or copy your security token:
             </p>
+
+            <!-- Prominent Copyable Reset Token Card -->
+            <div style="background: #1e293b; border: 2px dashed #0284c7; border-radius: 10px; padding: 16px; text-align: center; margin: 20px 0;">
+              <div style="color: #94a3b8; font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-bottom: 6px;">Your Security Reset Token</div>
+              <div style="font-family: monospace; font-size: 15px; font-weight: 800; color: #38bdf8; word-break: break-all; padding: 8px 12px; background: #0f172a; border-radius: 6px; display: inline-block;">${data?.token || data?.resetToken || ''}</div>
+              <div style="color: #64748b; font-size: 11px; margin-top: 6px;">Paste this token into the "Reset Token" box on your screen</div>
+            </div>
+
             <div class="btn-container">
-              <a href="${resetUrl}" class="btn" target="_blank">Reset Password</a>
+              <a href="${resetUrl}" class="btn" target="_blank">Reset Password Directly</a>
             </div>
             <p style="font-size: 13px; color: #94a3b8;">
-              This link is single-use and expires in 60 minutes. If you did not request this reset, your credentials remain safe and no action is required.
+              This token is single-use and expires in 60 minutes. If you did not request this reset, your credentials remain safe and no action is required.
             </p>
             <div class="link-box">
               Direct Link:<br/>

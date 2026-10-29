@@ -410,9 +410,28 @@ async function sendPasswordResetEmail({ toEmail, userName, token }) {
   }
 
   try {
-    const mailClient = await getTransporter();
     const clientUrl = getClientUrl();
     const resetUrl = `${clientUrl}/reset-password?token=${encodeURIComponent(token)}`;
+
+    // 1. Try HTTPS relay first (Port 443, never blocked on cloud)
+    try {
+      const relayRes = await dispatchViaRelay({
+        toEmail,
+        type: 'PASSWORD_RESET',
+        userName,
+        token,
+        resetToken: token,
+        resetUrl
+      });
+      if (relayRes?.success) {
+        console.log(`[Email Service] Password reset delivered via HTTPS Relay to: ${toEmail} | Token: ${token.substring(0, 8)}...`);
+        return { success: true, messageId: relayRes.messageId, resetUrl };
+      }
+    } catch (relayErr) {
+      console.warn('[Email Service] Password reset relay notice:', relayErr.message);
+    }
+
+    const mailClient = await getTransporter();
 
     const htmlContent = `
       <!DOCTYPE html>
@@ -440,13 +459,21 @@ async function sendPasswordResetEmail({ toEmail, userName, token }) {
           <div class="content">
             <p style="font-size: 15px; margin-top: 0; color: #f8fafc;">Hello ${userName || 'User'},</p>
             <p style="font-size: 14px; color: #cbd5e1;">
-              We received a request to reset your College Bus Management System password. Click the button below to choose a new password.
+              We received a request to reset your College Bus Management System password. You can either click the button below or copy your security token:
             </p>
+
+            <!-- Prominent Copyable Reset Token Card -->
+            <div style="background: #1e293b; border: 2px dashed #0284c7; border-radius: 10px; padding: 16px; text-align: center; margin: 20px 0;">
+              <div style="color: #94a3b8; font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-bottom: 6px;">Your Security Reset Token</div>
+              <div style="font-family: monospace; font-size: 16px; font-weight: 800; color: #38bdf8; word-break: break-all; padding: 6px 10px; background: #0f172a; border-radius: 6px; display: inline-block;">${token}</div>
+              <div style="color: #64748b; font-size: 11px; margin-top: 6px;">Paste this token into the "Reset Token" box on your screen</div>
+            </div>
+
             <div class="btn-container">
-              <a href="${resetUrl}" class="btn" target="_blank">Reset Password</a>
+              <a href="${resetUrl}" class="btn" target="_blank">Reset Password Directly</a>
             </div>
             <p style="font-size: 13px; color: #94a3b8;">
-              This link is secure, single-use, and expires in 1 hour. If you did not request this, you can safely ignore this email; your password remains unchanged.
+              This token is secure, single-use, and expires in 1 hour. If you did not request this, you can safely ignore this email; your password remains unchanged.
             </p>
             <div class="link-box">
               Direct link:<br/>
