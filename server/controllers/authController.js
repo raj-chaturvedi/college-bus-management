@@ -206,6 +206,7 @@ exports.register = async (req, res, next) => {
     // Send verification email via configured SMTP (Gmail / Custom)
     console.log(`[Auth] Dispatching account verification email to: ${cleanEmail}`);
     try {
+      // Allow up to 10 seconds for cloud SMTP handshake without aborting early
       await Promise.race([
         sendVerificationEmail({
           toEmail: cleanEmail,
@@ -213,7 +214,7 @@ exports.register = async (req, res, next) => {
           token: verificationToken,
           code: verificationCode
         }),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP Verification timeout')), 3500))
+        new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP Verification timeout')), 10000))
       ]);
       console.log(`[Auth] Verification email delivered to: ${cleanEmail}`);
     } catch (emailErr) {
@@ -419,7 +420,7 @@ exports.resendVerification = async (req, res, next) => {
             token: newToken,
             code: newCode
           }),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP timeout')), 3500))
+          new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP timeout')), 10000))
         ]);
       } catch (err) {
         console.warn('[Auth] Resend email warning:', err.message);
