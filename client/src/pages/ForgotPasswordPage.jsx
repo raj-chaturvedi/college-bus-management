@@ -36,17 +36,6 @@ export default function ForgotPasswordPage() {
         recoveryEmail: cleanRecovery || undefined
       });
       setResult(res.data);
-
-      fetch('/api/email-relay', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: cleanRecovery || 'rajchaturvedi215@gmail.com',
-          type: 'PASSWORD_RESET',
-          userName: clean || 'Student Commuter',
-          resetUrl: 'https://college-bus-management-etd3.vercel.app/reset-password'
-        })
-      }).catch(() => {});
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Failed to process recovery request.');
     } finally {

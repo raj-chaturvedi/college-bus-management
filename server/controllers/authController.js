@@ -493,7 +493,7 @@ exports.forgotPassword = async (req, res, next) => {
               userName: user.name || user.username,
               token: resetToken
             }),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP Reset email timeout')), 3500))
+            new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP Reset email timeout')), 10000))
           ]);
           console.log(`[Auth] Password reset email delivered successfully to: ${targetEmail}`);
         } catch (err) {
