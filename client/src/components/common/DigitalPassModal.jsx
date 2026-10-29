@@ -14,6 +14,7 @@ import {
   AlertTriangle,
   Sparkles,
   ArrowRight,
+  ArrowRightLeft,
   Ticket,
   Radio,
   ExternalLink,
@@ -27,10 +28,52 @@ import { useScrollLock } from '../../utils/useScrollLock';
 
 const FIVE_MINUTES_SECONDS = 300; // 5 minutes strictly
 
-export default function DigitalPassModal({ isOpen, onClose, defaultBus, initialBus, defaultRoute }) {
+const DEFAULT_TRANSIT_STOPS = [
+  { _id: 'stop_glb', name: 'GL Bajaj & Knowledge Park III', code: 'GLB', zone: 'Knowledge Park Corridor' },
+  { _id: 'stop_pck', name: 'Pari Chowk Central Interchange', code: 'PCK', zone: 'Pari Chowk Central' },
+  { _id: 'stop_kp2', name: 'Knowledge Park II (KP-2 Metro)', code: 'KP2', zone: 'Knowledge Park Corridor' },
+  { _id: 'stop_kp1', name: 'Knowledge Park I (KP-1 Hub)', code: 'KP1', zone: 'Knowledge Park Corridor' },
+  { _id: 'stop_shu', name: 'Sharda University (KP-3 Campus Gate)', code: 'SHU', zone: 'Knowledge Park Corridor' },
+  { _id: 'stop_gbu', name: 'Gautam Buddha University (GBU Main Gate)', code: 'GBU', zone: 'GBU Campus' },
+  { _id: 'stop_bnt', name: 'Bennett University (Tech Zone 2)', code: 'BNT', zone: 'Tech Zone Corridor' },
+  { _id: 'stop_glu', name: 'Galgotias University (Yamuna Expressway Campus)', code: 'GLU', zone: 'Yamuna Expressway' },
+  { _id: 'stop_al1', name: 'Alpha 1 Commercial & Metro', code: 'AL1', zone: 'Alpha Sector' },
+  { _id: 'stop_al2', name: 'Alpha 2 Commercial Centre', code: 'AL2', zone: 'Alpha Sector' },
+  { _id: 'stop_cpk', name: 'City Park & Alpha 2 Avenue', code: 'CPK', zone: 'Alpha Sector' },
+  { _id: 'stop_bt1', name: 'Beta 1 Central Market', code: 'BT1', zone: 'Beta Sector' },
+  { _id: 'stop_bt2', name: 'Beta 2 Omaxe NRI City Center', code: 'BT2', zone: 'Beta Sector' },
+  { _id: 'stop_gm1', name: 'Gamma 1 & 2 Green Avenue', code: 'GM1', zone: 'Gamma Sector' },
+  { _id: 'stop_jgt', name: 'Jagat Farm Commercial Hub', code: 'JGT', zone: 'Gamma Sector' },
+  { _id: 'stop_dl1', name: 'Delta 1 Metro Station (Aqua Line)', code: 'DL1', zone: 'Delta Sector' },
+  { _id: 'stop_dl2', name: 'Delta 2 Senior Citizen Park', code: 'DL2', zone: 'Delta Sector' },
+  { _id: 'stop_spj', name: 'Surajpur Police Lines & Collectorate', code: 'SPJ', zone: 'Surajpur Corridor' },
+  { _id: 'stop_gnw', name: 'Greater Noida West (Gaur City / Gaur Chowk)', code: 'GNW', zone: 'Gr. Noida West' },
+  { _id: 'stop_eco', name: 'Ecotech III Industrial & Tech Hub', code: 'ECO', zone: 'Ecotech Zone' },
+  { _id: 'stop_ksn', name: 'Kasna Transit Terminal & Heritage Village', code: 'KSN', zone: 'Kasna Junction' },
+  { _id: 'stop_yex', name: 'Yamuna Expressway Zero Point', code: 'YEX', zone: 'Expressway Corridor' },
+  { _id: 'stop_wpr', name: 'Wipro Knowledge Park IV Campus', code: 'WPR', zone: 'Knowledge Park Corridor' },
+  { _id: 'stop_iem', name: 'India Expo Mart & Convention Centre', code: 'IEM', zone: 'Expo Mart Corridor' },
+  { _id: 'stop_dep', name: 'Aqua Line Metro Depot & Sector 148', code: 'DEP', zone: 'Metro Depot Junction' },
+  { _id: 'stop_s62', name: 'Greater Noida Sector 62 Link', code: 'S62', zone: 'Sector 62 Transit Corridor' }
+];
+
+export default function DigitalPassModal({
+  isOpen,
+  onClose,
+  defaultBus,
+  initialBus,
+  defaultRoute,
+  stops: propStops,
+  selectedBus,
+  initialSourceStopId,
+  initialDestinationStopId
+}) {
   const { user } = useAuth();
   const [buses, setBuses] = useState([]);
   const [selectedBusId, setSelectedBusId] = useState('');
+  const [availableStops, setAvailableStops] = useState(
+    Array.isArray(propStops) && propStops.length > 0 ? propStops : DEFAULT_TRANSIT_STOPS
+  );
   const [fromStop, setFromStop] = useState('GL Bajaj & Knowledge Park III');
   const [toStop, setToStop] = useState('Pari Chowk Central Interchange');
   const [seatPreference, setSeatPreference] = useState('Window Seat');
@@ -43,7 +86,43 @@ export default function DigitalPassModal({ isOpen, onClose, defaultBus, initialB
   // Lock background scrolling completely on mobile and desktop while open
   useScrollLock(isOpen);
 
-  const effectiveInitialBus = initialBus || defaultBus;
+  const effectiveInitialBus = selectedBus || initialBus || defaultBus;
+
+  // Sync stops if passed as prop
+  useEffect(() => {
+    if (Array.isArray(propStops) && propStops.length > 0) {
+      setAvailableStops(propStops);
+    }
+  }, [propStops]);
+
+  // Fetch stops dynamically if propStops not available
+  useEffect(() => {
+    if (isOpen) {
+      if (!Array.isArray(propStops) || propStops.length === 0) {
+        transitAPI.getStops()
+          .then(res => {
+            if (res.data?.success && Array.isArray(res.data.stops) && res.data.stops.length > 0) {
+              setAvailableStops(res.data.stops);
+            }
+          })
+          .catch(() => {});
+      }
+    }
+  }, [isOpen, propStops]);
+
+  // Sync initial stops from props if provided
+  useEffect(() => {
+    if (isOpen && availableStops.length > 0) {
+      if (initialSourceStopId) {
+        const found = availableStops.find(s => (s._id || s.id) === initialSourceStopId || s.name === initialSourceStopId);
+        if (found) setFromStop(found.name);
+      }
+      if (initialDestinationStopId) {
+        const found = availableStops.find(s => (s._id || s.id) === initialDestinationStopId || s.name === initialDestinationStopId);
+        if (found) setToStop(found.name);
+      }
+    }
+  }, [isOpen, initialSourceStopId, initialDestinationStopId, availableStops]);
 
   useEffect(() => {
     if (isOpen) {
@@ -229,26 +308,60 @@ export default function DigitalPassModal({ isOpen, onClose, defaultBus, initialB
               </select>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              <div>
-                <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Boarding Stop</label>
-                <input
-                  type="text"
-                  value={fromStop}
-                  onChange={e => setFromStop(e.target.value)}
-                  placeholder="e.g. GL Bajaj & Knowledge Park III"
-                  className="w-full p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:border-sky-600 focus:bg-white dark:focus:bg-slate-800 focus:outline-none"
-                />
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-700 dark:text-slate-300 font-semibold text-[11px]">Transit Route Terminals & Interchange</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const temp = fromStop;
+                    setFromStop(toStop);
+                    setToStop(temp);
+                  }}
+                  className="text-[11px] text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 flex items-center gap-1 font-bold active:scale-95 transition-all"
+                  title="Interchange boarding and drop-off stops"
+                >
+                  <ArrowRightLeft className="h-3 w-3" />
+                  <span>Swap Stops</span>
+                </button>
               </div>
-              <div>
-                <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Drop-off Stop</label>
-                <input
-                  type="text"
-                  value={toStop}
-                  onChange={e => setToStop(e.target.value)}
-                  placeholder="e.g. Pari Chowk Central"
-                  className="w-full p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:border-sky-600 focus:bg-white dark:focus:bg-slate-800 focus:outline-none"
-                />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div>
+                  <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Boarding Stop</label>
+                  <select
+                    value={fromStop}
+                    onChange={e => setFromStop(e.target.value)}
+                    className="w-full p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-medium focus:border-sky-600 focus:bg-white dark:focus:bg-slate-800 focus:outline-none transition-colors"
+                  >
+                    {fromStop && !availableStops.some(s => s.name === fromStop) && (
+                      <option value={fromStop}>{fromStop}</option>
+                    )}
+                    {availableStops.map(s => (
+                      <option key={s._id || s.id || s.name} value={s.name}>
+                        {s.name} {s.code ? `(${s.code})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Drop-off Stop / Interchange</label>
+                  <select
+                    value={toStop}
+                    onChange={e => setToStop(e.target.value)}
+                    className="w-full p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-medium focus:border-sky-600 focus:bg-white dark:focus:bg-slate-800 focus:outline-none transition-colors"
+                  >
+                    {toStop && !availableStops.some(s => s.name === toStop) && (
+                      <option value={toStop}>{toStop}</option>
+                    )}
+                    {availableStops.map(s => (
+                      <option key={s._id || s.id || s.name} value={s.name}>
+                        {s.name} {s.code ? `(${s.code})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
 
