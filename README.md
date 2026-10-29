@@ -3,7 +3,12 @@
 > Real-time college transit telemetry, road-following bus tracking, dynamic ETAs, crowd analytics, and 5-minute digital boarding passes.
 
 **Production Deployment:** [https://college-bus-management-etd3.vercel.app/](https://college-bus-management-etd3.vercel.app/)  
-**Maintained by:** Raj Chaturvedi ([rajchaturvedi215@gmail.com](mailto:rajchaturvedi215@gmail.com))
+**Author & Owner:** Raj Chaturvedi ([rajchaturvedi215@gmail.com](mailto:rajchaturvedi215@gmail.com))
+
+> [!CAUTION]
+> **PROPRIETARY & CONFIDENTIAL INTELLECTUAL PROPERTY — ALL RIGHTS RESERVED**  
+> Copyright &copy; 2026 Raj Chaturvedi. All rights reserved.  
+> This source code, algorithms, user interfaces, routing engine, and telemetry systems are the exclusive intellectual property of Raj Chaturvedi. **Unauthorized copying, reverse engineering, redistribution, resale, commercial deployment, or scamming is strictly prohibited by law and subject to immediate civil and criminal prosecution under the Indian Copyright Act, 1957 and the DMCA.** Access to this repository is granted for read-only portfolio evaluation only.
 
 ---
 
@@ -232,3 +237,15 @@ Pre-seeded accounts are available for testing with 1-click quick-fill buttons on
 - `GET /api/buses/live` — 3-second live road telemetry with headings and occupancy
 - `POST /api/recommendations` — Multi-criteria route recommendation engine
 - `POST /api/ai/chat` — Context-grounded Gemini AI transit chatbot
+
+---
+
+## Intellectual Property & Legal Protection
+
+This software is **proprietary and confidential**. It is NOT open-source and is NOT licensed under MIT or any public license.
+
+- **Ownership:** Exclusively authored and owned by **Raj Chaturvedi** ([rajchaturvedi215@gmail.com](mailto:rajchaturvedi215@gmail.com)).
+- **Inspection Rights:** Viewers may review this code exclusively for portfolio evaluation or grading purposes.
+- **Strict Prohibition:** Downloading, cloning, deploying, sublicensing, reselling, or using this codebase for commercial gain, freelance services, or academic plagiarism without explicit written permission from the Author is strictly prohibited.
+- **Enforcement:** Infringements are monitored and subject to immediate legal action and DMCA takedowns under applicable international and Indian copyright laws.
+

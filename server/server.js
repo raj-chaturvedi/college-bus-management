@@ -1,3 +1,12 @@
+/**
+ * College Bus Management System with AI Route Recommendation & Live Telemetry
+ * Copyright (c) 2026 Raj Chaturvedi (rajchaturvedi215@gmail.com). All Rights Reserved.
+ * 
+ * PROPRIETARY & CONFIDENTIAL: This software is the exclusive property of Raj Chaturvedi.
+ * Unauthorized copying, modification, reverse engineering, redistribution, resale, or
+ * commercial deployment is strictly prohibited and subject to legal prosecution.
+ */
+
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 require('dotenv').config();
