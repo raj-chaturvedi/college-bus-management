@@ -1,21 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import AuthLayout from '../components/auth/AuthLayout';
 import {
   Bus,
-  Mail,
-  User,
   Eye,
   EyeOff,
   AlertCircle,
   CheckCircle2,
+  XCircle,
   ArrowRight,
-  ShieldCheck
+  ShieldCheck,
+  Check,
+  X
 } from 'lucide-react';
 
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-const USERNAME_REGEX = /^[a-zA-Z0-9_-]{3,30}$/;
+const RESERVED_NAMES = [
+  'admin', 'administrator', 'root', 'support', 'null', 'undefined',
+  'moderator', 'system', 'test', 'guest', 'demo', 'superuser'
+];
 
 export default function RegisterPage() {
   const [username, setUsername] = useState('');
@@ -32,6 +36,63 @@ export default function RegisterPage() {
   const { register } = useAuth();
   const navigate = useNavigate();
 
+  // Real-time username validation criteria
+  const usernameRules = useMemo(() => {
+    const trimmed = username.trim();
+    const lengthValid = trimmed.length >= 4 && trimmed.length <= 16;
+    const startsWithLetter = /^[a-zA-Z]/.test(trimmed);
+    const charsValid = /^[a-zA-Z0-9_]+$/.test(trimmed);
+    const notReserved = !RESERVED_NAMES.includes(trimmed.toLowerCase());
+    const valid = lengthValid && startsWithLetter && charsValid && notReserved;
+    return {
+      lengthValid,
+      startsWithLetter,
+      charsValid,
+      notReserved,
+      valid
+    };
+  }, [username]);
+
+  // Real-time password validation criteria
+  const passwordRules = useMemo(() => {
+    const trimmed = password;
+    const lengthValid = trimmed.length >= 10 && trimmed.length <= 32;
+    const hasUpper = /[A-Z]/.test(trimmed);
+    const hasLower = /[a-z]/.test(trimmed);
+    const hasNumber = /[0-9]/.test(trimmed);
+    const hasSymbol = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(trimmed);
+    
+    // Check if password contains username
+    const trimmedUser = username.trim().toLowerCase();
+    const noUsername = !trimmedUser || trimmedUser.length < 3 || !trimmed.toLowerCase().includes(trimmedUser);
+    
+    // Check for repetitive characters (e.g. 'aaaa')
+    const noRepetitive = !/(.)\1{3,}/.test(trimmed);
+
+    const valid = lengthValid && hasUpper && hasLower && hasNumber && hasSymbol && noUsername && noRepetitive;
+
+    return {
+      lengthValid,
+      hasUpper,
+      hasLower,
+      hasNumber,
+      hasSymbol,
+      noUsername,
+      noRepetitive,
+      valid
+    };
+  }, [password, username]);
+
+  const emailValid = useMemo(() => {
+    return EMAIL_REGEX.test(email.trim().toLowerCase());
+  }, [email]);
+
+  const confirmMatch = useMemo(() => {
+    return Boolean(password && confirmPassword && password === confirmPassword);
+  }, [password, confirmPassword]);
+
+  const isFormValid = usernameRules.valid && emailValid && passwordRules.valid && confirmMatch;
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
@@ -40,63 +101,58 @@ export default function RegisterPage() {
     const cleanUsername = username.trim();
     const cleanEmail = email.trim().toLowerCase();
 
-    if (!cleanUsername) {
-      setError('Username is required.');
+    if (!usernameRules.valid) {
+      if (!usernameRules.startsWithLetter) {
+        setError('Username must start with a letter (A-Z or a-z).');
+        return;
+      }
+      if (!usernameRules.lengthValid) {
+        setError('Username must be between 4 and 16 characters.');
+        return;
+      }
+      if (!usernameRules.charsValid) {
+        setError('Username can only contain letters, numbers, and underscores.');
+        return;
+      }
+      if (!usernameRules.notReserved) {
+        setError('This username is reserved. Please choose another one.');
+        return;
+      }
+      setError('Please provide a valid username.');
       return;
     }
 
-    if (cleanUsername.length < 4 || cleanUsername.length > 20) {
-      setError('Username must be between 4 and 20 characters.');
-      return;
-    }
-
-    if (!/^[a-zA-Z0-9_]+$/.test(cleanUsername)) {
-      setError('Username can only contain letters, numbers, and underscores (no spaces or special symbols).');
-      return;
-    }
-
-    if (cleanUsername.startsWith('_')) {
-      setError('Username cannot start with an underscore.');
-      return;
-    }
-
-    if (/^_+$/.test(cleanUsername)) {
-      setError('Username cannot contain only underscores.');
-      return;
-    }
-
-    if (!cleanEmail) {
-      setError('Email address is required.');
-      return;
-    }
-
-    if (!EMAIL_REGEX.test(cleanEmail)) {
+    if (!cleanEmail || !emailValid) {
       setError('Please provide a valid email address (e.g. name@college.edu or gmail.com).');
       return;
     }
 
-    if (password.length < 10) {
-      setError('Password must be at least 10 characters long.');
-      return;
-    }
-
-    if (!/[A-Z]/.test(password)) {
-      setError('Password must include at least one uppercase letter (A-Z).');
-      return;
-    }
-
-    if (!/[a-z]/.test(password)) {
-      setError('Password must include at least one lowercase letter (a-z).');
-      return;
-    }
-
-    if (!/[0-9]/.test(password)) {
-      setError('Password must include at least one number (0-9).');
-      return;
-    }
-
-    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(password)) {
-      setError('Password must include at least one special character (!@#$%^&*...).');
+    if (!passwordRules.valid) {
+      if (!passwordRules.lengthValid) {
+        setError('Password must be between 10 and 32 characters.');
+        return;
+      }
+      if (!passwordRules.hasUpper || !passwordRules.hasLower) {
+        setError('Password must contain both uppercase (A-Z) and lowercase (a-z) letters.');
+        return;
+      }
+      if (!passwordRules.hasNumber) {
+        setError('Password must contain at least one number (0-9).');
+        return;
+      }
+      if (!passwordRules.hasSymbol) {
+        setError('Password must contain at least one special symbol (!@#$%^&*...).');
+        return;
+      }
+      if (!passwordRules.noUsername) {
+        setError('Password cannot contain your username.');
+        return;
+      }
+      if (!passwordRules.noRepetitive) {
+        setError('Password cannot contain 4 or more repeated characters in a row.');
+        return;
+      }
+      setError('Password does not meet the security requirements.');
       return;
     }
 
@@ -131,7 +187,7 @@ export default function RegisterPage() {
     <AuthLayout>
       {/* Brand Header */}
       <div className="mb-5 sm:mb-6">
-        <div className="flex items-center gap-2 mb-2.5">
+        <div className="flex items-center gap-2 mb-2">
           <div className="w-8 h-8 rounded-lg bg-sky-50 dark:bg-sky-950/80 border border-sky-100 dark:border-sky-800 flex items-center justify-center text-sky-600 dark:text-sky-400">
             <Bus className="w-4 h-4" />
           </div>
@@ -141,7 +197,7 @@ export default function RegisterPage() {
         </div>
         <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Create an account</h1>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Sign up with your username and email to activate student transit access.
+          Sign up with your username and verified email to activate campus bus pass access.
         </p>
       </div>
 
@@ -168,9 +224,17 @@ export default function RegisterPage() {
       <form onSubmit={handleRegister} className="space-y-3.5 sm:space-y-4">
         {/* Username */}
         <div>
-          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1" htmlFor="register-username">
-            Username
-          </label>
+          <div className="flex items-center justify-between mb-1">
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300" htmlFor="register-username">
+              Username
+            </label>
+            {username && (
+              <span className={`text-[10px] font-semibold flex items-center gap-1 ${usernameRules.valid ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}>
+                {usernameRules.valid ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                {usernameRules.valid ? 'Valid Username' : 'Needs attention'}
+              </span>
+            )}
+          </div>
           <div className="relative">
             <input
               id="register-username"
@@ -178,15 +242,33 @@ export default function RegisterPage() {
               required
               autoComplete="username"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => setUsername(e.target.value.replace(/\s+/g, ''))}
               placeholder="e.g. rohit_kumar"
               disabled={submitting}
-              className="w-full h-10 px-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition"
+              maxLength={16}
+              className={`w-full h-10 px-3 bg-white dark:bg-slate-800 border rounded-lg text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition ${
+                username && !usernameRules.valid
+                  ? 'border-amber-300 dark:border-amber-700 focus:ring-amber-500'
+                  : 'border-slate-300 dark:border-slate-700 focus:ring-sky-500'
+              }`}
             />
           </div>
-          <span className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 block">
-            3-30 characters, letters, numbers, underscores or hyphens.
-          </span>
+          
+          {/* Real-time username checklist */}
+          <div className="mt-1.5 grid grid-cols-2 gap-x-2 gap-y-0.5 text-[10px]">
+            <span className={`flex items-center gap-1 ${usernameRules.startsWithLetter ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500'}`}>
+              {usernameRules.startsWithLetter ? '✓' : '•'} Starts with letter (a-z)
+            </span>
+            <span className={`flex items-center gap-1 ${usernameRules.lengthValid ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500'}`}>
+              {usernameRules.lengthValid ? '✓' : '•'} 4 to 16 characters
+            </span>
+            <span className={`flex items-center gap-1 ${usernameRules.charsValid ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500'}`}>
+              {usernameRules.charsValid ? '✓' : '•'} Letters, numbers, underscore
+            </span>
+            <span className={`flex items-center gap-1 ${usernameRules.notReserved ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500'}`}>
+              {usernameRules.notReserved ? '✓' : '•'} Not a system name
+            </span>
+          </div>
         </div>
 
         {/* Email Address */}
@@ -204,19 +286,31 @@ export default function RegisterPage() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="e.g. student@college.edu or gmail.com"
               disabled={submitting}
-              className="w-full h-10 px-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition"
+              className={`w-full h-10 px-3 bg-white dark:bg-slate-800 border rounded-lg text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition ${
+                email && !emailValid
+                  ? 'border-amber-300 dark:border-amber-700 focus:ring-amber-500'
+                  : 'border-slate-300 dark:border-slate-700 focus:ring-sky-500'
+              }`}
             />
           </div>
-          <span className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 block">
-            A 6-digit verification code will be sent to this email.
+          <span className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 block">
+            A 6-digit OTP code will be sent to this email for instant verification.
           </span>
         </div>
 
         {/* Password */}
         <div>
-          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1" htmlFor="register-password">
-            Password (min. 10 chars, uppercase, lowercase, number, symbol)
-          </label>
+          <div className="flex items-center justify-between mb-1">
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300" htmlFor="register-password">
+              Password
+            </label>
+            {password && (
+              <span className={`text-[10px] font-semibold flex items-center gap-1 ${passwordRules.valid ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}>
+                {passwordRules.valid ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                {passwordRules.valid ? 'Strong Password' : 'Incomplete'}
+              </span>
+            )}
+          </div>
           <div className="relative">
             <input
               id="register-password"
@@ -225,9 +319,14 @@ export default function RegisterPage() {
               autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder="Min. 10 chars, uppercase, lowercase, number, symbol"
               disabled={submitting}
-              className="w-full h-10 pl-3 pr-10 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition"
+              maxLength={32}
+              className={`w-full h-10 pl-3 pr-10 bg-white dark:bg-slate-800 border rounded-lg text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition ${
+                password && !passwordRules.valid
+                  ? 'border-amber-300 dark:border-amber-700 focus:ring-amber-500'
+                  : 'border-slate-300 dark:border-slate-700 focus:ring-sky-500'
+              }`}
             />
             <button
               type="button"
@@ -238,13 +337,43 @@ export default function RegisterPage() {
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
+
+          {/* Real-time password requirement tags */}
+          <div className="mt-1.5 grid grid-cols-2 gap-x-2 gap-y-0.5 text-[10px]">
+            <span className={`flex items-center gap-1 ${passwordRules.lengthValid ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500'}`}>
+              {passwordRules.lengthValid ? '✓' : '•'} 10 to 32 characters
+            </span>
+            <span className={`flex items-center gap-1 ${passwordRules.hasUpper ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500'}`}>
+              {passwordRules.hasUpper ? '✓' : '•'} At least 1 uppercase (A-Z)
+            </span>
+            <span className={`flex items-center gap-1 ${passwordRules.hasLower ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500'}`}>
+              {passwordRules.hasLower ? '✓' : '•'} At least 1 lowercase (a-z)
+            </span>
+            <span className={`flex items-center gap-1 ${passwordRules.hasNumber ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500'}`}>
+              {passwordRules.hasNumber ? '✓' : '•'} At least 1 number (0-9)
+            </span>
+            <span className={`flex items-center gap-1 ${passwordRules.hasSymbol ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500'}`}>
+              {passwordRules.hasSymbol ? '✓' : '•'} 1 special symbol (!@#$)
+            </span>
+            <span className={`flex items-center gap-1 ${passwordRules.noUsername ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500'}`}>
+              {passwordRules.noUsername ? '✓' : '•'} No username in password
+            </span>
+          </div>
         </div>
 
         {/* Confirm Password */}
         <div>
-          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1" htmlFor="register-confirm-password">
-            Confirm password
-          </label>
+          <div className="flex items-center justify-between mb-1">
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300" htmlFor="register-confirm-password">
+              Confirm password
+            </label>
+            {confirmPassword && (
+              <span className={`text-[10px] font-semibold flex items-center gap-1 ${confirmMatch ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                {confirmMatch ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                {confirmMatch ? 'Passwords match' : 'Do not match'}
+              </span>
+            )}
+          </div>
           <div className="relative">
             <input
               id="register-confirm-password"
@@ -253,9 +382,13 @@ export default function RegisterPage() {
               autoComplete="new-password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder="Re-enter password"
               disabled={submitting}
-              className="w-full h-10 pl-3 pr-10 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition"
+              className={`w-full h-10 pl-3 pr-10 bg-white dark:bg-slate-800 border rounded-lg text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition ${
+                confirmPassword && !confirmMatch
+                  ? 'border-rose-300 dark:border-rose-700 focus:ring-rose-500'
+                  : 'border-slate-300 dark:border-slate-700 focus:ring-sky-500'
+              }`}
             />
             <button
               type="button"
@@ -277,7 +410,7 @@ export default function RegisterPage() {
         {/* Submit Button */}
         <button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || !isFormValid}
           className="w-full h-10 mt-1 bg-sky-600 hover:bg-sky-700 active:bg-sky-800 text-white font-medium text-sm rounded-lg transition shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {submitting ? 'Creating account & sending OTP...' : 'Create Account & Verify'}

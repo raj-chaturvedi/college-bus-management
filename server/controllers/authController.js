@@ -34,35 +34,40 @@ const COMMON_WEAK_PASSWORDS = new Set([
   'passcode123', 'secret12345', 'changeme123'
 ]);
 
+const RESERVED_USERNAMES = new Set([
+  'admin', 'administrator', 'root', 'support', 'moderator', 'transit',
+  'system', 'help', 'null', 'undefined', 'superuser', 'security'
+]);
+
 /**
- * Validates username according to security requirements:
- * 4-20 chars, letters/numbers/underscores only, no spaces, cannot start with underscore, cannot be only underscores.
+ * Validates username according to strict security requirements:
+ * 4-16 chars, must start with a letter (a-z), alphanumeric and underscores only, no reserved system names.
  */
 function validateUsername(username) {
   if (!username || typeof username !== 'string') {
     return { valid: false, message: 'Username is required.' };
   }
   const clean = username.trim();
-  if (clean.length < 4 || clean.length > 20) {
-    return { valid: false, message: 'Username must be between 4 and 20 characters.' };
+  if (clean.length < 4 || clean.length > 16) {
+    return { valid: false, message: 'Username must be between 4 and 16 characters long.' };
   }
-  if (!/^[a-zA-Z0-9_]+$/.test(clean)) {
-    return { valid: false, message: 'Username can only contain letters, numbers, and underscores.' };
+  if (!/^[a-zA-Z]/.test(clean)) {
+    return { valid: false, message: 'Username must start with a letter (A-Z or a-z), not a number or underscore.' };
   }
-  if (clean.startsWith('_')) {
-    return { valid: false, message: 'Username cannot start with an underscore.' };
+  if (!/^[a-zA-Z][a-zA-Z0-9_]{3,15}$/.test(clean)) {
+    return { valid: false, message: 'Username can only contain letters, numbers, and underscores (no spaces or special symbols).' };
   }
-  if (/^_+$/.test(clean)) {
-    return { valid: false, message: 'Username cannot contain only underscores.' };
+  if (RESERVED_USERNAMES.has(clean.toLowerCase())) {
+    return { valid: false, message: 'This username is reserved by the transit system. Please choose another username.' };
   }
   return { valid: true, cleanUsername: clean.toLowerCase() };
 }
 
 /**
- * Validates password according to security requirements:
- * At least 10 chars, uppercase, lowercase, number, special character, no whitespace-only, not in weak password list.
+ * Validates password according to strict security requirements:
+ * 10-32 chars, uppercase, lowercase, number, special character, no username/email inclusion, no 4+ repeated characters, no common passwords.
  */
-function validatePassword(password) {
+function validatePassword(password, username = '', email = '') {
   if (!password || typeof password !== 'string') {
     return { valid: false, message: 'Password is required.' };
   }
@@ -71,6 +76,9 @@ function validatePassword(password) {
   }
   if (password.length < 10) {
     return { valid: false, message: 'Password must be at least 10 characters long.' };
+  }
+  if (password.length > 32) {
+    return { valid: false, message: 'Password cannot exceed 32 characters.' };
   }
   if (!/[A-Z]/.test(password)) {
     return { valid: false, message: 'Password must include at least one uppercase letter (A-Z).' };
@@ -83,6 +91,21 @@ function validatePassword(password) {
   }
   if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(password)) {
     return { valid: false, message: 'Password must include at least one special character (!@#$%^&*...).' };
+  }
+  // Check if password contains the username
+  if (username && username.length >= 3 && password.toLowerCase().includes(username.toLowerCase())) {
+    return { valid: false, message: 'Password cannot contain your username.' };
+  }
+  // Check if password contains the email handle
+  if (email && email.includes('@')) {
+    const handle = email.split('@')[0].toLowerCase();
+    if (handle.length >= 3 && password.toLowerCase().includes(handle)) {
+      return { valid: false, message: 'Password cannot contain your email name.' };
+    }
+  }
+  // Reject 4 or more identical consecutive characters
+  if (/(.)\1{3,}/.test(password)) {
+    return { valid: false, message: 'Password cannot contain 4 or more identical consecutive characters.' };
   }
   const normalizedWeak = password.toLowerCase().replace(/[^a-z0-9]/g, '');
   if (COMMON_WEAK_PASSWORDS.has(password.toLowerCase()) || COMMON_WEAK_PASSWORDS.has(normalizedWeak)) {
@@ -123,7 +146,7 @@ exports.register = async (req, res, next) => {
       });
     }
 
-    const passwordCheck = validatePassword(password);
+    const passwordCheck = validatePassword(password, cleanUsername, cleanEmail);
     if (!passwordCheck.valid) {
       return res.status(400).json({
         success: false,
@@ -260,8 +283,8 @@ exports.login = async (req, res, next) => {
       });
     }
 
-    // Block unverified accounts
-    if (user.isVerified === false && user.authProvider !== 'google') {
+    // Block unverified accounts strictly
+    if (!user.isVerified && user.authProvider !== 'google') {
       return res.status(403).json({
         success: false,
         isUnverified: true,

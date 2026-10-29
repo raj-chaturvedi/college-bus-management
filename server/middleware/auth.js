@@ -31,7 +31,7 @@ const verifyToken = async (req, res, next) => {
       });
     }
 
-    if (user.isVerified === false && user.authProvider !== 'google') {
+    if (!user.isVerified && user.authProvider !== 'google') {
       return res.status(403).json({
         success: false,
         isUnverified: true,

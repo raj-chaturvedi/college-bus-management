@@ -81,6 +81,7 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
   const [stopBoardInfo, setStopBoardInfo] = useState({ id: '', name: '' });
   const [showIncidentModal, setShowIncidentModal] = useState(false);
   const [showEmergencyModal, setShowEmergencyModal] = useState(false);
+  const [mobileActiveTab, setMobileActiveTab] = useState('live'); // 'live' | 'routes'
 
   // Live real-time dynamic clock & telemetry countdown
   const [liveClock, setLiveClock] = useState(() =>
@@ -327,391 +328,408 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
       {/* MOBILE-FIRST HUMAN EXPERIENCE (< 768px)                      */}
       {/* Clean, spacious, uncluttered, human-designed transport app   */}
       {/* ============================================================ */}
-      <div className="block md:hidden space-y-3.5 px-0.5">
-        {/* Mobile Header: Clean & Compact */}
-        <div className="flex items-center justify-between py-1">
+      <div className="block md:hidden space-y-4 px-1 pb-4">
+        {/* Mobile Header: Clean, modern status header */}
+        <div className="flex items-center justify-between pt-1">
           <div>
             <h1 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               {timeGreeting}, {greetingName}
             </h1>
-            <div className="flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-              <span>{liveClock}</span>
+            <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              <span className="font-medium">{liveClock}</span>
               <span>&bull;</span>
               <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                On Time
+                Active Transit
               </span>
             </div>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-semibold text-sky-800 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 px-2.5 py-1 rounded-full border border-sky-200 dark:border-sky-800">
-              {buses.length || 16} Live
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-sky-800 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 px-3 py-1 rounded-full border border-sky-200 dark:border-sky-800 shadow-2xs">
+              {buses.length || 16} Buses
             </span>
           </div>
         </div>
 
-        {/* Mobile Next Journey Card: Clean Single-Layer */}
-        <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-4 shadow-md border border-slate-700/60">
-          <div className="flex items-center justify-between mb-2.5">
+        {/* Next Bus Live ETA Card - Crisp, readable, single layer */}
+        <div className="bg-gradient-to-br from-slate-900 via-slate-850 to-slate-900 text-white rounded-2xl p-4 shadow-md border border-slate-750">
+          <div className="flex items-center justify-between mb-2">
             <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border ${arrivalInfo.badgeClass}`}>
               {arrivalInfo.badge}
             </span>
             {nextBus && (
-              <span className="text-xs font-mono text-slate-300 font-bold bg-slate-800/80 px-2 py-0.5 rounded border border-slate-700">
+              <span className="text-xs font-mono text-sky-300 font-bold bg-sky-950/60 px-2.5 py-0.5 rounded-full border border-sky-800/80">
                 {nextBus.busNumber}
               </span>
             )}
           </div>
 
-          <div className="mb-3">
-            <div className="text-lg font-bold text-white tracking-tight">
-              {arrivalInfo.headline}
-            </div>
-            <div className="text-xs text-slate-400 flex items-center gap-1.5 mt-0.5">
-              <span className="truncate max-w-[130px] font-medium text-slate-300">{currentSourceStop?.name?.split(' (')[0] || 'Boarding'}</span>
-              <span>&rarr;</span>
-              <span className="truncate max-w-[130px] font-medium text-slate-200">{currentDestStop?.name?.split(' (')[0] || 'Destination'}</span>
-              {arrivalInfo.distanceKm && (
-                <span className="text-slate-400 font-mono text-[11px]">({arrivalInfo.distanceKm} km)</span>
-              )}
-            </div>
+          <div className="text-xl font-black text-white tracking-tight">
+            {arrivalInfo.headline}
+          </div>
+          <div className="text-xs text-slate-300 flex items-center gap-1.5 mt-1">
+            <span className="font-semibold text-white truncate max-w-[140px]">
+              {currentSourceStop?.name?.split(' (')[0] || 'Origin'}
+            </span>
+            <span className="text-slate-400">&rarr;</span>
+            <span className="font-semibold text-slate-200 truncate max-w-[140px]">
+              {currentDestStop?.name?.split(' (')[0] || 'Destination'}
+            </span>
+            {arrivalInfo.distanceKm && (
+              <span className="text-sky-300/80 font-mono text-[11px] shrink-0">({arrivalInfo.distanceKm} km)</span>
+            )}
           </div>
 
           {arrivalInfo.isAvailable && nextBus && (
-            <div className="space-y-3 pt-3 border-t border-slate-700/60">
-              <div className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="text-slate-400">Occupancy:</span>
-                  <span className="font-bold text-white">{nextBusOcc !== null ? `${nextBusOcc}%` : 'N/A'}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-slate-400">Reliability:</span>
-                  <span className="font-bold text-emerald-400">{nextBusReliability}%</span>
-                </div>
+            <div className="mt-3 pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
+              <div className="flex items-center gap-3">
+                <span className="text-slate-400">Crowd: <strong className="text-white">{nextBusOcc !== null ? `${nextBusOcc}%` : 'N/A'}</strong></span>
+                <span className="text-slate-400">Reliability: <strong className="text-emerald-400">{nextBusReliability}%</strong></span>
               </div>
-
-              {nextBusOcc !== null && (
-                <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full ${nextBusOcc > 80 ? 'bg-rose-500' : nextBusOcc > 50 ? 'bg-amber-500' : 'bg-emerald-500'}`}
-                    style={{ width: `${nextBusOcc}%` }}
-                  />
-                </div>
-              )}
-
               <button
                 type="button"
                 onClick={() => {
                   setPassBus(nextBus);
                   setShowPassModal(true);
                 }}
-                className="w-full min-h-[44px] py-2.5 bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition"
+                className="px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition active:scale-95"
               >
-                <Ticket className="w-4 h-4 text-sky-200" />
-                <span>Issue Digital Pass (5-Min Validity)</span>
+                <Ticket className="w-3.5 h-3.5" />
+                <span>Issue Pass</span>
               </button>
             </div>
           )}
         </div>
 
-        {/* Quick Actions Grid (4 Thumb-Friendly Action Cards) */}
-        <div className="grid grid-cols-4 gap-2">
+        {/* Clean 2-Segment Control: Live Map vs Route Finder */}
+        <div className="bg-slate-100 dark:bg-slate-850 p-1 rounded-2xl flex items-center gap-1 border border-slate-200 dark:border-slate-800">
           <button
             type="button"
-            onClick={() => {
-              const el = document.getElementById('mobile-map-section');
-              if (el) el.scrollIntoView({ behavior: 'smooth' });
-            }}
-            className="flex flex-col items-center justify-center py-2.5 px-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs hover:border-sky-500 transition active:scale-95 min-h-[56px]"
+            onClick={() => setMobileActiveTab('live')}
+            className={`flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition ${
+              mobileActiveTab === 'live'
+                ? 'bg-white dark:bg-slate-800 text-sky-600 dark:text-sky-400 shadow-sm'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+            }`}
           >
-            <div className="w-7 h-7 rounded-lg bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center mb-1">
-              <Navigation className="w-3.5 h-3.5" />
-            </div>
-            <span className="text-[10px] font-bold text-slate-800 dark:text-slate-200">Live Map</span>
+            <Navigation className="w-4 h-4" />
+            <span>Live Fleet Map</span>
           </button>
-
           <button
             type="button"
-            onClick={() => {
-              setPassBus(nextBus || buses[0]);
-              setShowPassModal(true);
-            }}
-            className="flex flex-col items-center justify-center py-2.5 px-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs hover:border-emerald-500 transition active:scale-95 min-h-[56px]"
+            onClick={() => setMobileActiveTab('routes')}
+            className={`flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition ${
+              mobileActiveTab === 'routes'
+                ? 'bg-white dark:bg-slate-800 text-sky-600 dark:text-sky-400 shadow-sm'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+            }`}
           >
-            <div className="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-1">
-              <Ticket className="w-3.5 h-3.5" />
-            </div>
-            <span className="text-[10px] font-bold text-slate-800 dark:text-slate-200">My Pass</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={onOpenAI}
-            className="flex flex-col items-center justify-center py-2.5 px-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs hover:border-indigo-500 transition active:scale-95 min-h-[56px]"
-          >
-            <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-1">
-              <Sparkles className="w-3.5 h-3.5" />
-            </div>
-            <span className="text-[10px] font-bold text-slate-800 dark:text-slate-200">Bus AI</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setShowIncidentModal(true)}
-            className="flex flex-col items-center justify-center py-2.5 px-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs hover:border-rose-500 transition active:scale-95 min-h-[56px]"
-          >
-            <div className="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center mb-1">
-              <AlertTriangle className="w-3.5 h-3.5" />
-            </div>
-            <span className="text-[10px] font-bold text-slate-800 dark:text-slate-200">Report</span>
+            <Search className="w-4 h-4" />
+            <span>Find Route</span>
           </button>
         </div>
 
-        {/* Route Search: Streamlined Single Card */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">Plan Journey</span>
-            <button
-              type="button"
-              onClick={handleDetectLocation}
-              disabled={isLocating}
-              className="text-[11px] font-semibold text-sky-700 dark:text-sky-400 flex items-center gap-1"
-            >
-              <Crosshair className={`w-3 h-3 ${isLocating ? 'animate-spin' : ''}`} />
-              <span>{isLocating ? 'Locating...' : 'Near Me'}</span>
-            </button>
-          </div>
-
-          <div className="space-y-2">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
-                <MapPin className="h-4 w-4 text-teal-600 dark:text-teal-400" />
-              </div>
-              <select
-                value={sourceStopId}
-                onChange={(e) => setSourceStopId(e.target.value)}
-                className="w-full pl-8 pr-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white font-medium focus:border-sky-500"
-              >
-                {stops.map((stop) => (
-                  <option key={stop._id || stop.id} value={stop._id || stop.id}>
-                    {stop.name} ({stop.code})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex items-center justify-center -my-1 relative z-10">
+        {/* TAB 1: LIVE FLEET TRACKING MAP */}
+        {mobileActiveTab === 'live' && (
+          <div className="space-y-3 animate-fadeIn">
+            <div className="flex items-center justify-between px-1">
+              <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                Live GPS Telemetry
+              </span>
               <button
                 type="button"
-                onClick={handleSwap}
-                className="p-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 shadow-xs hover:bg-slate-50"
-                title="Swap origin & destination"
+                onClick={handleDetectLocation}
+                disabled={isLocating}
+                className="text-[11px] font-semibold text-sky-600 dark:text-sky-400 flex items-center gap-1 bg-white dark:bg-slate-900 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-800"
               >
-                <RotateCcw className="w-3.5 h-3.5" />
+                <Crosshair className={`w-3 h-3 ${isLocating ? 'animate-spin' : ''}`} />
+                <span>{isLocating ? 'Locating...' : 'Locate Me'}</span>
               </button>
             </div>
 
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
-                <Navigation className="h-4 w-4 text-sky-600 dark:text-sky-400" />
-              </div>
-              <select
-                value={destinationStopId}
-                onChange={(e) => setDestinationStopId(e.target.value)}
-                className="w-full pl-8 pr-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white font-medium focus:border-sky-500"
-              >
-                {stops.map((stop) => (
-                  <option key={stop._id || stop.id} value={stop._id || stop.id}>
-                    {stop.name} ({stop.code})
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Preference Modes Bar */}
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
-            {PREFERENCE_MODES.slice(0, 4).map((m) => (
-              <button
-                key={m.id}
-                onClick={() => {
-                  setActiveMode(m.id);
-                  fetchRecommendation(sourceStopId, destinationStopId, m.id);
+            <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm bg-slate-100 dark:bg-slate-900">
+              <TransitMap
+                buses={buses}
+                stops={stops}
+                routes={routes}
+                selectedBus={nextBus}
+                recommendedRoute={activeCandidate}
+                alternativeRoutes={
+                  recommendation
+                    ? [secondBest, thirdBest].filter(Boolean)
+                    : []
+                }
+                sourceStop={sourceStopId}
+                destinationStop={destinationStopId}
+                userLocation={userCoords}
+                destinationLocation={
+                  currentDestStop ? [currentDestStop.latitude, currentDestStop.longitude] : null
+                }
+                center={
+                  currentSourceStop
+                    ? [currentSourceStop.latitude, currentSourceStop.longitude]
+                    : GREATER_NOIDA_CENTER
+                }
+                zoom={13}
+                height="380px"
+                onSelectDeparture={(id) => {
+                  setSourceStopId(id);
+                  fetchRecommendation(id, destinationStopId, activeMode);
                 }}
-                className={`px-2.5 py-1 rounded-full text-[11px] font-semibold transition whitespace-nowrap ${
-                  activeMode === m.id
-                    ? 'bg-sky-600 text-white'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
-                }`}
+                onSelectDestination={(id) => {
+                  setDestinationStopId(id);
+                  fetchRecommendation(sourceStopId, id, activeMode);
+                }}
+                onOpenStopBoard={(id, name) => {
+                  setStopBoardInfo({ id, name });
+                  setShowStopBoard(true);
+                }}
+                onLocateUser={handleDetectLocation}
+              />
+            </div>
+
+            <div className="flex items-center justify-between px-1 text-[11px] text-slate-500 dark:text-slate-400">
+              <span>Tap any bus or station pin to inspect live telemetry</span>
+              <button
+                type="button"
+                onClick={() => setMobileActiveTab('routes')}
+                className="font-bold text-sky-600 dark:text-sky-400 hover:underline flex items-center gap-0.5"
               >
-                {m.label}
+                <span>Change route</span>
+                <ChevronRight className="w-3 h-3" />
               </button>
-            ))}
+            </div>
           </div>
+        )}
 
-          <button
-            onClick={handleSearch}
-            disabled={loadingRecommendation}
-            className="w-full min-h-[44px] py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 active:bg-sky-800 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition"
-          >
-            <Search className="h-4 w-4" />
-            <span>{loadingRecommendation ? 'Finding Buses...' : 'Find Best Route'}</span>
-          </button>
-        </div>
-
-        {/* Mobile Route Results: Individual Single-Layer Cards */}
-        {bestMatch && (
-          <div className="space-y-2.5">
-            <div className="flex items-center justify-between px-1">
-              <span className="text-xs font-bold text-slate-900 dark:text-white">Route Options</span>
-              <span className="text-[11px] text-slate-500 dark:text-slate-400">Score: {bestMatch.score}/100</span>
-            </div>
-
-            {/* Best Match Card */}
-            <div
-              onClick={() => setSelectedCandidate(bestMatch)}
-              className={`p-3.5 rounded-2xl border transition active:scale-[0.99] cursor-pointer ${
-                activeCandidate?.candidateId === bestMatch.candidateId
-                  ? 'bg-sky-50/70 dark:bg-sky-950/40 border-sky-600 shadow-sm'
-                  : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-extrabold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 px-2 py-0.5 rounded-full">
-                  Recommended
-                </span>
-                <span className="text-sm font-extrabold text-slate-900 dark:text-white">
-                  {bestMatch.metrics?.travelTimeMinutes} min &bull; {bestMatch.metrics?.distanceKm} km
-                </span>
-              </div>
-
+        {/* TAB 2: ROUTE SEARCH & RECOMMENDATIONS */}
+        {mobileActiveTab === 'routes' && (
+          <div className="space-y-4 animate-fadeIn">
+            {/* Route Planning Inputs */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm space-y-3">
               <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">Select Journey</span>
+                <button
+                  type="button"
+                  onClick={handleDetectLocation}
+                  disabled={isLocating}
+                  className="text-[11px] font-semibold text-sky-600 dark:text-sky-400 flex items-center gap-1"
+                >
+                  <Crosshair className={`w-3 h-3 ${isLocating ? 'animate-spin' : ''}`} />
+                  <span>{isLocating ? 'Locating...' : 'Nearest Stop'}</span>
+                </button>
+              </div>
+
+              <div className="space-y-2">
                 <div>
-                  <div className="font-bold text-slate-900 dark:text-white text-sm">
-                    {bestMatch.bus?.busNumber}
-                  </div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[200px]">
-                    {bestMatch.route?.name}
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Boarding From</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <MapPin className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+                    </div>
+                    <select
+                      value={sourceStopId}
+                      onChange={(e) => setSourceStopId(e.target.value)}
+                      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    >
+                      {stops.map((stop) => (
+                        <option key={stop._id || stop.id} value={stop._id || stop.id}>
+                          {stop.name} ({stop.code})
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
-                <div className="text-right text-[11px]">
-                  <span className="font-semibold text-slate-700 dark:text-slate-300 block">
-                    Crowd: {bestMatch.metrics?.occupancyPercentage}%
-                  </span>
-                  <span className="text-slate-500 dark:text-slate-400 font-medium">
-                    Walk: {bestMatch.metrics?.walkingMeters}m
-                  </span>
+
+                <div className="flex items-center justify-center -my-1 relative z-10">
+                  <button
+                    type="button"
+                    onClick={handleSwap}
+                    className="p-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 shadow-sm hover:bg-slate-50"
+                    title="Swap origin & destination"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Going To</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Navigation className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+                    </div>
+                    <select
+                      value={destinationStopId}
+                      onChange={(e) => setDestinationStopId(e.target.value)}
+                      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    >
+                      {stops.map((stop) => (
+                        <option key={stop._id || stop.id} value={stop._id || stop.id}>
+                          {stop.name} ({stop.code})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-2.5 mt-2.5 border-t border-slate-100 dark:border-slate-800 text-xs">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedCandidateForWhy(bestMatch);
-                  }}
-                  className="text-sky-700 dark:text-sky-400 font-semibold text-[11px]"
-                >
-                  Why this route?
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setPassBus(bestMatch.bus);
-                    setShowPassModal(true);
-                  }}
-                  className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold rounded-lg text-[11px]"
-                >
-                  Issue Pass
-                </button>
+              {/* Preference Modes Bar */}
+              <div>
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Preference</label>
+                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                  {PREFERENCE_MODES.slice(0, 5).map((m) => (
+                    <button
+                      key={m.id}
+                      onClick={() => {
+                        setActiveMode(m.id);
+                        fetchRecommendation(sourceStopId, destinationStopId, m.id);
+                      }}
+                      className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition whitespace-nowrap ${
+                        activeMode === m.id
+                          ? 'bg-sky-600 text-white shadow-xs'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
+                      }`}
+                    >
+                      {m.label}
+                    </button>
+                  ))}
+                </div>
               </div>
+
+              <button
+                onClick={handleSearch}
+                disabled={loadingRecommendation}
+                className="w-full min-h-[44px] py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 active:bg-sky-800 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition"
+              >
+                <Search className="h-4 w-4" />
+                <span>{loadingRecommendation ? 'Calculating optimal routes...' : 'Search Available Buses'}</span>
+              </button>
             </div>
 
-            {/* Alternative Option if available */}
-            {secondBest && (
-              <div
-                onClick={() => setSelectedCandidate(secondBest)}
-                className={`p-3 rounded-2xl border transition active:scale-[0.99] cursor-pointer ${
-                  activeCandidate?.candidateId === secondBest.candidateId
-                    ? 'bg-sky-50/70 dark:bg-sky-950/40 border-sky-600 shadow-sm'
-                    : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
-                      Alternative
+            {/* Route Results Cards */}
+            {bestMatch && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between px-1">
+                  <span className="text-xs font-bold text-slate-900 dark:text-white">Route Recommendations</span>
+                  <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">Match: {bestMatch.score}%</span>
+                </div>
+
+                {/* Best Match Card */}
+                <div
+                  onClick={() => {
+                    setSelectedCandidate(bestMatch);
+                    setMobileActiveTab('live');
+                  }}
+                  className={`p-4 rounded-2xl border transition active:scale-[0.99] cursor-pointer ${
+                    activeCandidate?.candidateId === bestMatch.candidateId
+                      ? 'bg-sky-50/70 dark:bg-sky-950/40 border-sky-500 shadow-sm ring-1 ring-sky-500/20'
+                      : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 px-2.5 py-0.5 rounded-full">
+                      Recommended
                     </span>
-                    <div className="font-bold text-slate-900 dark:text-white text-xs mt-1">
-                      {secondBest.bus?.busNumber} &bull; {secondBest.route?.name}
+                    <span className="text-sm font-extrabold text-slate-900 dark:text-white font-mono">
+                      {bestMatch.metrics?.travelTimeMinutes} min &bull; {bestMatch.metrics?.distanceKm} km
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-extrabold text-slate-900 dark:text-white text-base">
+                        {bestMatch.bus?.busNumber}
+                      </div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[210px] mt-0.5">
+                        {bestMatch.route?.name}
+                      </div>
+                    </div>
+                    <div className="text-right text-xs">
+                      <span className="font-bold text-slate-700 dark:text-slate-200 block">
+                        Occupancy: {bestMatch.metrics?.occupancyPercentage}%
+                      </span>
+                      <span className="text-slate-400 font-medium text-[11px]">
+                        Walk: {bestMatch.metrics?.walkingMeters}m
+                      </span>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <span className="text-xs font-bold text-slate-900 dark:text-white block">
-                      {secondBest.metrics?.travelTimeMinutes} min
-                    </span>
-                    <span className="text-[11px] text-slate-500 font-mono">
-                      {secondBest.metrics?.distanceKm} km
-                    </span>
+
+                  <div className="flex items-center justify-between pt-3 mt-3 border-t border-slate-100 dark:border-slate-800 text-xs">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedCandidateForWhy(bestMatch);
+                      }}
+                      className="text-sky-600 dark:text-sky-400 font-bold text-xs"
+                    >
+                      Why this route?
+                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedCandidate(bestMatch);
+                          setMobileActiveTab('live');
+                        }}
+                        className="px-3 py-1.5 bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 font-bold rounded-xl text-xs border border-sky-200 dark:border-sky-800"
+                      >
+                        Track on Map
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPassBus(bestMatch.bus);
+                          setShowPassModal(true);
+                        }}
+                        className="px-3.5 py-1.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl text-xs shadow-xs"
+                      >
+                        Issue Pass
+                      </button>
+                    </div>
                   </div>
                 </div>
+
+                {/* Second Option */}
+                {secondBest && (
+                  <div
+                    onClick={() => {
+                      setSelectedCandidate(secondBest);
+                      setMobileActiveTab('live');
+                    }}
+                    className={`p-3.5 rounded-2xl border transition active:scale-[0.99] cursor-pointer ${
+                      activeCandidate?.candidateId === secondBest.candidateId
+                        ? 'bg-sky-50/70 dark:bg-sky-950/40 border-sky-500 shadow-sm'
+                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
+                          Alternative Option
+                        </span>
+                        <div className="font-bold text-slate-900 dark:text-white text-sm mt-1">
+                          {secondBest.bus?.busNumber} &bull; {secondBest.route?.name}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs font-bold text-slate-900 dark:text-white block font-mono">
+                          {secondBest.metrics?.travelTimeMinutes} min
+                        </span>
+                        <span className="text-[11px] text-slate-500 font-mono">
+                          {secondBest.metrics?.distanceKm} km
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
         )}
-
-        {/* Mobile Live Map Container */}
-        <div id="mobile-map-section" className="space-y-2 pt-1">
-          <div className="flex items-center justify-between px-1">
-            <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              Live Fleet Road Tracking
-            </span>
-            <span className="text-[11px] text-slate-500 dark:text-slate-400">OSRM Road Geometry</span>
-          </div>
-          <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-xs">
-            <TransitMap
-              buses={buses}
-              stops={stops}
-              routes={routes}
-              selectedBus={nextBus}
-              recommendedRoute={activeCandidate}
-              alternativeRoutes={
-                recommendation
-                  ? [secondBest, thirdBest].filter(Boolean)
-                  : []
-              }
-              sourceStop={sourceStopId}
-              destinationStop={destinationStopId}
-              userLocation={userCoords}
-              destinationLocation={
-                currentDestStop ? [currentDestStop.latitude, currentDestStop.longitude] : null
-              }
-              center={
-                currentSourceStop
-                  ? [currentSourceStop.latitude, currentSourceStop.longitude]
-                  : GREATER_NOIDA_CENTER
-              }
-              zoom={13}
-              height="340px"
-              onSelectDeparture={(id) => {
-                setSourceStopId(id);
-                fetchRecommendation(id, destinationStopId, activeMode);
-              }}
-              onSelectDestination={(id) => {
-                setDestinationStopId(id);
-                fetchRecommendation(sourceStopId, id, activeMode);
-              }}
-              onOpenStopBoard={(id, name) => {
-                setStopBoardInfo({ id, name });
-                setShowStopBoard(true);
-              }}
-              onLocateUser={handleDetectLocation}
-            />
-          </div>
-        </div>
       </div>
 
       {/* ============================================================ */}
