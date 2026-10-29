@@ -260,19 +260,6 @@ npm --prefix client run build
 
 ---
 
-## Demo Test Accounts
-
-The login interface includes 1-click test fill shortcuts for quick evaluation:
-
-| Role | Username | Email Address | Password | Account Holder |
-| :--- | :--- | :--- | :--- | :--- |
-| **Student Commuter** | `rajchaturvedi` | `rajchaturvedi215@gmail.com` | `student123` | Raj Chaturvedi |
-| **Student Commuter** | `priyasharma` | `priya.sharma@gmail.com` | `student123` | Priya Sharma |
-| **Student Commuter** | `student` | `student@college.edu` | `student123` | Alex Rivera |
-| **Transit Admin** | `admin` | `admin@college.edu` | `admin123` | Dr. Marcus Vance |
-
----
-
 ## Intellectual Property & Legal Protection
 
 This software, its design assets, telemetry models, and documentation are **proprietary and confidential**. It is **NOT** open-source and is **NOT** released under the MIT License or any public permissive license.
