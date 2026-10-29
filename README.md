@@ -1,267 +1,240 @@
-# College Bus Management System with AI Route Recommendation
+# College Bus Management System
 
-[![Node.js](https://img.shields.io/badge/Node.js-v24.19.0-green.svg)](https://nodejs.org/)
-[![React](https://img.shields.io/badge/React-18.3-blue.svg)](https://react.dev/)
-[![Vite](https://img.shields.io/badge/Vite-6.1-purple.svg)](https://vitejs.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-3.4-38bdf8.svg)](https://tailwindcss.com/)
-[![Leaflet](https://img.shields.io/badge/Leaflet-1.9-10b981.svg)](https://leafletjs.com/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-emerald.svg)](https://www.mongodb.com/)
-[![Google Gemini](https://img.shields.io/badge/AI-Google%20Gemini%201.5-orange.svg)](https://ai.google.dev/)
+> Real-time college transit telemetry, road-following bus tracking, dynamic ETAs, crowd analytics, and 5-minute digital boarding passes.
+
+**Production Deployment:** [https://college-bus-management-etd3.vercel.app/](https://college-bus-management-etd3.vercel.app/)  
+**Maintained by:** Raj Chaturvedi ([rajchaturvedi215@gmail.com](mailto:rajchaturvedi215@gmail.com))
 
 ---
 
-## 1. Project Title & Vision
-**College Bus Management System with AI Route Recommendation** is a production-quality, intelligent campus transportation and transit optimization platform. It bridges deterministic graph algorithms (Dijkstra's shortest/optimal path) with real-time GPS telemetry, personalized commuter preference scoring, historical crowd prediction, fleet reliability tracking, and Google Gemini conversational transit assistance.
+## Overview
+
+College Bus Management System is a transit web application built specifically for college campuses and commuter corridors in Greater Noida (covering Knowledge Park III, Pari Chowk, Sector 62 Link, Yamuna Expressway, Bennett University, and residential sectors).
+
+Instead of relying on straight-line markers or static schedules, the system binds 16 active fleet buses to verified OpenStreetMap road routes (OSRM geometry), simulates real-time movement at realistic city transit speeds (18–24 km/h), dynamically estimates next-stop arrivals, flags real passenger crowd levels, and issues secure, time-limited digital QR boarding passes.
 
 ---
 
-## 2. Problem Statement
-Campus transit across large universities, collegiate clusters, and metropolitan feeder lines often faces severe operational bottlenecks:
-- Students experience uncertainty about bus arrival times, overcrowding, and unpredictable delays.
-- Commuters lack personalized guidance (e.g. students with walking limitations or those prioritizing comfortable seating over sheer speed).
-- Campus transportation administrators struggle with fragmented telemetry, lack of real-time passenger crowd visibility, and poor route optimization data.
+## Key Features
+
+### 1. Live Road-Following Bus Tracking
+- **Actual Road Geometry:** Buses follow verified OSRM road coordinates loaded from `routeRoadGeometries.json`. No straight-line shortcuts, no flying over campus buildings or teleporting between stops.
+- **Realistic Speeds:** Fleet buses travel at realistic campus/city speeds of 18–24 km/h. Coordinates advance strictly by 1 road step per 3-second cycle (~15 meters).
+- **Smooth Client Linear Interpolation:** Front-end markers interpolate positions using `requestAnimationFrame` over 2.8-second intervals, making movement appear smooth and natural on the map.
+- **Dynamic Compass Heading:** Bus icons rotate in real-time to match the exact road segment bearing (`0°–360°`).
+- **Telemetry Transparency:** Every bus card and map popup clearly distinguishes verified physical GPS from simulated road telemetry.
+
+### 2. Vehicle Silhouette Markers & Live Crowd Colors
+- **Navigation-Grade Vehicle Icons:** Replaced generic circular map pins with standalone top-down vehicle silhouettes modeled after real-time delivery and ride-tracking apps (like Zomato).
+- **Integrated Identifier Plate:** Each bus marker carries a high-contrast rear license/number plate tag (e.g. `B-101`) directly on the vehicle chassis.
+- **Dynamic Occupancy Colors:**
+  - 🟢 **Green (< 50%):** Low Crowd / Seats Available
+  - 🟡 **Amber (50% – 80%):** Moderate Crowd / Standing Room Limited
+  - 🔴 **Red (> 80%):** High Crowd / Near Capacity
+  - ⚪ **Slate (N/A):** Neutral / Telemetry Offline
+- **Touch-Friendly Controls:** Hover or tap displays a lightweight Leaflet tooltip (`Bus Number • Crowd Status • Speed`), while clicking opens complete vehicle metadata and route details.
+
+### 3. Mobile-First Commuter Experience (320px – 430px)
+- **Zero Congested Clutter:** Replaced bulky, nested multi-card desktop views on mobile with a clean, single-layer layout designed for quick glances between classes.
+- **Header:** Displays a personalized greeting, live clock, real-time "On Time" status indicator, and active bus count.
+- **Next Journey Hero Card:** Prominent card highlighting the commuter's next ride, origin-to-destination corridor, live arrival countdown, bus plate, and an instant "Issue Digital Pass" action.
+- **Quick Action Bar:** 4 one-tap actions for Live Map, My Pass, Bus AI Assistant, and Incident Reporting.
+- **Clean Route Planner:** Streamlined origin/destination selects with one-tap swap, quick preference pills (`Balanced`, `Fastest`, `Shortest`, `Least Crowded`), and clean result cards.
+- **Modal Scroll-Lock:** Fixed mobile dialog scroll bleed in the Digital Pass and AI Assistant modals using `position: fixed` scroll restoration and `overscroll-behavior: contain`.
+
+### 4. 5-Minute Digital Boarding Pass
+- **Server-Authoritative Expiry:** Passes expire exactly 5 minutes after creation (`expiresAt = createdAt + 5 minutes`). Expiration is calculated and verified server-side to prevent device clock tampering.
+- **Live Visual Countdown:** Front-end pass displays a live 1-second countdown timer. Once expired, the QR code dims, a clear expired badge appears, and the pass is disabled.
+- **Single-Use QR Validation:** The QR scanner endpoint validates pass legitimacy against database records and marks the pass as `USED` on successful scan to prevent reuse.
+- **Anti-Fraud Security:** Expired or already consumed passes are rejected with `400 Bad Request`.
+
+### 5. Account Security & Verification
+- **Username Standards:** 4–20 characters, alphanumeric with underscores (`/^[a-zA-Z0-9_]+$/`), cannot start with an underscore, normalized to lowercase, and enforced unique in the database.
+- **Strong Password Rules:** Minimum 10 characters requiring uppercase, lowercase, numbers, and special characters (`!@#$%^&*...`). Blocks common weak passwords.
+- **Email Verification Flow:** New accounts are created in a pending/unverified state. The server generates a time-limited (15-minute) 6-digit OTP and 32-byte secure token sent via Gmail SMTP or HTTPS relay.
+- **Access Gating:** Unverified accounts are prevented from accessing protected student or admin transit features (`403 Forbidden`).
+- **Rate Limiting:** Sliding-window rate limiters protect registration (5/hr), login attempts (10/15m), and email verification requests (5/15m).
+- **Google OAuth 2.0:** One-tap sign-in with verified Google accounts is preserved and fully supported.
+
+### 6. Grounded AI Transit Assistant (Google Gemini)
+- Integrated Google Gemini conversational assistant answering natural language questions about bus arrivals, crowd levels, and optimal routes.
+- Feeds live fleet telemetry directly into the context window to prevent AI hallucinations.
+- Features automatic fallback to local rule-based intelligence when offline or without an API key.
 
 ---
 
-## 3. Project Objectives
-1. **Intelligent Route Optimization:** Represent campus stops and corridors as a directed graph and calculate candidate paths using Dijkstra's algorithm.
-2. **Personalized Multi-Criteria Scoring:** Rank candidate routes on a normalized 0–100 scale based on travel time, walking distance, boarding wait, crowd level, transfers, and reliability.
-3. **Simulated Real-Time GPS Tracking:** Provide live bus movement along route coordinates on interactive OpenStreetMap (Leaflet) without paid map APIs.
-4. **Historical Crowd Prediction:** Project expected passenger occupancy levels for upcoming peak hours.
-5. **Route Reliability Analytics:** Track delays, cancellations, and on-time percentages across all transit lines.
-6. **Conversational AI Assistance:** Integrate Google Gemini AI to answer transit queries and explain recommendation rationale without inventing false numbers.
-7. **Comprehensive Administrative Command Center:** Enable transport officers to manage fleet units, routes, stops, licensed drivers, and view rich charts.
+## Transit Network Corridors (Greater Noida)
+
+The platform models 26 verified campus & regional transit stops across 6 major Greater Noida corridors:
+
+| Route Code | Route Name | Coverage & Highlights | Frequency | Fleet Units |
+| :--- | :--- | :--- | :--- | :--- |
+| **ROUTE-101** | **KP-3 University Express** | Sharda University ↔ GL Bajaj ↔ Pari Chowk ↔ Jagat Farm Commercial Hub | Every 8 mins | Bus 12, Bus 3, Bus 5 |
+| **ROUTE-102** | **Sector 62 - Gr. Noida West** | Noida Sector 62 Link ↔ Gaur City ↔ Pari Chowk ↔ Knowledge Park III | Every 12 mins | Bus 4, UPSRTC 102 |
+| **ROUTE-103** | **Aqua Line Metro Orbit** | KP-2 Metro Station ↔ Jagat Farm ↔ City Park ↔ Delta 1 Metro | Every 10 mins | NMRC Feeder 9, Bus 8 |
+| **ROUTE-104** | **Yamuna Expressway Shuttle** | Zero Point ↔ Gautam Buddha University (GBU) ↔ Galgotias University ↔ Kasna | Every 15 mins | Bus 7, UPSRTC 104 |
+| **ROUTE-105** | **Bennett University Tech Link** | Bennett University Campus ↔ Wipro SEZ KP-4 ↔ Pari Chowk Terminal | Every 15 mins | Bus 11, StarLine 15 |
+| **ROUTE-106** | **Delta - Gamma Residential Feeder** | Delta 2 ↔ Alpha 1 Commercial Belt ↔ Pari Chowk Interchange | Every 10 mins | Bus 16, CityShuttle 18 |
 
 ---
 
-## 4. Key Features
+## Tech Stack
 
-### For Students
-- **Smart Route Finder:** Find optimal bus connections between any two stops with instant ranking (Best Match, Alternative 1, Alternative 2).
-- **"Why This Route?" Explanation:** Detailed modal showing exact metric score breakdowns and human-readable justification grounded in real telemetry.
-- **"What If?" Route Optimizer:** Interactive panel enabling commuters to switch between `BALANCED`, `FASTEST`, `LEAST_WALKING`, `LEAST_CROWDED`, `NO_TRANSFERS`, `LEAST_WAITING`, and `MOST_RELIABLE` with dynamic re-ranking.
-- **Interactive Live Map:** Leaflet map featuring real-time moving bus markers, heading orientation, route polylines, and stop markers.
-- **Gemini AI Transit Assistant:** Context-grounded conversational chatbot answering queries about crowds, schedules, and delays.
-- **Smart & Personalized Alerts:** Notifications for high crowd density, delays, and approaching stops tailored to student favorites.
-- **Favorites & Search History:** Save daily commutes and re-run historical searches with one click.
-- **Personalized Preference Matrix:** Configure sensitivity sliders for walking meters, waiting minutes, and priority weights.
-
-### For Administrators
-- **Executive KPI Dashboard:** 8 real-time indicators (Total Fleet, Active Buses, Students, Routes, Avg Occupancy, Peak Hour, Delay, Reliability).
-- **Interactive Analytics (Recharts):**
-  - Average Fleet Occupancy by Hour (Area chart)
-  - Student Route Searches by Hour (Bar chart)
-  - Bus Volume & Utilization Rates (Bar chart)
-  - Route Punctuality & Reliability Index (Bar chart)
-- **Bus Fleet Management:** Add, edit, delete buses, update capacity, and adjust live passenger counts.
-- **Route & Corridor Management:** Define multi-stop routes, schedules, frequency, and colors.
-- **Stop Station Management:** Create stops with GPS coordinates and campus zone allocations.
-- **Driver Registry:** Maintain driver phone, license, safety rating, and bus assignments.
-- **User Account Security:** View registered students and toggle account activation.
+- **Frontend:** React 18, Vite 6, Tailwind CSS 3.4, React-Leaflet, Leaflet, Recharts, Lucide Icons, Axios
+- **Backend:** Node.js (v18+), Express.js, JWT, bcryptjs, Nodemailer
+- **Routing & Maps:** OpenStreetMap, OSRM Road Routing Engine, Leaflet
+- **Database & Storage:** MongoDB / Mongoose with an automatic resilient in-memory/JSON fallback engine (`server/services/store.js`) for zero-dependency local development
+- **AI Integration:** Google Gemini 1.5 Flash (`@google/generative-ai`)
 
 ---
 
-## 5. Technology Stack
+## Project Structure
 
-| Layer | Technologies |
-|---|---|
-| **Frontend** | React 18, Vite 6, Tailwind CSS, React Router v6, Axios, Leaflet, React-Leaflet, Recharts, Lucide React |
-| **Backend** | Node.js v24, Express.js, JWT, bcryptjs, Mongoose, CORS, Dotenv |
-| **Database** | MongoDB (with automatic high-performance resilient Memory/JSON Store fallback) |
-| **AI Integration** | Google Gemini 1.5 Flash via `@google/generative-ai` with Grounded Telemetry Ingestion |
-| **Algorithms** | Dijkstra's Graph Search, Haversine Distance Formula, Multi-Criteria Weighted Scoring |
-
----
-
-## 6. System Architecture
-
-```mermaid
-graph TD
-    A[Student / Admin Browser] -->|HTTP / JSON REST API| B[Express.js Server]
-    B -->|Authentication & JWT| C[Auth Controller & Middleware]
-    B -->|Route Optimization| D[Dijkstra Graph Router]
-    D -->|Candidate Evaluation| E[Multi-Criteria Recommendation Engine]
-    B -->|Telemetry Simulation| F[Live GPS Simulation Engine (3s Step)]
-    B -->|Transit Context Grounding| G[Google Gemini AI Assistant]
-    B -->|Data Persistence| H[(MongoDB / Mongoose / Store)]
-    H -->|Models| I[Buses, Routes, Stops, Drivers, Users, Trips, Favorites]
+```text
+college-bus-management/
+├── client/                     # Vite + React Frontend
+│   ├── public/                 # Static assets & icons
+│   └── src/
+│       ├── components/
+│       │   ├── ai/             # Gemini AI Assistant drawer & quick prompts
+│       │   ├── auth/           # Login, registration, & protected route wrappers
+│       │   ├── common/         # DigitalPassModal, WhyThisRouteModal, StopBoard
+│       │   └── map/            # TransitMap (Zomato-style vehicle markers, road layers)
+│       ├── data/               # routeRoadGeometries.json (OSRM road coordinates)
+│       ├── pages/              # DashboardPage, LoginPage, RegisterPage, AdminPage
+│       └── services/           # api.js, roadRoutingService.js, geocodingService.js
+├── server/                     # Express.js REST API
+│   ├── controllers/            # authController, passController, transitController
+│   ├── middleware/             # auth.js (JWT + verification gate), rateLimiter.js
+│   ├── models/                 # User, Bus, Route, Stop, Pass, Incident (Mongoose)
+│   ├── routes/                 # authRoutes, passRoutes, transitRoutes, aiRoutes
+│   ├── scripts/                # testMasterRequirements.js, testEndpoints.js
+│   └── services/               # store.js (dual DB/memory engine), simulationService.js
+└── seed/                       # Database seed scripts for stops, routes, and fleet
 ```
 
 ---
 
-## 7. Database Models (Mongoose)
-
-1. **User:** `name`, `email`, `password`, `role` (`student` \| `admin`), `preferences` (mode, priorities, thresholds), `favoriteRoutes`, `favoriteBuses`, `isActive`.
-2. **Bus:** `busNumber`, `plateNumber`, `capacity`, `currentPassengers`, `currentLocation` (`lat`, `lng`, `heading`, `speed`), `route`, `driver`, `status`, `currentStopIndex`, `nextStopEtaMinutes`, `delayMinutes`, `direction`.
-3. **Route:** `name`, `code`, `description`, `color`, `stops` (ordered stop references with scheduled minutes from start), `distance`, `estimatedTime`, `buses`, `frequencyMinutes`.
-4. **Stop:** `name`, `code`, `latitude`, `longitude`, `zone`, `isActive`.
-5. **Driver:** `name`, `phone`, `licenseNumber`, `assignedBus`, `experienceYears`, `safetyRating`.
-6. **Trip:** `student`, `source`, `destination`, `bus`, `route`, `travelTime`, `walkingDistance`, `status`, `timestamp`.
-7. **Favorite:** `student`, `itemType` (`route` \| `bus` \| `destination`), `route`, `bus`, `destinationStop`, `label`.
-8. **OccupancyRecord:** `bus`, `timestamp`, `passengerCount`, `occupancyPercentage`, `hourOfDay`, `dayOfWeek`.
-9. **ReliabilityRecord:** `bus`, `route`, `delay`, `onTime`, `tripStatus`, `timestamp`.
-
----
-
-## 8. Route Recommendation & Scoring Algorithm
-
-Every candidate path between source stop $S$ and destination stop $D$ is evaluated across six normalized metrics ($0$ to $100$):
-
-$$\text{RouteScore} = w_{\text{travel}} \cdot S_{\text{travel}} + w_{\text{walk}} \cdot S_{\text{walk}} + w_{\text{wait}} \cdot S_{\text{wait}} + w_{\text{crowd}} \cdot S_{\text{crowd}} + w_{\text{transfer}} \cdot S_{\text{transfer}} + w_{\text{rel}} \cdot S_{\text{rel}}$$
-
-### Configurable Weights by Mode:
-- **BALANCED:** Travel (0.30), Crowd (0.20), Walking (0.15), Waiting (0.15), Transfer (0.10), Reliability (0.10)
-- **FASTEST:** Travel (0.50), Waiting (0.20), Walking (0.10), Crowd (0.10), Transfer (0.05), Reliability (0.05)
-- **LEAST_WALKING:** Walking (0.45), Travel (0.20), Crowd (0.15), Waiting (0.10), Reliability (0.05), Transfer (0.05)
-- **LEAST_CROWDED:** Crowd (0.45), Travel (0.20), Waiting (0.15), Reliability (0.10), Walking (0.05), Transfer (0.05)
-- **NO_TRANSFERS:** Transfer (0.40), Travel (0.20), Waiting (0.15), Crowd (0.15), Walking (0.05), Reliability (0.05)
-- **LEAST_WAITING:** Waiting (0.45), Travel (0.20), Crowd (0.15), Reliability (0.10), Walking (0.05), Transfer (0.05)
-- **MOST_RELIABLE:** Reliability (0.45), Travel (0.20), Waiting (0.15), Crowd (0.10), Walking (0.05), Transfer (0.05)
-
----
-
-## 9. AI Integration (Google Gemini)
-- **Ground Truth Context:** The backend serializes the current active telemetry snapshot of buses, stops, occupancy rates, and delays into the system prompt.
-- **Hallucination Prevention:** Gemini is strictly instructed never to fabricate non-existent bus numbers, departure times, or routes.
-- **Smart Engine Fallback:** If `GEMINI_API_KEY` is not provided in `.env`, the built-in Transit Intelligence Engine automatically parses student queries and generates verified responses from real database state.
-
----
-
-## 10. Quickstart & Installation
+## Getting Started
 
 ### Prerequisites
-- Node.js (v18 or higher recommended)
-- MongoDB running locally on `localhost:27017` (or MongoDB Atlas connection string). *Note: The system also includes an automatic memory fallback if MongoDB daemon is inactive.*
+- **Node.js** (v18 or higher recommended)
+- **npm** (v9+)
+- *Optional:* MongoDB running locally on `localhost:27017` (If MongoDB is offline, the backend automatically uses its resilient JSON/Memory store).
 
-### 1. Clone & Setup
-```bash
-git clone <repository_url>
-cd college-bus-ai
-```
+### 1. Installation
+Clone the repository and install dependencies for both the backend and frontend:
 
-### 2. Install Server & Client Dependencies
 ```bash
-# Server packages
+# Clone the repository
+git clone https://github.com/raj-chaturvedi/college-bus-management.git
+cd college-bus-management
+
+# Install server packages
 cd server
 npm install
 
-# Client packages
+# Install client packages
 cd ../client
 npm install
+cd ..
 ```
 
-### 3. Configure Environment Variables
-In `server/.env`:
+### 2. Environment Setup
+Create a `.env` file inside `server/`:
+
 ```env
 PORT=5000
 NODE_ENV=development
 MONGODB_URI=mongodb://127.0.0.1:27017/college_bus_ai
-JWT_SECRET=college_bus_ai_super_secure_jwt_token_secret_key_2026
+JWT_SECRET=college_bus_management_secure_jwt_secret_key_2026
+
+# Optional: Live Google Gemini AI Key
 GEMINI_API_KEY=your_gemini_api_key_here
+
+# Optional: Live Gmail SMTP Dispatch
+GMAIL_APP_USER=rajchaturvedi215@gmail.com
+GMAIL_APP_PASS=your_gmail_app_password
 ```
 
-### 4. Seed the Database
+Create a `.env` file inside `client/`:
+
+```env
+VITE_API_URL=http://localhost:5000/api
+# Optional: Google OAuth Client ID
+VITE_GOOGLE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
+```
+
+### 3. Seed Database
+Initialize the 26 Greater Noida stops, 6 transit corridors, 16 buses, and default accounts:
+
 ```bash
-# From workspace root
 node seed/seed.js
 ```
-*Creates 8 buses, 20 stops, 6 routes, 8 drivers, sample trips, occupancy, and demo accounts.*
 
-### 5. Start the Application
-In Terminal 1 (Backend):
+### 4. Running Locally
+Run the server and client concurrently in two terminal tabs:
+
+**Terminal 1 (Backend API):**
 ```bash
 node server/server.js
+# Backend listening on http://localhost:5000
 ```
 
-In Terminal 2 (Frontend):
+**Terminal 2 (Frontend Client):**
 ```bash
 cd client
 npm run dev
+# Frontend live at http://localhost:5173
 ```
-
-Open **`http://localhost:5173`** in your browser.
 
 ---
 
-## 11. Demo Accounts & Authentication
+## Verification & Automated Tests
 
-The system supports **Universal Identifier Authentication**: commuters can log in using either their unique **Username** or their **Email address**.
+The repository includes comprehensive automated test suites covering all security, routing, pass validity, and API endpoints:
+
+```bash
+# Run Master Requirements Verification (6 core security & telemetry domains)
+node server/scripts/testMasterRequirements.js
+
+# Run API Integration & Endpoint Suite (7/7 tests)
+node server/scripts/testEndpoints.js
+
+# Validate Frontend Production Build
+npm --prefix client run build
+```
+
+---
+
+## Demo Accounts
+
+Pre-seeded accounts are available for testing with 1-click quick-fill buttons on the login screen:
 
 | Role | Username | Email | Password | Name |
-|---|---|---|---|---|
-| **Student** | `student` | `student@college.edu` | `student123` | Alex Rivera |
+| :--- | :--- | :--- | :--- | :--- |
 | **Student** | `rajchaturvedi` | `rajchaturvedi215@gmail.com` | `student123` | Raj Chaturvedi |
+| **Student** | `student` | `student@college.edu` | `student123` | Alex Rivera |
 | **Student** | `priyasharma` | `priya.sharma@gmail.com` | `student123` | Priya Sharma |
 | **Admin** | `admin` | `admin@college.edu` | `admin123` | Dr. Marcus Vance |
 
-*(1-Click quick fill buttons are available directly on the login page for immediate testing!)*
+---
+
+## API Summary
+
+- `POST /api/auth/register` — User registration with username format validation & initial unverified state
+- `POST /api/auth/verify-email` — Verify account using 6-digit OTP or link token
+- `POST /api/auth/resend-verification` — Request new verification code (rate limited)
+- `POST /api/auth/login` — Sign in via Username or Email + Password
+- `POST /api/auth/google` — Google OAuth 2.0 authentication
+- `POST /api/passes/generate` — Generate 5-minute digital boarding pass
+- `POST /api/passes/verify` — Server-side QR scanner pass validation & single-use redemption
+- `GET /api/buses/live` — 3-second live road telemetry with headings and occupancy
+- `POST /api/recommendations` — Multi-criteria route recommendation engine
+- `POST /api/ai/chat` — Context-grounded Gemini AI transit chatbot
 
 ---
 
-## 12. Multimodal Transit Fleet (College, Government & Private)
+## License
 
-The transit network models real-world Greater Noida regional transport across three operational tiers:
-
-1. **College Campus Fleet (8 Buses):** Dedicated institution shuttles (`Bus 12`, `Bus 4`, `Bus 3`, etc.) connecting campuses and metros with 100% subsidized (₹0.00) student transit passes.
-2. **Government State Transport (4 Buses):** `UPSRTC City Bus 102`, `NMRC Aqua Metro Feeder 9`, `UPSRTC Express 104`, and `NMRC Feeder 20` connecting major sector arteries and metro terminals with standard state fares (₹15–₹30).
-3. **Private Charters & Express Lines (4 Buses):** `StarLine Pvt Shuttle 15`, `CityShuttle Pvt Express 18`, `FastTrack Pvt 14`, and `Metro CityLink 25` providing high-frequency commercial commuter connections (₹20–₹35).
-
----
-
-## 13. Google OAuth 2.0 Setup Guide
-
-To enable live Google Sign-In with real Google accounts:
-
-1. Go to the [Google Cloud Console](https://console.cloud.google.com/) &rarr; **APIs & Services** &rarr; **Credentials**.
-2. Click **Create Credentials** &rarr; **OAuth client ID**.
-3. Choose **Application type:** *Web application*.
-4. Under **Authorized JavaScript origins**, add:
-   - `http://localhost:5173` (Local Vite dev server)
-   - `http://127.0.0.1:5173`
-5. Click **Create** and copy your **Client ID**.
-6. Set the Client ID in your environment configuration:
-   - In `client/.env`: `VITE_GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com`
-   - In `server/.env`: `GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com`
-7. Restart the servers. Clicking **Continue with Google** will automatically open the official Google account chooser popup.
-
----
-
-## 14. REST API Documentation
-
-### Authentication & Commuters
-- `POST /api/auth/register` — Create account with **Username** and **Password** (email strictly not required)
-- `POST /api/auth/login` — Sign in with **Username** or **Email** + Password
-- `POST /api/auth/google` — Authenticate via verified Google OAuth credential token
-- `POST /api/auth/forgot-password` — Password recovery (provides in-person verification guidance for username-only accounts)
-- `POST /api/auth/reset-password` — Set new password using token and verify account
-- `GET /api/auth/me` — Current user profile
-- `PUT /api/auth/preferences` — Update commute preference weights
-
-### Recommendations & Routing
-- `POST /api/recommendations` — Compute Dijkstra candidates and multi-criteria ranked routes
-
-### Telemetry & Fleet
-- `GET /api/buses` — List all buses (with `busType`, `operatorName`, and `fare`)
-- `GET /api/buses/live` — Real-time GPS coordinates, heading, speed, and occupancy
-- `POST /api/buses` — Add bus (Admin)
-- `PUT /api/buses/:id` — Update bus (Admin)
-- `PUT /api/buses/:id/occupancy` — Update passenger count (Admin)
-- `DELETE /api/buses/:id` — Remove bus (Admin)
-
-### Corridors & Stops
-- `GET /api/routes` — Get routes with ordered stops sequence
-- `GET /api/stops` — Get all 21 Greater Noida campus & sector stops with coordinates
-
-
-### AI Assistant & Alerts
-- `POST /api/ai/chat` — Conversational inquiries with grounded transit context
-- `GET /api/alerts` — Real-time smart delay and crowd alerts
-- `GET /api/analytics` — Admin fleet metrics and Recharts distributions (Admin)
-
----
-
-## 13. Future-Ready Architecture
-- **IoT GPS Hardware Gateway:** Ready to ingest real vehicle MQTT/WebSocket location feeds.
-- **Mobile PWA:** Progressive Web App manifest for offline schedules and instant push notifications.
-- **QR Code Boarding Pass:** Fast biometric or student ID card validation.
-- **TensorFlow / ML Crowd Predictor:** Ingest seasonal term dates and exam schedules for long-range predictive dispatch.
+This project is licensed under the [MIT License](LICENSE).

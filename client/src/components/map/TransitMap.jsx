@@ -4,6 +4,7 @@ import {
   TileLayer,
   Marker,
   Popup,
+  Tooltip,
   Polyline,
   useMap
 } from 'react-leaflet';
@@ -79,83 +80,277 @@ const createStopIcon = (stop, isSource = false, isDest = false) => {
   });
 };
 
-// Realistic Bus Marker with SVG shape and Crowd-Based Color
+// Helper for 8-point compass bearing
+const getCompassDirection = (heading) => {
+  if (typeof heading !== 'number') return 'N';
+  const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+  return dirs[Math.round((heading % 360) / 45) % 8];
+};
+
+// Realistic Top-Down Bus Silhouette Marker with Directional Heading and Crowd Colors
+// Designed strictly in the style of navigation and delivery tracking apps (Zomato/Uber style)
+// Standalone vehicle silhouette sitting directly on the road polyline (no enclosing circle/card)
 const createBusIcon = (bus, isSelected = false) => {
   const hasOcc = typeof bus.occupancyPercentage === 'number' && typeof bus.capacity === 'number';
   const occ = hasOcc ? bus.occupancyPercentage : null;
 
-  let crowdColor = '#16a34a'; // Green: Low crowd (<50%)
+  // Crowd category mapping per specifications:
+  // Green (<50%): Seats Available / Low crowd
+  // Amber/Orange (50-80%): Moderate crowd
+  // Red (>80%): Crowded / High crowd
+  // Neutral Slate: Crowd data unavailable
+  let crowdColor = '#10b981'; // Green (Low crowd)
+  let crowdAccent = '#34d399';
+  let crowdBadge = 'Low';
   if (occ === null) {
-    crowdColor = '#64748b'; // Neutral Slate: Unavailable
+    crowdColor = '#64748b'; // Slate (Neutral)
+    crowdAccent = '#94a3b8';
+    crowdBadge = 'N/A';
   } else if (occ > 80) {
-    crowdColor = '#dc2626'; // Red: Crowded (>80%)
+    crowdColor = '#ef4444'; // Red (High crowd)
+    crowdAccent = '#f87171';
+    crowdBadge = `${occ}%`;
   } else if (occ >= 50) {
-    crowdColor = '#ea580c'; // Amber/Orange: Moderate (50-80%)
+    crowdColor = '#f59e0b'; // Amber (Moderate crowd)
+    crowdAccent = '#fbbf24';
+    crowdBadge = `${occ}%`;
   }
 
-  const busNo = (bus.busNumber || 'Bus').replace(/Bus\s*/i, 'B-').substring(0, 10);
-  const selectedStyle = isSelected
-    ? 'box-shadow: 0 0 0 4px #0284c7, 0 4px 12px rgba(0,0,0,0.45); transform: scale(1.12);'
-    : 'box-shadow: 0 2px 8px rgba(0,0,0,0.35);';
+  // Heading bearing in degrees for vehicle alignment (fallback to 0° upright)
+  const heading = typeof bus.currentLocation?.heading === 'number' ? Math.round(bus.currentLocation.heading) : 0;
+  // Compact bus plate tag (e.g. "B-101" or "101")
+  const plateLabel = (bus.busNumber || 'Bus').replace(/Bus\s*/i, '').substring(0, 6);
+
+  const glowStyle = isSelected
+    ? `filter: drop-shadow(0 0 8px #0284c7) drop-shadow(0 4px 8px rgba(0,0,0,0.55));`
+    : `filter: drop-shadow(0 2px 6px rgba(0,0,0,0.45));`;
 
   return L.divIcon({
-    className: 'custom-bus-marker',
+    className: 'realistic-bus-vehicle-marker',
     html: `
       <div style="
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+        width: 36px;
+        height: 52px;
+        position: relative;
         cursor: pointer;
+        ${glowStyle}
       ">
         <div style="
-          background: #0f172a;
-          color: white;
-          border: 2px solid ${crowdColor};
-          border-radius: 16px;
-          padding: 2.5px 7px;
-          display: flex;
-          align-items: center;
-          gap: 5px;
-          font-size: 11px;
-          font-weight: 700;
-          font-family: ui-monospace, SFMono-Regular, monospace;
-          white-space: nowrap;
-          ${selectedStyle}
+          width: 36px;
+          height: 52px;
+          transform: rotate(${heading}deg);
+          transform-origin: 18px 26px;
+          transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
         ">
-          <!-- Realistic Bus SVG Icon -->
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${crowdColor}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="15" rx="3" fill="#1e293b"/>
-            <path d="M3 9h18" stroke="#94a3b8" stroke-width="1.5"/>
-            <circle cx="7" cy="14.5" r="1.5" fill="${crowdColor}"/>
-            <circle cx="17" cy="14.5" r="1.5" fill="${crowdColor}"/>
-            <path d="M5 18v2a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-2"/>
-            <path d="M16 18v2a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-2"/>
+          <svg width="36" height="52" viewBox="0 0 36 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Front Headlight Beams (subtle luminous gradient) -->
+            <polygon points="6,6 1,0 11,0" fill="url(#hbeam)" opacity="0.4"/>
+            <polygon points="30,6 25,0 35,0" fill="url(#hbeam)" opacity="0.4"/>
+
+            <defs>
+              <linearGradient id="hbeam" x1="0%" y1="100%" x2="0%" y2="0%">
+                <stop offset="0%" stop-color="#fef08a" stop-opacity="0.9"/>
+                <stop offset="100%" stop-color="#fef08a" stop-opacity="0"/>
+              </linearGradient>
+              <linearGradient id="glassGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#0284c7"/>
+                <stop offset="100%" stop-color="#0f172a"/>
+              </linearGradient>
+            </defs>
+
+            <!-- Side Wing Mirrors -->
+            <rect x="0.5" y="12" width="3" height="5.5" rx="1.5" fill="#1e293b" stroke="#ffffff" stroke-width="0.8"/>
+            <rect x="32.5" y="12" width="3" height="5.5" rx="1.5" fill="#1e293b" stroke="#ffffff" stroke-width="0.8"/>
+
+            <!-- Main Heavy Bus Chassis Outer Shell (Dark Navy with Crisp White Border) -->
+            <rect x="3" y="6" width="30" height="42" rx="6" fill="#0f172a" stroke="#ffffff" stroke-width="1.8"/>
+
+            <!-- Roof Body Accent in Dynamic Crowd Color -->
+            <rect x="4.8" y="7.8" width="26.4" height="38.4" rx="4.5" fill="${crowdColor}" fill-opacity="0.95"/>
+
+            <!-- Directional Forward Chevron (Nose Pointer) -->
+            <polygon points="18,8.5 13.5,13.5 22.5,13.5" fill="#ffffff" opacity="0.95"/>
+
+            <!-- Tinted Front Curved Windshield -->
+            <path d="M7 14.5 Q18 11.5 29 14.5 L28 19.5 Q18 17.5 8 19.5 Z" fill="url(#glassGrad)" stroke="#38bdf8" stroke-width="0.8"/>
+
+            <!-- Side Passenger Windows Left & Right -->
+            <rect x="5.5" y="21" width="2" height="3.5" rx="0.5" fill="#0f172a" opacity="0.75"/>
+            <rect x="28.5" y="21" width="2" height="3.5" rx="0.5" fill="#0f172a" opacity="0.75"/>
+            <rect x="5.5" y="26" width="2" height="3.5" rx="0.5" fill="#0f172a" opacity="0.75"/>
+            <rect x="28.5" y="26" width="2" height="3.5" rx="0.5" fill="#0f172a" opacity="0.75"/>
+            <rect x="5.5" y="31" width="2" height="3.5" rx="0.5" fill="#0f172a" opacity="0.75"/>
+            <rect x="28.5" y="31" width="2" height="3.5" rx="0.5" fill="#0f172a" opacity="0.75"/>
+
+            <!-- Roof Ventilation / AC Unit -->
+            <rect x="11" y="21.5" width="14" height="13.5" rx="2" fill="#0f172a" stroke="#ffffff" stroke-width="0.8"/>
+            <line x1="13.5" y1="24.5" x2="22.5" y2="24.5" stroke="${crowdAccent}" stroke-width="1"/>
+            <line x1="13.5" y1="27.5" x2="22.5" y2="27.5" stroke="${crowdAccent}" stroke-width="1"/>
+            <line x1="13.5" y1="30.5" x2="22.5" y2="30.5" stroke="${crowdAccent}" stroke-width="1"/>
+
+            <!-- Rear High-Contrast Plate Tag (Like Zomato vehicle "44" badge) -->
+            <rect x="8" y="37" width="20" height="7.5" rx="2" fill="#0f172a" stroke="#ffffff" stroke-width="1"/>
+            <text x="18" y="42.8" fill="#ffffff" font-size="6.5" font-weight="900" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, monospace">${plateLabel}</text>
+
+            <!-- Twin Front Headlights (Bright Golden Yellow) -->
+            <circle cx="7" cy="8" r="1.5" fill="#fef08a" stroke="#ca8a04" stroke-width="0.5"/>
+            <circle cx="29" cy="8" r="1.5" fill="#fef08a" stroke="#ca8a04" stroke-width="0.5"/>
+
+            <!-- Twin Rear Taillights (Red) -->
+            <circle cx="7" cy="46.5" r="1.4" fill="#dc2626"/>
+            <circle cx="29" cy="46.5" r="1.4" fill="#dc2626"/>
           </svg>
-          <span style="color: #ffffff; font-weight: 800;">${busNo}</span>
-          <span style="
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: ${crowdColor};
-            display: inline-block;
-          "></span>
         </div>
-        <!-- Little road-pointing notch -->
-        <div style="
-          width: 0;
-          height: 0;
-          border-left: 5px solid transparent;
-          border-right: 5px solid transparent;
-          border-top: 5px solid ${crowdColor};
-          margin-top: -1px;
-        "></div>
       </div>
     `,
-    iconSize: [68, 30],
-    iconAnchor: [34, 28],
-    popupAnchor: [0, -30]
+    iconSize: [36, 52],
+    iconAnchor: [18, 26],
+    popupAnchor: [0, -28],
+    tooltipAnchor: [0, -28]
   });
+};
+
+// Smooth animated bus marker that linearly interpolates position between 3s telemetry ticks
+const SmoothBusMarker = ({ bus, isSelected, onClick }) => {
+  const targetLat = bus.currentLocation?.latitude;
+  const targetLng = bus.currentLocation?.longitude;
+  const [currentPos, setCurrentPos] = useState([targetLat, targetLng]);
+  const prevPosRef = useRef([targetLat, targetLng]);
+  const targetPosRef = useRef([targetLat, targetLng]);
+  const animStartTimeRef = useRef(null);
+  const animFrameRef = useRef(null);
+
+  useEffect(() => {
+    if (!targetLat || !targetLng) return;
+    const newTarget = [targetLat, targetLng];
+    const prev = targetPosRef.current;
+
+    // Skip if position hasn't changed
+    if (prev && prev[0] === newTarget[0] && prev[1] === newTarget[1]) return;
+
+    // If large jump (e.g. initial render or route switch > 0.01 deg ~ 1km), snap immediately
+    const dist = prev ? Math.hypot(newTarget[0] - prev[0], newTarget[1] - prev[1]) : 0;
+    if (dist > 0.01 || !prev || !prev[0]) {
+      setCurrentPos(newTarget);
+      prevPosRef.current = newTarget;
+      targetPosRef.current = newTarget;
+      return;
+    }
+
+    prevPosRef.current = currentPos;
+    targetPosRef.current = newTarget;
+    animStartTimeRef.current = performance.now();
+    const duration = 2800; // Linear glide across 2.8s of the 3s update tick
+
+    const animate = (now) => {
+      const elapsed = now - animStartTimeRef.current;
+      const progress = Math.min(elapsed / duration, 1);
+      // Smooth linear interpolation along road coordinates
+      const lat = prevPosRef.current[0] + (targetPosRef.current[0] - prevPosRef.current[0]) * progress;
+      const lng = prevPosRef.current[1] + (targetPosRef.current[1] - prevPosRef.current[1]) * progress;
+      setCurrentPos([lat, lng]);
+
+      if (progress < 1) {
+        animFrameRef.current = requestAnimationFrame(animate);
+      }
+    };
+
+    if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+    animFrameRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+    };
+  }, [targetLat, targetLng]);
+
+  const hasOcc = typeof bus.occupancyPercentage === 'number' && typeof bus.capacity === 'number';
+  const occ = hasOcc ? bus.occupancyPercentage : null;
+  const availableSeats = hasOcc ? Math.max(0, (bus.capacity || 0) - (bus.currentPassengers || 0)) : null;
+  let crowdBadgeText = 'Crowd data unavailable';
+  if (occ !== null) {
+    crowdBadgeText = occ < 50 ? 'Low Crowd (Seats Available)' : occ <= 80 ? 'Moderate Crowd' : 'High Crowd';
+  }
+
+  return (
+    <Marker
+      position={currentPos}
+      icon={createBusIcon(bus, isSelected)}
+      eventHandlers={{
+        click: () => onClick && onClick(bus)
+      }}
+    >
+      <Tooltip direction="top" offset={[0, -26]} opacity={0.95}>
+        <div className="font-sans text-[11px] font-bold text-slate-900 flex items-center gap-1.5 py-0.5">
+          <span>{bus.busNumber}</span>
+          <span>&bull;</span>
+          <span className={occ === null ? 'text-slate-500' : occ > 80 ? 'text-red-600' : occ >= 50 ? 'text-amber-600' : 'text-emerald-600'}>
+            {crowdBadgeText}
+          </span>
+          <span>&bull;</span>
+          <span className="text-slate-500">{bus.speed || 20} km/h</span>
+        </div>
+      </Tooltip>
+      <Popup>
+        <div className="text-xs p-0.5 space-y-1.5 min-w-[210px] text-slate-800">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-1">
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-bold text-slate-900 text-sm">{bus.busNumber}</span>
+                <span className={`text-[9px] px-1.5 py-0.2 rounded font-bold uppercase ${
+                  bus.busType === 'government' ? 'bg-blue-100 text-blue-800' :
+                  bus.busType === 'private' ? 'bg-purple-100 text-purple-800' :
+                  'bg-teal-100 text-[#0F766E]'
+                }`}>
+                  {bus.busType || 'college'}
+                </span>
+              </div>
+              <div className="text-[10px] text-slate-500 font-medium">
+                {bus.operatorName || 'Campus Transit Fleet'} &bull; {bus.fare === 0 || !bus.fare ? 'Free/Subsidized' : `Fare: ₹${bus.fare}`}
+              </div>
+            </div>
+            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
+              {bus.speed || 20} km/h
+            </span>
+          </div>
+          <div className="text-[11px] space-y-1 text-slate-600">
+            <p>Route: <strong className="text-slate-900">{bus.route?.name || 'Greater Noida Corridor'}</strong></p>
+            <p>
+              Crowd: {hasOcc ? (
+                <>
+                  <strong className="text-slate-900">{bus.currentPassengers}/{bus.capacity}</strong> ({occ}% &bull; {crowdBadgeText})
+                  {availableSeats !== null && (
+                    <span className="block text-emerald-600 font-semibold mt-0.5">
+                      Available Seats: {availableSeats}
+                    </span>
+                  )}
+                </>
+              ) : (
+                <span className="text-slate-500 italic">Crowd data unavailable</span>
+              )}
+            </p>
+            <p>
+              Next Stop ETA: <strong className="text-sky-700">~{bus.nextStopEtaMinutes ? `${bus.nextStopEtaMinutes} mins` : 'Calculating...'}</strong>
+            </p>
+            <p className="text-[10px] text-slate-400 font-mono">
+              Plate: {bus.plateNumber || 'UP-16-CB-1012'}
+            </p>
+            <div className="flex items-center justify-between pt-1 border-t border-slate-100 text-[10px]">
+              <span className={`px-1.5 py-0.5 rounded font-bold border ${
+                bus.currentLocation?.isSimulated
+                  ? 'bg-amber-50 text-amber-800 border-amber-200'
+                  : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+              }`}>
+                {bus.currentLocation?.isSimulated ? 'Simulated Road Telemetry' : 'Live Physical GPS'}
+              </span>
+              <span className="text-slate-500 font-mono font-semibold">
+                {bus.currentLocation?.heading ?? 0}° {getCompassDirection(bus.currentLocation?.heading)}
+              </span>
+            </div>
+          </div>
+        </div>
+      </Popup>
+    </Marker>
+  );
 };
 
 // User Location Marker
@@ -487,7 +682,7 @@ export default function TransitMap({
     destinationLocation,
     stops,
     alternativeRoutes,
-    selectedBus
+    selectedBus?.route?._id || selectedBus?.route || selectedBus?._id || selectedBus?.id
   ]);
 
   // Center / pan map on selected bus when changed
@@ -586,6 +781,23 @@ export default function TransitMap({
             }}
           />
         ))}
+
+        {/* Network Corridor Road Lines (Subtle road network shown when no specific bus or search route is active) */}
+        {roadBusPath.length === 0 && !recommendedRoute && Object.entries(cachedRouteRoadGeometries).map(([rId, data]) => {
+          if (!data?.positions || data.positions.length < 2) return null;
+          return (
+            <Polyline
+              key={`net_corridor_${rId}`}
+              positions={data.positions}
+              pathOptions={{
+                color: '#0284c7',
+                weight: 2.5,
+                opacity: 0.35,
+                dashArray: '4, 6'
+              }}
+            />
+          );
+        })}
 
         {/* Recommended Main Bus Route (Following real roads via OSRM) */}
         {roadBusPath.length > 0 && (
@@ -700,7 +912,7 @@ export default function TransitMap({
           );
         })}
 
-        {/* Live Active Buses */}
+        {/* Live Active Buses with Smooth Road Linear Interpolation */}
         {buses.map((bus) => {
           if (!bus.currentLocation?.latitude || !bus.currentLocation?.longitude) return null;
           const busIdStr = (bus._id || bus.id)?.toString();
@@ -710,68 +922,13 @@ export default function TransitMap({
             (selectedBus.busNumber && selectedBus.busNumber === bus.busNumber)
           );
 
-          const hasOcc = typeof bus.occupancyPercentage === 'number' && typeof bus.capacity === 'number';
-          const occ = hasOcc ? bus.occupancyPercentage : null;
-          const availableSeats = hasOcc ? Math.max(0, (bus.capacity || 0) - (bus.currentPassengers || 0)) : null;
-          let crowdBadgeText = 'Crowd data unavailable';
-          if (occ !== null) {
-            crowdBadgeText = occ < 50 ? 'Low Crowd (Seats Available)' : occ <= 80 ? 'Moderate Crowd' : 'High Crowd';
-          }
-
           return (
-            <Marker
+            <SmoothBusMarker
               key={bus.id || bus._id}
-              position={[bus.currentLocation.latitude, bus.currentLocation.longitude]}
-              icon={createBusIcon(bus, isSelected)}
-            >
-              <Popup>
-                <div className="text-xs p-0.5 space-y-1.5 min-w-[210px] text-slate-800">
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-1">
-                    <div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-bold text-slate-900 text-sm">{bus.busNumber}</span>
-                        <span className={`text-[9px] px-1.5 py-0.2 rounded font-bold uppercase ${
-                          bus.busType === 'government' ? 'bg-blue-100 text-blue-800' :
-                          bus.busType === 'private' ? 'bg-purple-100 text-purple-800' :
-                          'bg-teal-100 text-[#0F766E]'
-                        }`}>
-                          {bus.busType || 'college'}
-                        </span>
-                      </div>
-                      <div className="text-[10px] text-slate-500 font-medium">
-                        {bus.operatorName || 'Campus Transit Fleet'} &bull; {bus.fare === 0 || !bus.fare ? 'Free/Subsidized' : `Fare: ₹${bus.fare}`}
-                      </div>
-                    </div>
-                    <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
-                      {bus.speed || 32} km/h
-                    </span>
-                  </div>
-                  <div className="text-[11px] space-y-1 text-slate-600">
-                    <p>Route: <strong className="text-slate-900">{bus.route?.name || 'Greater Noida Corridor'}</strong></p>
-                    <p>
-                      Crowd: {hasOcc ? (
-                        <>
-                          <strong className="text-slate-900">{bus.currentPassengers}/{bus.capacity}</strong> ({occ}% &bull; {crowdBadgeText})
-                          {availableSeats !== null && (
-                            <span className="block text-emerald-600 font-semibold mt-0.5">
-                              Available Seats: {availableSeats}
-                            </span>
-                          )}
-                        </>
-                      ) : (
-                        <span className="text-slate-500 italic">Crowd data unavailable</span>
-                      )}
-                    </p>
-                    <p>
-                      Next Stop ETA: <strong className="text-sky-700">~{bus.nextStopEtaMinutes ? `${bus.nextStopEtaMinutes} mins` : 'Calculating...'}</strong>
-                    </p>
-                    <p className="text-[10px] text-slate-400 font-mono">
-                      Plate: {bus.plateNumber || 'UP-16-CB-1012'}
-                    </p>
-                  </div>
-                </div>
-              </Popup>
-            </Marker>
+              bus={bus}
+              isSelected={isSelected}
+              onClick={(b) => setSelectedBus && setSelectedBus(b)}
+            />
           );
         })}
 
@@ -897,22 +1054,32 @@ export default function TransitMap({
       )}
 
       {/* Clean Compact Map Legend */}
-      <div className="absolute bottom-3 left-3 z-20 bg-white/95 border border-slate-200 rounded-lg p-2.5 text-[11px] space-y-1 shadow-sm hidden sm:block text-slate-700">
+      <div className="absolute bottom-3 left-3 z-20 bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-slate-800 rounded-lg p-2.5 text-[11px] space-y-1.5 shadow-sm hidden sm:block text-slate-700 dark:text-slate-300">
         <div className="flex items-center gap-2">
           <div className="h-1.5 w-4 bg-sky-600 rounded"></div>
-          <span>Bus Route (OSRM Real Roads)</span>
+          <span>Active Road Route (OSRM)</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="h-1.5 w-4 border-t-2 border-dashed border-teal-700"></div>
           <span>Walking Segment</span>
         </div>
-        <div className="flex items-center gap-2 pt-0.5 border-t border-slate-100">
-          <span className="h-2 w-2 rounded-full bg-green-600"></span>
-          <span className="text-[10px] text-slate-500">Seats Available (&lt;50%)</span>
-          <span className="h-2 w-2 rounded-full bg-orange-600 ml-1"></span>
-          <span className="text-[10px] text-slate-500">Moderate</span>
-          <span className="h-2 w-2 rounded-full bg-red-600 ml-1"></span>
-          <span className="text-[10px] text-slate-500">Crowded</span>
+        <div className="flex items-center gap-2 pt-1 border-t border-slate-100 dark:border-slate-800 flex-wrap">
+          <div className="flex items-center gap-1">
+            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+            <span className="text-[10px] text-slate-500 dark:text-slate-400">&lt;50% Low</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="h-2.5 w-2.5 rounded-full bg-amber-500"></span>
+            <span className="text-[10px] text-slate-500 dark:text-slate-400">50-80% Moderate</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="h-2.5 w-2.5 rounded-full bg-red-500"></span>
+            <span className="text-[10px] text-slate-500 dark:text-slate-400">&gt;80% High</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="h-2.5 w-2.5 rounded-full bg-slate-500"></span>
+            <span className="text-[10px] text-slate-500 dark:text-slate-400">N/A</span>
+          </div>
         </div>
       </div>
     </div>

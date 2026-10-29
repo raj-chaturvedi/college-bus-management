@@ -28,6 +28,7 @@ export default function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+  const [unverifiedEmail, setUnverifiedEmail] = useState('');
 
   const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
@@ -150,7 +151,13 @@ export default function LoginPage() {
       }).catch(() => {});
       navigate(redirectDestination, { replace: true });
     } catch (err) {
-      setError(err.message || 'Invalid username or password.');
+      if (err.isUnverified) {
+        setUnverifiedEmail(err.email || cleanUsername);
+        setError('Your email is not verified yet. Please enter the 6-digit verification code or click the activation link sent to your email.');
+      } else {
+        setUnverifiedEmail('');
+        setError(err.message || 'Invalid username or password.');
+      }
     } finally {
       setSubmitting(false);
     }
@@ -200,9 +207,19 @@ export default function LoginPage() {
 
       {/* Error Banner */}
       {error && (
-        <div className="mb-4 p-3 rounded-lg bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs flex items-start gap-2">
-          <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
-          <span className="font-medium">{error}</span>
+        <div className="mb-4 p-3 rounded-lg bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs flex flex-col gap-2">
+          <div className="flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+            <span className="font-medium">{error}</span>
+          </div>
+          {unverifiedEmail && (
+            <Link
+              to={`/verify-email?email=${encodeURIComponent(unverifiedEmail)}`}
+              className="mt-1 inline-flex items-center justify-center py-1.5 px-3 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-semibold w-fit transition shadow-sm"
+            >
+              Verify Email Now &rarr;
+            </Link>
+          )}
         </div>
       )}
 

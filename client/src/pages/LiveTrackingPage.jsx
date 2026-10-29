@@ -106,7 +106,7 @@ export default function LiveTrackingPage() {
         </div>
 
         {/* Filter Chips */}
-        <div className="flex items-center gap-1.5 p-1 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs">
+        <div className="flex items-center gap-1.5 p-1 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs overflow-x-auto no-scrollbar max-w-full">
           {['ALL', 'LOW', 'MEDIUM', 'HIGH'].map((lvl) => (
             <button
               key={lvl}

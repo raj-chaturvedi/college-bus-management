@@ -8,8 +8,10 @@ import {
 } from 'lucide-react';
 import { transitAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import { useScrollLock } from '../../utils/useScrollLock';
 
 export default function EmergencyModal({ isOpen, onClose }) {
+  useScrollLock(isOpen);
   const { user } = useAuth();
   const [sosSent, setSosSent] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -36,8 +38,19 @@ export default function EmergencyModal({ isOpen, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[1200] app-critical-backdrop flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-      <div className="relative z-[1210] w-full max-w-md rounded-2xl bg-white border border-rose-200 shadow-2xl p-6">
+    <div
+      className="fixed inset-0 z-[1200] app-critical-backdrop flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm overflow-hidden"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          setSosSent(false);
+          onClose();
+        }
+      }}
+    >
+      <div
+        className="relative z-[1210] w-full max-w-md rounded-2xl bg-white border border-rose-200 shadow-2xl p-4 sm:p-6 app-dvh-max-dialog overflow-y-auto modal-scroll-lock"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-slate-100">
           <div className="flex items-center gap-2.5">

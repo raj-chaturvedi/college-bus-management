@@ -11,8 +11,10 @@ import {
   ScanLine
 } from 'lucide-react';
 import { transitAPI } from '../../services/api';
+import { useScrollLock } from '../../utils/useScrollLock';
 
 export default function QrScannerModal({ isOpen, onClose }) {
+  useScrollLock(isOpen);
   const videoRef = useRef(null);
   const streamRef = useRef(null);
   const animFrameRef = useRef(null);
@@ -181,8 +183,16 @@ export default function QrScannerModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[1000] app-modal-backdrop flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
-      <div className="relative z-[1100] app-modal-content w-full max-w-md rounded-2xl bg-white border border-slate-200 shadow-xl p-5 my-auto text-slate-800">
+    <div
+      className="fixed inset-0 z-[1000] app-modal-backdrop flex items-center justify-center p-3 sm:p-4 bg-slate-900/50 backdrop-blur-sm overflow-hidden"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div
+        className="relative z-[1100] app-modal-content w-full max-w-md rounded-2xl bg-white border border-slate-200 shadow-xl p-4 sm:p-5 my-auto text-slate-800 app-dvh-max-dialog overflow-y-auto modal-scroll-lock"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-slate-100">
           <div className="flex items-center gap-2">

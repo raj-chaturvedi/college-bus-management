@@ -124,12 +124,14 @@ exports.generatePass = async (req, res, next) => {
     const passCode = `GNTA-TKN-${cleanBusTag}-${timeEpochPart}-${randomTicketSuffix}`;
     const tokenHash = Math.random().toString(16).substring(2, 10).toUpperCase() + '-' + Math.random().toString(16).substring(2, 10).toUpperCase();
 
-    // Valid strictly for 10 minutes from issuance (live dynamic boarding token)
-    const validUntil = new Date(Date.now() + 10 * 60 * 1000);
+    // Valid strictly for exactly 5 minutes from issuance (server-side source of truth)
+    const createdAt = new Date();
+    const expiresAt = new Date(createdAt.getTime() + 5 * 60 * 1000); // 5 minutes exactly (300,000ms)
+    const validUntil = expiresAt;
 
     const pass = await store.createPass({
       student: req.user?._id || 'guest_student',
-      studentName: req.user?.name || 'Student Traveler',
+      studentName: req.user?.name || req.user?.username || 'Student Traveler',
       studentEmail: req.user?.email || 'student@gbu.ac.in',
       bus: bus._id,
       busNumber: bus.busNumber,
@@ -142,6 +144,8 @@ exports.generatePass = async (req, res, next) => {
       tokenHash,
       fareStatus: 'PAID (GNTA Student Pass Subsidized)',
       seatNumber: `Seat #${seatNum} (${seatPreference || 'Window/Standard'})`,
+      createdAt,
+      expiresAt,
       validUntil
     });
 
@@ -172,14 +176,17 @@ exports.generatePass = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      message: 'Realistic digital transit QR boarding token issued successfully (Valid for 10 minutes).',
+      message: 'Realistic digital transit QR boarding token issued successfully (Valid for exactly 5 minutes).',
       pass: {
         ...passObj,
         tokenHash,
         plateNumber: bus.plateNumber || 'UP-16-CB-1012',
         fareStatus: 'PAID (GNTA Student Pass Subsidized)',
         authority: 'GREATER NOIDA TRANSIT AUTHORITY (GNTA)',
-        validityMinutes: 10
+        validityMinutes: 5,
+        createdAt,
+        expiresAt,
+        validUntil
       }
     });
   } catch (error) {

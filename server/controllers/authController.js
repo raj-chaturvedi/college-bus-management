@@ -27,37 +27,107 @@ const generateToken = (user) => {
 };
 
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-const USERNAME_REGEX = /^[a-zA-Z0-9_-]{3,30}$/;
+
+const COMMON_WEAK_PASSWORDS = new Set([
+  'password123', 'password@123', 'admin12345', 'welcome123',
+  '1234567890', 'qwerty12345', 'college1234', 'student1234',
+  'passcode123', 'secret12345', 'changeme123'
+]);
 
 /**
- * Normal Registration: ONLY Username and Password.
- * Email is strictly NOT shown or required.
- * Normal registration creates verified 'student' accounts only.
+ * Validates username according to security requirements:
+ * 4-20 chars, letters/numbers/underscores only, no spaces, cannot start with underscore, cannot be only underscores.
+ */
+function validateUsername(username) {
+  if (!username || typeof username !== 'string') {
+    return { valid: false, message: 'Username is required.' };
+  }
+  const clean = username.trim();
+  if (clean.length < 4 || clean.length > 20) {
+    return { valid: false, message: 'Username must be between 4 and 20 characters.' };
+  }
+  if (!/^[a-zA-Z0-9_]+$/.test(clean)) {
+    return { valid: false, message: 'Username can only contain letters, numbers, and underscores.' };
+  }
+  if (clean.startsWith('_')) {
+    return { valid: false, message: 'Username cannot start with an underscore.' };
+  }
+  if (/^_+$/.test(clean)) {
+    return { valid: false, message: 'Username cannot contain only underscores.' };
+  }
+  return { valid: true, cleanUsername: clean.toLowerCase() };
+}
+
+/**
+ * Validates password according to security requirements:
+ * At least 10 chars, uppercase, lowercase, number, special character, no whitespace-only, not in weak password list.
+ */
+function validatePassword(password) {
+  if (!password || typeof password !== 'string') {
+    return { valid: false, message: 'Password is required.' };
+  }
+  if (password.trim().length === 0) {
+    return { valid: false, message: 'Password cannot consist only of spaces.' };
+  }
+  if (password.length < 10) {
+    return { valid: false, message: 'Password must be at least 10 characters long.' };
+  }
+  if (!/[A-Z]/.test(password)) {
+    return { valid: false, message: 'Password must include at least one uppercase letter (A-Z).' };
+  }
+  if (!/[a-z]/.test(password)) {
+    return { valid: false, message: 'Password must include at least one lowercase letter (a-z).' };
+  }
+  if (!/[0-9]/.test(password)) {
+    return { valid: false, message: 'Password must include at least one number (0-9).' };
+  }
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(password)) {
+    return { valid: false, message: 'Password must include at least one special character (!@#$%^&*...).' };
+  }
+  const normalizedWeak = password.toLowerCase().replace(/[^a-z0-9]/g, '');
+  if (COMMON_WEAK_PASSWORDS.has(password.toLowerCase()) || COMMON_WEAK_PASSWORDS.has(normalizedWeak)) {
+    return { valid: false, message: 'This password is too common and easily guessed. Please choose a stronger password.' };
+  }
+  return { valid: true };
+}
+
+/**
+ * User Registration: Requires Username, Email, and Password.
+ * Account is created in pending/unverified state until email verification.
  */
 exports.register = async (req, res, next) => {
   try {
-    const { username, password, confirmPassword } = req.body;
+    const { username, email, password, confirmPassword } = req.body;
 
-    if (!username || !password) {
+    if (!username || !email || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Username and password are required.'
+        message: 'Username, email address, and password are required.'
       });
     }
 
-    const cleanUsername = String(username).trim().toLowerCase();
-
-    if (!USERNAME_REGEX.test(cleanUsername)) {
+    const usernameCheck = validateUsername(username);
+    if (!usernameCheck.valid) {
       return res.status(400).json({
         success: false,
-        message: 'Username must be 3-30 characters long and can contain only letters, numbers, underscores, and hyphens.'
+        message: usernameCheck.message
+      });
+    }
+    const cleanUsername = usernameCheck.cleanUsername;
+
+    const cleanEmail = String(email).trim().toLowerCase();
+    if (!EMAIL_REGEX.test(cleanEmail)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a valid institutional or personal email address.'
       });
     }
 
-    if (password.length < 8) {
+    const passwordCheck = validatePassword(password);
+    if (!passwordCheck.valid) {
       return res.status(400).json({
         success: false,
-        message: 'Password must be at least 8 characters long.'
+        message: passwordCheck.message
       });
     }
 
@@ -69,38 +139,77 @@ exports.register = async (req, res, next) => {
     }
 
     // Check if username already exists
-    const existingUser = await store.findUserByUsername(cleanUsername);
-    if (existingUser) {
+    const existingUsername = await store.findUserByUsername(cleanUsername);
+    if (existingUsername) {
       return res.status(409).json({
         success: false,
         message: 'This username is already taken. Please choose another username.'
       });
     }
 
+    // Check if email already exists
+    const existingEmail = await store.findUserByEmail(cleanEmail);
+    if (existingEmail) {
+      return res.status(409).json({
+        success: false,
+        message: 'An account with this email address already exists. Please sign in or reset your password.'
+      });
+    }
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create user with verified status, no fabricated email, role strictly 'student'
+    // Generate secure single-use verification token & 6-digit OTP code with 24-hour expiry
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    // Create user in unverified pending state
     const user = await store.createUser({
       username: cleanUsername,
       name: cleanUsername,
+      email: cleanEmail,
       password: hashedPassword,
       role: 'student',
       authProvider: 'local',
       isActive: true,
-      isVerified: true
+      isVerified: false,
+      verificationToken,
+      verificationTokenExpires: verificationExpires,
+      verificationCode,
+      verificationCodeExpires: verificationExpires
     });
+
+    // Send verification email via configured SMTP (Gmail / Custom)
+    console.log(`[Auth] Dispatching account verification email to: ${cleanEmail}`);
+    try {
+      await Promise.race([
+        sendVerificationEmail({
+          toEmail: cleanEmail,
+          userName: cleanUsername,
+          token: verificationToken,
+          code: verificationCode
+        }),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP Verification timeout')), 3500))
+      ]);
+      console.log(`[Auth] Verification email delivered to: ${cleanEmail}`);
+    } catch (emailErr) {
+      console.warn('[Auth] Verification email notice:', emailErr.message);
+    }
 
     return res.status(201).json({
       success: true,
-      message: 'Account created successfully. Please sign in with your credentials.',
-      username: user.username
+      message: 'Account created successfully! We sent a 6-digit verification code and activation link to your email. Please verify your email before signing in.',
+      email: user.email,
+      username: user.username,
+      isVerified: false
     });
   } catch (error) {
     if (error.code === 11000) {
+      const field = error.keyPattern && Object.keys(error.keyPattern)[0];
       return res.status(409).json({
         success: false,
-        message: 'This username is already taken. Please choose another username.'
+        message: field === 'email' ? 'An account with this email address already exists.' : 'This username is already taken. Please choose another username.'
       });
     }
     next(error);
@@ -151,13 +260,13 @@ exports.login = async (req, res, next) => {
       });
     }
 
-    // Block unverified accounts (applicable only to legacy accounts with email)
-    if (user.email && user.isVerified === false && user.authProvider !== 'google') {
+    // Block unverified accounts
+    if (user.isVerified === false && user.authProvider !== 'google') {
       return res.status(403).json({
         success: false,
         isUnverified: true,
-        email: user.email,
-        message: 'Please verify your email address before signing in.'
+        email: user.email || cleanIdentifier,
+        message: 'Your account is pending verification. Please verify your email with the 6-digit code or link before signing in.'
       });
     }
 
@@ -249,18 +358,24 @@ exports.verifyEmail = async (req, res, next) => {
  */
 exports.resendVerification = async (req, res, next) => {
   try {
-    const { email } = req.body;
-    if (!email) {
+    const rawTarget = (req.body.email || req.body.identifier || req.body.username || '').trim();
+    if (!rawTarget) {
       return res.status(400).json({
         success: false,
-        message: 'Email address is required.'
+        message: 'Email address or username is required.'
       });
     }
 
-    const cleanEmail = String(email).trim().toLowerCase();
-    const user = await store.findUserByEmail(cleanEmail);
+    const cleanTarget = rawTarget.toLowerCase();
+    let user = await store.findUserByEmail(cleanTarget);
+    if (!user) {
+      user = await store.findUserByUsername(cleanTarget);
+    }
+    if (!user) {
+      user = await store.findUserByIdentifier(cleanTarget);
+    }
 
-    if (user && user.isVerified === false) {
+    if (user && user.isVerified === false && user.email) {
       const newToken = crypto.randomBytes(32).toString('hex');
       const newCode = Math.floor(100000 + Math.random() * 900000).toString();
       const newExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
@@ -272,18 +387,26 @@ exports.resendVerification = async (req, res, next) => {
         verificationCodeExpires: newExpires
       });
 
-      await sendVerificationEmail({
-        toEmail: user.email,
-        userName: user.name,
-        token: newToken,
-        code: newCode
-      });
+      console.log(`[Auth] Resending verification code to: ${user.email}`);
+      try {
+        await Promise.race([
+          sendVerificationEmail({
+            toEmail: user.email,
+            userName: user.name || user.username,
+            token: newToken,
+            code: newCode
+          }),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP timeout')), 3500))
+        ]);
+      } catch (err) {
+        console.warn('[Auth] Resend email warning:', err.message);
+      }
     }
 
     // Always return success to protect privacy
     res.status(200).json({
       success: true,
-      message: 'If an unverified account exists with this email address, a new verification link has been sent.'
+      message: 'If an unverified account exists with these details, a new 6-digit verification code and link has been sent to your registered email.'
     });
   } catch (error) {
     next(error);
@@ -400,10 +523,11 @@ exports.resetPassword = async (req, res, next) => {
       });
     }
 
-    if (password.length < 8) {
+    const passwordCheck = validatePassword(password);
+    if (!passwordCheck.valid) {
       return res.status(400).json({
         success: false,
-        message: 'New password must be at least 8 characters long.'
+        message: passwordCheck.message
       });
     }
 

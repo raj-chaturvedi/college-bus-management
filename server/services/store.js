@@ -28,6 +28,22 @@ const memoryStore = {
   incidents: []
 };
 
+// Auto-hydrate memory store from persisted snapshot if available on disk
+try {
+  const dumpPath = path.join(__dirname, '../data/seedData.json');
+  if (fs.existsSync(dumpPath)) {
+    const raw = fs.readFileSync(dumpPath, 'utf-8');
+    const parsed = JSON.parse(raw);
+    for (const key of Object.keys(memoryStore)) {
+      if (Array.isArray(parsed[key]) && parsed[key].length > 0) {
+        memoryStore[key] = parsed[key];
+      }
+    }
+  }
+} catch (err) {
+  // Silent fallback
+}
+
 // Persist memory cache to disk safely
 const persistMemoryCache = () => {
   try {

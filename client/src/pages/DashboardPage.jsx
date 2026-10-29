@@ -322,97 +322,82 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
   const greetingName = user?.name ? user.name.trim().split(' ')[0] : 'Commuter';
 
   return (
-    <div className="max-w-6xl mx-auto space-y-5 pb-12">
-      {/* 1. Header / Real-Time Operations Telemetry Bar */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="font-bold text-slate-900 dark:text-white text-lg">
+    <div className="max-w-6xl mx-auto pb-12">
+      {/* ============================================================ */}
+      {/* MOBILE-FIRST HUMAN EXPERIENCE (< 768px)                      */}
+      {/* Clean, spacious, uncluttered, human-designed transport app   */}
+      {/* ============================================================ */}
+      <div className="block md:hidden space-y-3.5 px-0.5">
+        {/* Mobile Header: Clean & Compact */}
+        <div className="flex items-center justify-between py-1">
+          <div>
+            <h1 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               {timeGreeting}, {greetingName}
             </h1>
-            <span className="text-[11px] font-semibold text-sky-800 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/50 px-2 py-0.5 rounded border border-sky-100 dark:border-sky-800">
-              Greater Noida Transit
+            <div className="flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+              <span>{liveClock}</span>
+              <span>&bull;</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                On Time
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-[11px] font-semibold text-sky-800 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 px-2.5 py-1 rounded-full border border-sky-200 dark:border-sky-800">
+              {buses.length || 16} Live
             </span>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Knowledge Park &bull; Pari Chowk &bull; Sector 62 Link &bull; Campus Transit Corridors
-          </p>
         </div>
 
-        {/* Real Dynamic Telemetry Indicators */}
-        <div className="flex flex-wrap items-center gap-2.5 sm:gap-4 text-xs text-slate-600 dark:text-slate-300 border-t md:border-t-0 pt-2 md:pt-0 border-slate-200 dark:border-slate-800">
-          <div className="flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-2.5 py-1 rounded-md font-semibold text-[11px]">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>SERVICE: ON TIME</span>
-          </div>
-          <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 py-1 rounded-md">
-            <span className="font-semibold text-slate-900 dark:text-white">{buses.length || 16}</span>
-            <span className="text-slate-500 dark:text-slate-400">Active Buses</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-[11px]">
-            <span className="h-1.5 w-1.5 rounded-full bg-sky-500"></span>
-            <span>GPS sync: {syncCountdown} seconds ago</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300 font-mono text-[11px] bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 py-1 rounded-md">
-            <span>{liveClock}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. Your Next Journey Card */}
-      <div className="bg-slate-900 text-white rounded-xl p-5 border border-slate-800 shadow-md">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${arrivalInfo.badgeClass}`}>
-                {arrivalInfo.badge}
+        {/* Mobile Next Journey Card: Clean Single-Layer */}
+        <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-4 shadow-md border border-slate-700/60">
+          <div className="flex items-center justify-between mb-2.5">
+            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border ${arrivalInfo.badgeClass}`}>
+              {arrivalInfo.badge}
+            </span>
+            {nextBus && (
+              <span className="text-xs font-mono text-slate-300 font-bold bg-slate-800/80 px-2 py-0.5 rounded border border-slate-700">
+                {nextBus.busNumber}
               </span>
-              {nextBus ? (
-                <span className="text-xs text-slate-400 font-mono">
-                  {nextBus.busNumber} &bull; {nextBus.plateNumber || 'UP-16-CB-1012'}
-                </span>
-              ) : (
-                <span className="text-xs text-slate-400">Campus Transit Service</span>
+            )}
+          </div>
+
+          <div className="mb-3">
+            <div className="text-lg font-bold text-white tracking-tight">
+              {arrivalInfo.headline}
+            </div>
+            <div className="text-xs text-slate-400 flex items-center gap-1.5 mt-0.5">
+              <span className="truncate max-w-[130px] font-medium text-slate-300">{currentSourceStop?.name?.split(' (')[0] || 'Boarding'}</span>
+              <span>&rarr;</span>
+              <span className="truncate max-w-[130px] font-medium text-slate-200">{currentDestStop?.name?.split(' (')[0] || 'Destination'}</span>
+              {arrivalInfo.distanceKm && (
+                <span className="text-slate-400 font-mono text-[11px]">({arrivalInfo.distanceKm} km)</span>
               )}
             </div>
-            <div className="text-lg font-bold text-white flex flex-wrap items-center gap-2">
-              <span>{arrivalInfo.headline}</span>
-              {arrivalInfo.isAvailable && (
-                <span className="text-xs font-normal text-slate-400">
-                  {arrivalInfo.subtext}
-                </span>
-              )}
-            </div>
-            <p className="text-xs text-slate-400">
-              {arrivalInfo.isAvailable ? (
-                <>Corridor to: <strong className="text-slate-200">{currentDestStop?.name || 'Selected Destination'}</strong> {arrivalInfo.distanceKm && <span className="text-slate-500 font-mono ml-1">({arrivalInfo.distanceKm} km road distance)</span>}</>
-              ) : (
-                <span className="text-rose-300">{arrivalInfo.subtext}</span>
-              )}
-            </p>
           </div>
 
           {arrivalInfo.isAvailable && nextBus && (
-            <div className="flex items-center gap-4 sm:gap-6 border-t md:border-t-0 pt-3 md:pt-0 border-slate-800">
-              <div>
-                <div className="text-[11px] text-slate-400">Occupancy</div>
-                <div className="text-sm font-bold text-white flex items-center gap-2 mt-0.5">
-                  <span>{nextBusOcc !== null ? `${nextBusOcc}%` : 'N/A'}</span>
-                  {nextBusOcc !== null && (
-                    <div className="w-14 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full ${nextBusOcc > 80 ? 'bg-rose-500' : nextBusOcc > 50 ? 'bg-amber-500' : 'bg-emerald-500'}`}
-                        style={{ width: `${nextBusOcc}%` }}
-                      />
-                    </div>
-                  )}
+            <div className="space-y-3 pt-3 border-t border-slate-700/60">
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="text-slate-400">Occupancy:</span>
+                  <span className="font-bold text-white">{nextBusOcc !== null ? `${nextBusOcc}%` : 'N/A'}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-slate-400">Reliability:</span>
+                  <span className="font-bold text-emerald-400">{nextBusReliability}%</span>
                 </div>
               </div>
 
-              <div className="border-l border-slate-800 pl-4 sm:pl-6">
-                <div className="text-[11px] text-slate-400">Reliability</div>
-                <div className="text-sm font-bold text-emerald-400 mt-0.5">{nextBusReliability}%</div>
-              </div>
+              {nextBusOcc !== null && (
+                <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full ${nextBusOcc > 80 ? 'bg-rose-500' : nextBusOcc > 50 ? 'bg-amber-500' : 'bg-emerald-500'}`}
+                    style={{ width: `${nextBusOcc}%` }}
+                  />
+                </div>
+              )}
 
               <button
                 type="button"
@@ -420,136 +405,144 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
                   setPassBus(nextBus);
                   setShowPassModal(true);
                 }}
-                className="px-3.5 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm transition"
+                className="w-full min-h-[44px] py-2.5 bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition"
               >
-                <Ticket className="w-3.5 h-3.5 text-sky-200" />
-                <span>Issue Pass</span>
+                <Ticket className="w-4 h-4 text-sky-200" />
+                <span>Issue Digital Pass (5-Min Validity)</span>
               </button>
             </div>
           )}
         </div>
-      </div>
 
-      {/* 2. Hero Search Area */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-card space-y-4 transition-colors">
-        <div>
-          <h1 className="text-base font-bold text-slate-900 dark:text-white">
-            Find the best way to reach your destination.
-          </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            Select your departure and arrival points to get live bus options with real road routing.
-          </p>
+        {/* Quick Actions Grid (4 Thumb-Friendly Action Cards) */}
+        <div className="grid grid-cols-4 gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              const el = document.getElementById('mobile-map-section');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="flex flex-col items-center justify-center py-2.5 px-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs hover:border-sky-500 transition active:scale-95 min-h-[56px]"
+          >
+            <div className="w-7 h-7 rounded-lg bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center mb-1">
+              <Navigation className="w-3.5 h-3.5" />
+            </div>
+            <span className="text-[10px] font-bold text-slate-800 dark:text-slate-200">Live Map</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setPassBus(nextBus || buses[0]);
+              setShowPassModal(true);
+            }}
+            className="flex flex-col items-center justify-center py-2.5 px-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs hover:border-emerald-500 transition active:scale-95 min-h-[56px]"
+          >
+            <div className="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-1">
+              <Ticket className="w-3.5 h-3.5" />
+            </div>
+            <span className="text-[10px] font-bold text-slate-800 dark:text-slate-200">My Pass</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={onOpenAI}
+            className="flex flex-col items-center justify-center py-2.5 px-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs hover:border-indigo-500 transition active:scale-95 min-h-[56px]"
+          >
+            <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-1">
+              <Sparkles className="w-3.5 h-3.5" />
+            </div>
+            <span className="text-[10px] font-bold text-slate-800 dark:text-slate-200">Bus AI</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setShowIncidentModal(true)}
+            className="flex flex-col items-center justify-center py-2.5 px-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs hover:border-rose-500 transition active:scale-95 min-h-[56px]"
+          >
+            <div className="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center mb-1">
+              <AlertTriangle className="w-3.5 h-3.5" />
+            </div>
+            <span className="text-[10px] font-bold text-slate-800 dark:text-slate-200">Report</span>
+          </button>
         </div>
 
-        {/* Service area warning if user location is outside Greater Noida */}
-        {locationWarning && (
-          <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs text-amber-900 dark:text-amber-200 flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
-              <span>{locationWarning}</span>
-            </div>
-            <button
-              onClick={() => {
-                setUserCoords(GREATER_NOIDA_CENTER);
-                setLocationWarning('');
-                const defaultStop = stops.find(s => s.code === 'PCK') || stops[0];
-                if (defaultStop) setSourceStopId(defaultStop._id || defaultStop.id);
-              }}
-              className="px-2.5 py-1 rounded bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 font-semibold text-[11px] hover:bg-amber-100/50 dark:hover:bg-slate-700 transition-colors shrink-0"
-            >
-              Use Greater Noida Center
-            </button>
-          </div>
-        )}
-
-        {errorMessage && (
-          <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-xs text-red-800 dark:text-red-200 flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400 shrink-0" />
-            <span>{errorMessage}</span>
-          </div>
-        )}
-
-        {/* Search Input Row */}
-        <div className="grid grid-cols-1 md:grid-cols-11 gap-3 items-end">
-          {/* Origin / Current Location */}
-          <div className="md:col-span-5 space-y-1.5">
-            <div className="flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-300">
-              <label className="flex items-center gap-1.5">
-                <MapPin className="h-3.5 w-3.5 text-teal-600 dark:text-teal-400" />
-                <span>Your Current Location / Boarding Stop</span>
-              </label>
-              <button
-                type="button"
-                onClick={handleDetectLocation}
-                disabled={isLocating}
-                className="text-[11px] font-medium text-sky-700 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 flex items-center gap-1"
-              >
-                <Crosshair className={`h-3 w-3 ${isLocating ? 'animate-spin' : ''}`} />
-                <span>{isLocating ? 'Detecting...' : 'Detect Location'}</span>
-              </button>
-            </div>
-            <select
-              value={sourceStopId}
-              onChange={(e) => setSourceStopId(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:border-sky-600"
-            >
-              {stops.map((stop) => (
-                <option key={stop._id || stop.id} value={stop._id || stop.id}>
-                  {stop.name} ({stop.code}) — {stop.zone}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Swap Button */}
-          <div className="md:col-span-1 flex justify-center pb-0.5">
+        {/* Route Search: Streamlined Single Card */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">Plan Journey</span>
             <button
               type="button"
-              onClick={handleSwap}
-              className="p-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors"
-              title="Swap departure and destination"
+              onClick={handleDetectLocation}
+              disabled={isLocating}
+              className="text-[11px] font-semibold text-sky-700 dark:text-sky-400 flex items-center gap-1"
             >
-              <RotateCcw className="h-4 w-4" />
+              <Crosshair className={`w-3 h-3 ${isLocating ? 'animate-spin' : ''}`} />
+              <span>{isLocating ? 'Locating...' : 'Near Me'}</span>
             </button>
           </div>
 
-          {/* Destination */}
-          <div className="md:col-span-5 space-y-1.5">
-            <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
-              <Navigation className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
-              <span>Where do you want to go?</span>
-            </label>
-            <select
-              value={destinationStopId}
-              onChange={(e) => setDestinationStopId(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:border-sky-600"
-            >
-              {stops.map((stop) => (
-                <option key={stop._id || stop.id} value={stop._id || stop.id}>
-                  {stop.name} ({stop.code}) — {stop.zone}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+          <div className="space-y-2">
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                <MapPin className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+              </div>
+              <select
+                value={sourceStopId}
+                onChange={(e) => setSourceStopId(e.target.value)}
+                className="w-full pl-8 pr-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white font-medium focus:border-sky-500"
+              >
+                {stops.map((stop) => (
+                  <option key={stop._id || stop.id} value={stop._id || stop.id}>
+                    {stop.name} ({stop.code})
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        {/* Action Controls & Preference Modes */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 mr-1">Optimize:</span>
-            {PREFERENCE_MODES.map((m) => (
+            <div className="flex items-center justify-center -my-1 relative z-10">
+              <button
+                type="button"
+                onClick={handleSwap}
+                className="p-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 shadow-xs hover:bg-slate-50"
+                title="Swap origin & destination"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                <Navigation className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+              </div>
+              <select
+                value={destinationStopId}
+                onChange={(e) => setDestinationStopId(e.target.value)}
+                className="w-full pl-8 pr-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white font-medium focus:border-sky-500"
+              >
+                {stops.map((stop) => (
+                  <option key={stop._id || stop.id} value={stop._id || stop.id}>
+                    {stop.name} ({stop.code})
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Preference Modes Bar */}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+            {PREFERENCE_MODES.slice(0, 4).map((m) => (
               <button
                 key={m.id}
                 onClick={() => {
                   setActiveMode(m.id);
                   fetchRecommendation(sourceStopId, destinationStopId, m.id);
                 }}
-                className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors whitespace-nowrap ${
+                className={`px-2.5 py-1 rounded-full text-[11px] font-semibold transition whitespace-nowrap ${
                   activeMode === m.id
                     ? 'bg-sky-600 text-white'
-                    : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-transparent dark:border-slate-700'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
                 }`}
-                title={m.desc}
               >
                 {m.label}
               </button>
@@ -559,317 +552,723 @@ export default function DashboardPage({ onOpenAI, onOpenPassModal, onUpdateRoute
           <button
             onClick={handleSearch}
             disabled={loadingRecommendation}
-            className="px-5 py-2 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-sm"
+            className="w-full min-h-[44px] py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 active:bg-sky-800 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition"
           >
-            <Search className="h-3.5 w-3.5" />
-            <span>{loadingRecommendation ? 'Searching...' : 'Find Best Route'}</span>
+            <Search className="h-4 w-4" />
+            <span>{loadingRecommendation ? 'Finding Buses...' : 'Find Best Route'}</span>
           </button>
         </div>
 
-        {/* Popular Destinations Quick Pick */}
-        <div className="pt-2">
-          <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-            Popular Destinations in Greater Noida:
-          </p>
-          <div className="flex items-center gap-1.5 flex-wrap">
-            {POPULAR_GREATER_NOIDA_DESTINATIONS.slice(0, 6).map((dest) => (
-              <button
-                key={dest.id}
-                onClick={() => handleSelectQuickDestination(dest)}
-                className="px-2.5 py-1 rounded bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-[11px] transition-colors"
+        {/* Mobile Route Results: Individual Single-Layer Cards */}
+        {bestMatch && (
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between px-1">
+              <span className="text-xs font-bold text-slate-900 dark:text-white">Route Options</span>
+              <span className="text-[11px] text-slate-500 dark:text-slate-400">Score: {bestMatch.score}/100</span>
+            </div>
+
+            {/* Best Match Card */}
+            <div
+              onClick={() => setSelectedCandidate(bestMatch)}
+              className={`p-3.5 rounded-2xl border transition active:scale-[0.99] cursor-pointer ${
+                activeCandidate?.candidateId === bestMatch.candidateId
+                  ? 'bg-sky-50/70 dark:bg-sky-950/40 border-sky-600 shadow-sm'
+                  : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 px-2 py-0.5 rounded-full">
+                  Recommended
+                </span>
+                <span className="text-sm font-extrabold text-slate-900 dark:text-white">
+                  {bestMatch.metrics?.travelTimeMinutes} min &bull; {bestMatch.metrics?.distanceKm} km
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-bold text-slate-900 dark:text-white text-sm">
+                    {bestMatch.bus?.busNumber}
+                  </div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[200px]">
+                    {bestMatch.route?.name}
+                  </div>
+                </div>
+                <div className="text-right text-[11px]">
+                  <span className="font-semibold text-slate-700 dark:text-slate-300 block">
+                    Crowd: {bestMatch.metrics?.occupancyPercentage}%
+                  </span>
+                  <span className="text-slate-500 dark:text-slate-400 font-medium">
+                    Walk: {bestMatch.metrics?.walkingMeters}m
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5 mt-2.5 border-t border-slate-100 dark:border-slate-800 text-xs">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedCandidateForWhy(bestMatch);
+                  }}
+                  className="text-sky-700 dark:text-sky-400 font-semibold text-[11px]"
+                >
+                  Why this route?
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setPassBus(bestMatch.bus);
+                    setShowPassModal(true);
+                  }}
+                  className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold rounded-lg text-[11px]"
+                >
+                  Issue Pass
+                </button>
+              </div>
+            </div>
+
+            {/* Alternative Option if available */}
+            {secondBest && (
+              <div
+                onClick={() => setSelectedCandidate(secondBest)}
+                className={`p-3 rounded-2xl border transition active:scale-[0.99] cursor-pointer ${
+                  activeCandidate?.candidateId === secondBest.candidateId
+                    ? 'bg-sky-50/70 dark:bg-sky-950/40 border-sky-600 shadow-sm'
+                    : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+                }`}
               >
-                {dest.isCollege ? '🎓 ' : '📍 '}
-                {dest.name.split(' (')[0]}
-              </button>
-            ))}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
+                      Alternative
+                    </span>
+                    <div className="font-bold text-slate-900 dark:text-white text-xs mt-1">
+                      {secondBest.bus?.busNumber} &bull; {secondBest.route?.name}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-xs font-bold text-slate-900 dark:text-white block">
+                      {secondBest.metrics?.travelTimeMinutes} min
+                    </span>
+                    <span className="text-[11px] text-slate-500 font-mono">
+                      {secondBest.metrics?.distanceKm} km
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Mobile Live Map Container */}
+        <div id="mobile-map-section" className="space-y-2 pt-1">
+          <div className="flex items-center justify-between px-1">
+            <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              Live Fleet Road Tracking
+            </span>
+            <span className="text-[11px] text-slate-500 dark:text-slate-400">OSRM Road Geometry</span>
+          </div>
+          <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-xs">
+            <TransitMap
+              buses={buses}
+              stops={stops}
+              routes={routes}
+              selectedBus={nextBus}
+              recommendedRoute={activeCandidate}
+              alternativeRoutes={
+                recommendation
+                  ? [secondBest, thirdBest].filter(Boolean)
+                  : []
+              }
+              sourceStop={sourceStopId}
+              destinationStop={destinationStopId}
+              userLocation={userCoords}
+              destinationLocation={
+                currentDestStop ? [currentDestStop.latitude, currentDestStop.longitude] : null
+              }
+              center={
+                currentSourceStop
+                  ? [currentSourceStop.latitude, currentSourceStop.longitude]
+                  : GREATER_NOIDA_CENTER
+              }
+              zoom={13}
+              height="340px"
+              onSelectDeparture={(id) => {
+                setSourceStopId(id);
+                fetchRecommendation(id, destinationStopId, activeMode);
+              }}
+              onSelectDestination={(id) => {
+                setDestinationStopId(id);
+                fetchRecommendation(sourceStopId, id, activeMode);
+              }}
+              onOpenStopBoard={(id, name) => {
+                setStopBoardInfo({ id, name });
+                setShowStopBoard(true);
+              }}
+              onLocateUser={handleDetectLocation}
+            />
           </div>
         </div>
       </div>
 
-      {/* 3. Interactive Map & Route Recommendations View */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column: Route Options & Recommendations */}
-        <div className="lg:col-span-5 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-              Available Route Options
-            </h2>
-            <span className="text-xs text-slate-500 dark:text-slate-400">
-              Ranked by {PREFERENCE_MODES.find(m => m.id === activeMode)?.label || 'Balanced'}
-            </span>
+      {/* ============================================================ */}
+      {/* DESKTOP EXPERIENCE (>= 768px)                                */}
+      {/* Exact original rich desktop layout preserved intact          */}
+      {/* ============================================================ */}
+      <div className="hidden md:block space-y-5">
+        {/* 1. Header / Real-Time Operations Telemetry Bar */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors">
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="font-bold text-slate-900 dark:text-white text-lg">
+                {timeGreeting}, {greetingName}
+              </h1>
+              <span className="text-[11px] font-semibold text-sky-800 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/50 px-2 py-0.5 rounded border border-sky-100 dark:border-sky-800">
+                Greater Noida Transit
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Knowledge Park &bull; Pari Chowk &bull; Sector 62 Link &bull; Campus Transit Corridors
+            </p>
           </div>
 
-          {loadingRecommendation ? (
-            <div className="p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-center space-y-2">
-              <span className="h-4 w-4 border-2 border-sky-600 border-t-transparent rounded-full animate-spin inline-block"></span>
-              <p className="text-xs text-slate-600 dark:text-slate-400">Calculating road distances and telemetry...</p>
+          {/* Real Dynamic Telemetry Indicators */}
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-4 text-xs text-slate-600 dark:text-slate-300 border-t md:border-t-0 pt-2 md:pt-0 border-slate-200 dark:border-slate-800">
+            <div className="flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-2.5 py-1 rounded-md font-semibold text-[11px]">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>SERVICE: ON TIME</span>
             </div>
-          ) : !bestMatch ? (
-            <div className="p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-center space-y-2">
-              <Bus className="h-8 w-8 text-slate-400 mx-auto" />
-              <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">No route computed yet</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Select departure and destination to find buses.</p>
+            <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 py-1 rounded-md">
+              <span className="font-semibold text-slate-900 dark:text-white">{buses.length || 16}</span>
+              <span className="text-slate-500 dark:text-slate-400">Active Buses</span>
             </div>
-          ) : (
-            <div className="space-y-3">
-              {/* Recommended Best Option Card */}
-              <div
-                onClick={() => setSelectedCandidate(bestMatch)}
-                className={`p-4 rounded-xl border transition-all cursor-pointer ${
-                  activeCandidate?.candidateId === bestMatch.candidateId
-                    ? 'bg-sky-50/50 dark:bg-sky-950/40 border-sky-600 shadow-sm'
-                    : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 px-2 py-0.5 rounded">
-                      {bestMatch.badge || (activeMode === 'SHORTEST' ? 'SHORTEST ROUTE' : activeMode === 'FASTEST' ? 'FASTEST ROUTE' : 'BEST OPTION')}
-                    </span>
-                    <span className="text-[10px] font-mono font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
-                      {activeMode}
-                    </span>
-                  </div>
-                  <span className="text-xs font-bold text-sky-700 dark:text-sky-400">
-                    Match Score: {bestMatch.score}/100
-                  </span>
-                </div>
-
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-bold text-slate-900 dark:text-white text-sm">
-                      {bestMatch.bus?.busNumber}
-                    </h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                      {bestMatch.route?.name}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-lg font-bold text-slate-900 dark:text-white block leading-tight">
-                      {bestMatch.metrics?.travelTimeMinutes} min
-                    </span>
-                    <span className="text-xs font-semibold text-sky-700 dark:text-sky-400 font-mono">
-                      {bestMatch.metrics?.distanceKm} km road
-                    </span>
-                  </div>
-                </div>
-
-                {/* Practical Metric Row */}
-                <div className="grid grid-cols-4 gap-2 pt-3 mt-3 border-t border-slate-200/60 dark:border-slate-800 text-[11px]">
-                  <div>
-                    <span className="text-slate-500 dark:text-slate-400 block">Walking</span>
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">{bestMatch.metrics?.walkingMeters} m</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 dark:text-slate-400 block">Waiting</span>
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">~{bestMatch.metrics?.etaMinutes} min</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 dark:text-slate-400 block">Crowd</span>
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">{bestMatch.metrics?.occupancyPercentage}%</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 dark:text-slate-400 block">On-Time</span>
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">{bestMatch.metrics?.reliabilityPercentage}%</span>
-                  </div>
-                </div>
-
-                {/* Microcopy Justification */}
-                <p className="text-xs text-slate-600 dark:text-slate-300 mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800">
-                  {bestMatch.explanation}
-                </p>
-
-                {/* Card Actions */}
-                <div className="flex items-center justify-between pt-2.5 mt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedCandidateForWhy(bestMatch);
-                    }}
-                    className="text-sky-700 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 font-medium flex items-center gap-1"
-                  >
-                    <HelpCircle className="h-3.5 w-3.5" />
-                    <span>Why this route?</span>
-                  </button>
-
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setPassBus(bestMatch.bus);
-                      setShowPassModal(true);
-                    }}
-                    className="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-medium border border-transparent dark:border-slate-700"
-                  >
-                    Get Boarding Pass
-                  </button>
-                </div>
-              </div>
-
-              {/* Alternative 1 Card */}
-              {secondBest && (
-                <div
-                  onClick={() => setSelectedCandidate(secondBest)}
-                  className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
-                    activeCandidate?.candidateId === secondBest.candidateId
-                      ? 'bg-sky-50/50 dark:bg-sky-950/40 border-sky-600 shadow-sm'
-                      : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
-                      Alternative 1
-                    </span>
-                    <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
-                      Score: {secondBest.score}/100
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-bold text-slate-900 dark:text-white text-xs">
-                        {secondBest.bus?.busNumber}
-                      </h4>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400">{secondBest.route?.name}</p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block leading-tight">
-                        {secondBest.metrics?.travelTimeMinutes} min
-                      </span>
-                      <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 font-mono">
-                        {secondBest.metrics?.distanceKm} km
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-4 gap-2 pt-2 mt-2 border-t border-slate-100 dark:border-slate-800 text-[10px] text-slate-600 dark:text-slate-400">
-                    <div>Walk: <strong className="text-slate-800 dark:text-slate-200">{secondBest.metrics?.walkingMeters}m</strong></div>
-                    <div>Wait: <strong className="text-slate-800 dark:text-slate-200">{secondBest.metrics?.etaMinutes}m</strong></div>
-                    <div>Crowd: <strong className="text-slate-800 dark:text-slate-200">{secondBest.metrics?.occupancyPercentage}%</strong></div>
-                    <div>Reliable: <strong className="text-slate-800 dark:text-slate-200">{secondBest.metrics?.reliabilityPercentage}%</strong></div>
-                  </div>
-                </div>
-              )}
-
-              {/* Alternative 2 Card */}
-              {thirdBest && (
-                <div
-                  onClick={() => setSelectedCandidate(thirdBest)}
-                  className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
-                    activeCandidate?.candidateId === thirdBest.candidateId
-                      ? 'bg-sky-50/50 dark:bg-sky-950/40 border-sky-600 shadow-sm'
-                      : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
-                      Alternative 2
-                    </span>
-                    <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
-                      Score: {thirdBest.score}/100
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-bold text-slate-900 dark:text-white text-xs">
-                        {thirdBest.bus?.busNumber}
-                      </h4>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400">{thirdBest.route?.name}</p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block leading-tight">
-                        {thirdBest.metrics?.travelTimeMinutes} min
-                      </span>
-                      <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 font-mono">
-                        {thirdBest.metrics?.distanceKm} km
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-4 gap-2 pt-2 mt-2 border-t border-slate-100 dark:border-slate-800 text-[10px] text-slate-600 dark:text-slate-400">
-                    <div>Walk: <strong className="text-slate-800 dark:text-slate-200">{thirdBest.metrics?.walkingMeters}m</strong></div>
-                    <div>Wait: <strong className="text-slate-800 dark:text-slate-200">{thirdBest.metrics?.etaMinutes}m</strong></div>
-                    <div>Crowd: <strong className="text-slate-800 dark:text-slate-200">{thirdBest.metrics?.occupancyPercentage}%</strong></div>
-                    <div>Reliable: <strong className="text-slate-800 dark:text-slate-200">{thirdBest.metrics?.reliabilityPercentage}%</strong></div>
-                  </div>
-                </div>
-              )}
+            <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-[11px]">
+              <span className="h-1.5 w-1.5 rounded-full bg-sky-500"></span>
+              <span>GPS sync: {syncCountdown} seconds ago</span>
             </div>
-          )}
-
-          {/* Assistant Prompt Card */}
-          <div className="p-3.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                <Sparkles className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
-                Ask College Bus Assistant
-              </span>
-              <button
-                onClick={onOpenAI}
-                className="text-sky-700 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 font-semibold"
-              >
-                Open Assistant &rarr;
-              </button>
+            <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300 font-mono text-[11px] bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 py-1 rounded-md">
+              <span>{liveClock}</span>
             </div>
-            <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
-              Have specific questions about this journey? The assistant knows your current search, arrival ETA, and crowding levels.
-            </p>
           </div>
         </div>
 
-        {/* Right Column: Road-Routing Map */}
-        <div className="lg:col-span-7 space-y-2">
-          <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
-            <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-slate-900 dark:text-white">Road Transit Map</span>
-              <span>&bull;</span>
-              <span>Real road network via OSRM</span>
+        {/* 2. Your Next Journey Card */}
+        <div className="bg-slate-900 text-white rounded-xl p-5 border border-slate-800 shadow-md">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${arrivalInfo.badgeClass}`}>
+                  {arrivalInfo.badge}
+                </span>
+                {nextBus ? (
+                  <span className="text-xs text-slate-400 font-mono">
+                    {nextBus.busNumber} &bull; {nextBus.plateNumber || 'UP-16-CB-1012'}
+                  </span>
+                ) : (
+                  <span className="text-xs text-slate-400">Campus Transit Service</span>
+                )}
+              </div>
+              <div className="text-lg font-bold text-white flex flex-wrap items-center gap-2">
+                <span>{arrivalInfo.headline}</span>
+                {arrivalInfo.isAvailable && (
+                  <span className="text-xs font-normal text-slate-400">
+                    {arrivalInfo.subtext}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-slate-400">
+                {arrivalInfo.isAvailable ? (
+                  <>Corridor to: <strong className="text-slate-200">{currentDestStop?.name || 'Selected Destination'}</strong> {arrivalInfo.distanceKm && <span className="text-slate-500 font-mono ml-1">({arrivalInfo.distanceKm} km road distance)</span>}</>
+                ) : (
+                  <span className="text-rose-300">{arrivalInfo.subtext}</span>
+                )}
+              </p>
             </div>
-            {currentSourceStop && currentDestStop && (
-              <span className="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[280px]">
-                {currentSourceStop.name.split(' (')[0]} &rarr; {currentDestStop.name.split(' (')[0]}
-              </span>
+
+            {arrivalInfo.isAvailable && nextBus && (
+              <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-6 border-t md:border-t-0 pt-3 md:pt-0 border-slate-800">
+                <div className="flex items-center gap-4 sm:gap-6">
+                  <div>
+                    <div className="text-[11px] text-slate-400">Occupancy</div>
+                    <div className="text-sm font-bold text-white flex items-center gap-2 mt-0.5">
+                      <span>{nextBusOcc !== null ? `${nextBusOcc}%` : 'N/A'}</span>
+                      {nextBusOcc !== null && (
+                        <div className="w-12 sm:w-14 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full ${nextBusOcc > 80 ? 'bg-rose-500' : nextBusOcc > 50 ? 'bg-amber-500' : 'bg-emerald-500'}`}
+                            style={{ width: `${nextBusOcc}%` }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="border-l border-slate-800 pl-4 sm:pl-6">
+                    <div className="text-[11px] text-slate-400">Reliability</div>
+                    <div className="text-sm font-bold text-emerald-400 mt-0.5">{nextBusReliability}%</div>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPassBus(nextBus);
+                    setShowPassModal(true);
+                  }}
+                  className="w-full xs:w-auto px-3.5 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 shadow-sm transition"
+                >
+                  <Ticket className="w-3.5 h-3.5 text-sky-200" />
+                  <span>Issue Pass</span>
+                </button>
+              </div>
             )}
           </div>
+        </div>
 
-          <TransitMap
-            buses={buses}
-            stops={stops}
-            routes={routes}
-            selectedBus={nextBus}
-            recommendedRoute={activeCandidate}
-            alternativeRoutes={
-              recommendation
-                ? [secondBest, thirdBest].filter(Boolean)
-                : []
-            }
-            sourceStop={sourceStopId}
-            destinationStop={destinationStopId}
-            userLocation={userCoords}
-            destinationLocation={
-              currentDestStop ? [currentDestStop.latitude, currentDestStop.longitude] : null
-            }
-            center={
-              currentSourceStop
-                ? [currentSourceStop.latitude, currentSourceStop.longitude]
-                : GREATER_NOIDA_CENTER
-            }
-            zoom={13}
-            height="560px"
-            onSelectDeparture={(id) => {
-              setSourceStopId(id);
-              fetchRecommendation(id, destinationStopId, activeMode);
-            }}
-            onSelectDestination={(id) => {
-              setDestinationStopId(id);
-              fetchRecommendation(sourceStopId, id, activeMode);
-            }}
-            onOpenStopBoard={(id, name) => {
-              setStopBoardInfo({ id, name });
-              setShowStopBoard(true);
-            }}
-            onLocateUser={handleDetectLocation}
-          />
+        {/* 2. Hero Search Area */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-card space-y-4 transition-colors">
+          <div>
+            <h1 className="text-base font-bold text-slate-900 dark:text-white">
+              Find the best way to reach your destination.
+            </h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Select your departure and arrival points to get live bus options with real road routing.
+            </p>
+          </div>
+
+          {/* Service area warning if user location is outside Greater Noida */}
+          {locationWarning && (
+            <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs text-amber-900 dark:text-amber-200 flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                <span>{locationWarning}</span>
+              </div>
+              <button
+                onClick={() => {
+                  setUserCoords(GREATER_NOIDA_CENTER);
+                  setLocationWarning('');
+                  const defaultStop = stops.find(s => s.code === 'PCK') || stops[0];
+                  if (defaultStop) setSourceStopId(defaultStop._id || defaultStop.id);
+                }}
+                className="px-2.5 py-1 rounded bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 font-semibold text-[11px] hover:bg-amber-100/50 dark:hover:bg-slate-700 transition-colors shrink-0"
+              >
+                Use Greater Noida Center
+              </button>
+            </div>
+          )}
+
+          {errorMessage && (
+            <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-xs text-red-800 dark:text-red-200 flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400 shrink-0" />
+              <span>{errorMessage}</span>
+            </div>
+          )}
+
+          {/* Search Input Row */}
+          <div className="grid grid-cols-1 md:grid-cols-11 gap-3 items-end">
+            {/* Origin / Current Location */}
+            <div className="md:col-span-5 space-y-1.5">
+              <div className="flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <label className="flex items-center gap-1.5">
+                  <MapPin className="h-3.5 w-3.5 text-teal-600 dark:text-teal-400" />
+                  <span>Your Current Location / Boarding Stop</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={handleDetectLocation}
+                  disabled={isLocating}
+                  className="text-[11px] font-medium text-sky-700 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 flex items-center gap-1"
+                >
+                  <Crosshair className={`h-3 w-3 ${isLocating ? 'animate-spin' : ''}`} />
+                  <span>{isLocating ? 'Detecting...' : 'Detect Location'}</span>
+                </button>
+              </div>
+              <select
+                value={sourceStopId}
+                onChange={(e) => setSourceStopId(e.target.value)}
+                className="w-full px-3 py-2.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:border-sky-600"
+              >
+                {stops.map((stop) => (
+                  <option key={stop._id || stop.id} value={stop._id || stop.id}>
+                    {stop.name} ({stop.code}) — {stop.zone}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Swap Button */}
+            <div className="md:col-span-1 flex justify-center pb-0.5">
+              <button
+                type="button"
+                onClick={handleSwap}
+                className="p-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors"
+                title="Swap departure and destination"
+              >
+                <RotateCcw className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Destination */}
+            <div className="md:col-span-5 space-y-1.5">
+              <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <Navigation className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
+                <span>Where do you want to go?</span>
+              </label>
+              <select
+                value={destinationStopId}
+                onChange={(e) => setDestinationStopId(e.target.value)}
+                className="w-full px-3 py-2.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:border-sky-600"
+              >
+                {stops.map((stop) => (
+                  <option key={stop._id || stop.id} value={stop._id || stop.id}>
+                    {stop.name} ({stop.code}) — {stop.zone}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Action Controls & Preference Modes */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+              <span className="text-xs font-medium text-slate-500 dark:text-slate-400 mr-1">Optimize:</span>
+              {PREFERENCE_MODES.map((m) => (
+                <button
+                  key={m.id}
+                  onClick={() => {
+                    setActiveMode(m.id);
+                    fetchRecommendation(sourceStopId, destinationStopId, m.id);
+                  }}
+                  className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors whitespace-nowrap ${
+                    activeMode === m.id
+                      ? 'bg-sky-600 text-white'
+                      : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-transparent dark:border-slate-700'
+                  }`}
+                  title={m.desc}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={handleSearch}
+              disabled={loadingRecommendation}
+              className="px-5 py-2 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-sm"
+            >
+              <Search className="h-3.5 w-3.5" />
+              <span>{loadingRecommendation ? 'Searching...' : 'Find Best Route'}</span>
+            </button>
+          </div>
+
+          {/* Popular Destinations Quick Pick */}
+          <div className="pt-2">
+            <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+              Popular Destinations in Greater Noida:
+            </p>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {POPULAR_GREATER_NOIDA_DESTINATIONS.slice(0, 6).map((dest) => (
+                <button
+                  key={dest.id}
+                  onClick={() => handleSelectQuickDestination(dest)}
+                  className="px-2.5 py-1 rounded bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-[11px] transition-colors"
+                >
+                  {dest.isCollege ? '🎓 ' : '📍 '}
+                  {dest.name.split(' (')[0]}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* 3. Interactive Map & Route Recommendations View */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left Column: Route Options & Recommendations */}
+          <div className="lg:col-span-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                Available Route Options
+              </h2>
+              <span className="text-xs text-slate-500 dark:text-slate-400">
+                Ranked by {PREFERENCE_MODES.find(m => m.id === activeMode)?.label || 'Balanced'}
+              </span>
+            </div>
+
+            {loadingRecommendation ? (
+              <div className="p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-center space-y-2">
+                <span className="h-4 w-4 border-2 border-sky-600 border-t-transparent rounded-full animate-spin inline-block"></span>
+                <p className="text-xs text-slate-600 dark:text-slate-400">Calculating road distances and telemetry...</p>
+              </div>
+            ) : !bestMatch ? (
+              <div className="p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-center space-y-2">
+                <Bus className="h-8 w-8 text-slate-400 mx-auto" />
+                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">No route computed yet</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Select departure and destination to find buses.</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {/* Recommended Best Option Card */}
+                <div
+                  onClick={() => setSelectedCandidate(bestMatch)}
+                  className={`p-4 rounded-xl border transition-all cursor-pointer ${
+                    activeCandidate?.candidateId === bestMatch.candidateId
+                      ? 'bg-sky-50/50 dark:bg-sky-950/40 border-sky-600 shadow-sm'
+                      : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 px-2 py-0.5 rounded">
+                        {bestMatch.badge || (activeMode === 'SHORTEST' ? 'SHORTEST ROUTE' : activeMode === 'FASTEST' ? 'FASTEST ROUTE' : 'BEST OPTION')}
+                      </span>
+                      <span className="text-[10px] font-mono font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
+                        {activeMode}
+                      </span>
+                    </div>
+                    <span className="text-xs font-bold text-sky-700 dark:text-sky-400">
+                      Match Score: {bestMatch.score}/100
+                    </span>
+                  </div>
+
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="font-bold text-slate-900 dark:text-white text-sm">
+                        {bestMatch.bus?.busNumber}
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        {bestMatch.route?.name}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-lg font-bold text-slate-900 dark:text-white block leading-tight">
+                        {bestMatch.metrics?.travelTimeMinutes} min
+                      </span>
+                      <span className="text-xs font-semibold text-sky-700 dark:text-sky-400 font-mono">
+                        {bestMatch.metrics?.distanceKm} km road
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Practical Metric Row */}
+                  <div className="grid grid-cols-2 xs:grid-cols-4 gap-2 pt-3 mt-3 border-t border-slate-200/60 dark:border-slate-800 text-[11px]">
+                    <div>
+                      <span className="text-slate-500 dark:text-slate-400 block">Walking</span>
+                      <span className="font-semibold text-slate-800 dark:text-slate-200">{bestMatch.metrics?.walkingMeters} m</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 dark:text-slate-400 block">Waiting</span>
+                      <span className="font-semibold text-slate-800 dark:text-slate-200">~{bestMatch.metrics?.etaMinutes} min</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 dark:text-slate-400 block">Crowd</span>
+                      <span className="font-semibold text-slate-800 dark:text-slate-200">{bestMatch.metrics?.occupancyPercentage}%</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 dark:text-slate-400 block">On-Time</span>
+                      <span className="font-semibold text-slate-800 dark:text-slate-200">{bestMatch.metrics?.reliabilityPercentage}%</span>
+                    </div>
+                  </div>
+
+                  {/* Microcopy Justification */}
+                  <p className="text-xs text-slate-600 dark:text-slate-300 mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+                    {bestMatch.explanation}
+                  </p>
+
+                  {/* Card Actions */}
+                  <div className="flex items-center justify-between pt-2.5 mt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedCandidateForWhy(bestMatch);
+                      }}
+                      className="text-sky-700 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 font-medium flex items-center gap-1"
+                    >
+                      <HelpCircle className="h-3.5 w-3.5" />
+                      <span>Why this route?</span>
+                    </button>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPassBus(bestMatch.bus);
+                        setShowPassModal(true);
+                      }}
+                      className="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-medium border border-transparent dark:border-slate-700"
+                    >
+                      Get Boarding Pass
+                    </button>
+                  </div>
+                </div>
+
+                {/* Alternative 1 Card */}
+                {secondBest && (
+                  <div
+                    onClick={() => setSelectedCandidate(secondBest)}
+                    className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
+                      activeCandidate?.candidateId === secondBest.candidateId
+                        ? 'bg-sky-50/50 dark:bg-sky-950/40 border-sky-600 shadow-sm'
+                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                        Alternative 1
+                      </span>
+                      <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
+                        Score: {secondBest.score}/100
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-bold text-slate-900 dark:text-white text-xs">
+                          {secondBest.bus?.busNumber}
+                        </h4>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400">{secondBest.route?.name}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block leading-tight">
+                          {secondBest.metrics?.travelTimeMinutes} min
+                        </span>
+                        <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 font-mono">
+                          {secondBest.metrics?.distanceKm} km
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 xs:grid-cols-4 gap-2 pt-2 mt-2 border-t border-slate-100 dark:border-slate-800 text-[10px] text-slate-600 dark:text-slate-400">
+                      <div>Walk: <strong className="text-slate-800 dark:text-slate-200">{secondBest.metrics?.walkingMeters}m</strong></div>
+                      <div>Wait: <strong className="text-slate-800 dark:text-slate-200">{secondBest.metrics?.etaMinutes}m</strong></div>
+                      <div>Crowd: <strong className="text-slate-800 dark:text-slate-200">{secondBest.metrics?.occupancyPercentage}%</strong></div>
+                      <div>Reliable: <strong className="text-slate-800 dark:text-slate-200">{secondBest.metrics?.reliabilityPercentage}%</strong></div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Alternative 2 Card */}
+                {thirdBest && (
+                  <div
+                    onClick={() => setSelectedCandidate(thirdBest)}
+                    className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
+                      activeCandidate?.candidateId === thirdBest.candidateId
+                        ? 'bg-sky-50/50 dark:bg-sky-950/40 border-sky-600 shadow-sm'
+                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                        Alternative 2
+                      </span>
+                      <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
+                        Score: {thirdBest.score}/100
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-bold text-slate-900 dark:text-white text-xs">
+                          {thirdBest.bus?.busNumber}
+                        </h4>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400">{thirdBest.route?.name}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block leading-tight">
+                          {thirdBest.metrics?.travelTimeMinutes} min
+                        </span>
+                        <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 font-mono">
+                          {thirdBest.metrics?.distanceKm} km
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 xs:grid-cols-4 gap-2 pt-2 mt-2 border-t border-slate-100 dark:border-slate-800 text-[10px] text-slate-600 dark:text-slate-400">
+                      <div>Walk: <strong className="text-slate-800 dark:text-slate-200">{thirdBest.metrics?.walkingMeters}m</strong></div>
+                      <div>Wait: <strong className="text-slate-800 dark:text-slate-200">{thirdBest.metrics?.etaMinutes}m</strong></div>
+                      <div>Crowd: <strong className="text-slate-800 dark:text-slate-200">{thirdBest.metrics?.occupancyPercentage}%</strong></div>
+                      <div>Reliable: <strong className="text-slate-800 dark:text-slate-200">{thirdBest.metrics?.reliabilityPercentage}%</strong></div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Assistant Prompt Card */}
+            <div className="p-3.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <Sparkles className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
+                  Ask College Bus Assistant
+                </span>
+                <button
+                  onClick={onOpenAI}
+                  className="text-sky-700 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 font-semibold"
+                >
+                  Open Assistant &rarr;
+                </button>
+              </div>
+              <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
+                Have specific questions about this journey? The assistant knows your current search, arrival ETA, and crowding levels.
+              </p>
+            </div>
+          </div>
+
+          {/* Right Column: Road-Routing Map */}
+          <div className="lg:col-span-7 space-y-2">
+            <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
+              <div className="flex items-center gap-1.5">
+                <span className="font-semibold text-slate-900 dark:text-white">Road Transit Map</span>
+                <span>&bull;</span>
+                <span>Real road network via OSRM</span>
+              </div>
+              {currentSourceStop && currentDestStop && (
+                <span className="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[280px]">
+                  {currentSourceStop.name.split(' (')[0]} &rarr; {currentDestStop.name.split(' (')[0]}
+                </span>
+              )}
+            </div>
+
+            <TransitMap
+              buses={buses}
+              stops={stops}
+              routes={routes}
+              selectedBus={nextBus}
+              recommendedRoute={activeCandidate}
+              alternativeRoutes={
+                recommendation
+                  ? [secondBest, thirdBest].filter(Boolean)
+                  : []
+              }
+              sourceStop={sourceStopId}
+              destinationStop={destinationStopId}
+              userLocation={userCoords}
+              destinationLocation={
+                currentDestStop ? [currentDestStop.latitude, currentDestStop.longitude] : null
+              }
+              center={
+                currentSourceStop
+                  ? [currentSourceStop.latitude, currentSourceStop.longitude]
+                  : GREATER_NOIDA_CENTER
+              }
+              zoom={13}
+              height="560px"
+              onSelectDeparture={(id) => {
+                setSourceStopId(id);
+                fetchRecommendation(id, destinationStopId, activeMode);
+              }}
+              onSelectDestination={(id) => {
+                setDestinationStopId(id);
+                fetchRecommendation(sourceStopId, id, activeMode);
+              }}
+              onOpenStopBoard={(id, name) => {
+                setStopBoardInfo({ id, name });
+                setShowStopBoard(true);
+              }}
+              onLocateUser={handleDetectLocation}
+            />
+          </div>
         </div>
       </div>
 

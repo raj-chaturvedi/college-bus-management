@@ -29,6 +29,7 @@ import {
   RefreshCw,
   X
 } from 'lucide-react';
+import useScrollLock from '../utils/useScrollLock';
 
 export default function AdminDashboardPage({ initialTab = 'analytics' }) {
   const [activeTab, setActiveTab] = useState(initialTab); // 'analytics', 'buses', 'routes', 'stops', 'drivers', 'users'
@@ -69,6 +70,8 @@ export default function AdminDashboardPage({ initialTab = 'analytics' }) {
   // Quick edit occupancy modal
   const [editingOccupancyBus, setEditingOccupancyBus] = useState(null);
   const [editPassengerCount, setEditPassengerCount] = useState(30);
+
+  useScrollLock(Boolean(showAddBusModal || showAddStopModal || showAddDriverModal || editingOccupancyBus));
 
   const fetchAllAdminData = async () => {
     setLoading(true);

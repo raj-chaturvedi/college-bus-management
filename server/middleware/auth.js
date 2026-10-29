@@ -31,6 +31,14 @@ const verifyToken = async (req, res, next) => {
       });
     }
 
+    if (user.isVerified === false && user.authProvider !== 'google') {
+      return res.status(403).json({
+        success: false,
+        isUnverified: true,
+        message: 'Your account has not been verified. Please complete email verification.'
+      });
+    }
+
     req.user = user;
     next();
   } catch (error) {

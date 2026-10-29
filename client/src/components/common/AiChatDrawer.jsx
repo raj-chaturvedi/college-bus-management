@@ -20,6 +20,7 @@ import {
   ArrowRight,
   Sparkles
 } from 'lucide-react';
+import { useScrollLock } from '../../utils/useScrollLock';
 
 const QUICK_ACTIONS = [
   "Why this route?",
@@ -38,6 +39,9 @@ export default function AiChatDrawer({
   onHighlightBus = null
 }) {
   const { user } = useAuth();
+
+  // Lock background body scroll when drawer is open
+  useScrollLock(isOpen);
 
   const [messages, setMessages] = useState([
     {
@@ -236,9 +240,17 @@ export default function AiChatDrawer({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[500] app-drawer-backdrop overflow-hidden bg-slate-900/40 backdrop-blur-sm">
-      <div className="absolute inset-y-0 right-0 flex max-w-full pl-6">
-        <div className="w-screen max-w-md bg-white border-l border-slate-200 shadow-xl flex flex-col justify-between">
+    <div
+      className="fixed inset-0 z-[500] app-drawer-backdrop overflow-hidden bg-slate-900/40 backdrop-blur-sm"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="absolute inset-y-0 right-0 flex max-w-full pl-4 sm:pl-6">
+        <div
+          className="w-screen max-w-md bg-white border-l border-slate-200 shadow-xl flex flex-col justify-between h-full max-h-[100dvh] modal-scroll-lock overscroll-contain"
+          onClick={(e) => e.stopPropagation()}
+        >
           {/* Header */}
           <div className="px-5 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
             <div className="flex items-center gap-2.5">

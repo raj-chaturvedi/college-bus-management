@@ -74,7 +74,7 @@ export default function AlertsPage() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2 text-xs">
+      <div className="flex items-center gap-2 border-b border-slate-200 pb-2 text-xs overflow-x-auto no-scrollbar">
         {['ALL', 'DELAY', 'CROWD', 'INCIDENT', 'WEATHER'].map((cat) => (
           <button
             key={cat}

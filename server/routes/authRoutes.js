@@ -2,20 +2,27 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 const { verifyToken } = require('../middleware/auth');
+const {
+  registerLimiter,
+  loginLimiter,
+  verifyEmailLimiter,
+  resendVerificationLimiter,
+  passwordResetLimiter
+} = require('../middleware/rateLimiter');
 
-// Public authentication endpoints
-router.post('/register', authController.register);
-router.post('/login', authController.login);
-router.post('/google', authController.loginWithGoogle);
+// Public authentication endpoints with rate limits
+router.post('/register', registerLimiter, authController.register);
+router.post('/login', loginLimiter, authController.login);
+router.post('/google', loginLimiter, authController.loginWithGoogle);
 
-// Email verification endpoints
-router.post('/verify-email', authController.verifyEmail);
-router.get('/verify-email/:token', authController.verifyEmail);
-router.post('/resend-verification', authController.resendVerification);
+// Email verification endpoints with rate limits
+router.post('/verify-email', verifyEmailLimiter, authController.verifyEmail);
+router.get('/verify-email/:token', verifyEmailLimiter, authController.verifyEmail);
+router.post('/resend-verification', resendVerificationLimiter, authController.resendVerification);
 
-// Password recovery endpoints
-router.post('/forgot-password', authController.forgotPassword);
-router.post('/reset-password', authController.resetPassword);
+// Password recovery endpoints with rate limits
+router.post('/forgot-password', passwordResetLimiter, authController.forgotPassword);
+router.post('/reset-password', passwordResetLimiter, authController.resetPassword);
 
 // Configuration & profile endpoints
 router.post('/configure-gmail', authController.configureGmail);
@@ -24,3 +31,4 @@ router.get('/me', verifyToken, authController.getMe);
 router.put('/preferences', verifyToken, authController.updatePreferences);
 
 module.exports = router;
+

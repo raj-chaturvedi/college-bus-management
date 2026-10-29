@@ -119,28 +119,29 @@ class BusSimulationEngine {
         state = {
           coordIndex: initialIndex,
           direction: Math.random() > 0.4 ? 'outbound' : 'inbound',
-          speed: Math.round(26 + Math.random() * 12) // Realistic city bus speed 26-38 km/h
+          speed: Math.round(18 + Math.random() * 6) // Slow, realistic campus/city transit speed: 18-24 km/h
         };
         this.busProgress.set(busId, state);
       }
 
-      // Progress along road geometry by 2-4 coordinate points per 3-second cycle (realistic bus progress ~25m)
-      const stepDelta = Math.max(1, Math.min(4, Math.round(state.speed / 10)));
+      // Progress along road geometry by exactly 1 coordinate point per 3-second cycle (~15m at ~18-20 km/h)
+      // Guarantees smooth, slow, measured movement without coordinate teleportation
+      const stepDelta = 1;
 
       if (state.direction === 'outbound') {
         state.coordIndex += stepDelta;
         if (state.coordIndex >= roadPath.length - 1) {
           state.coordIndex = roadPath.length - 1;
           state.direction = 'inbound';
-          // Slight turnaround delay
-          state.speed = Math.round(24 + Math.random() * 8);
+          // Turnaround pause / slow speed
+          state.speed = Math.round(16 + Math.random() * 4);
         }
       } else {
         state.coordIndex -= stepDelta;
         if (state.coordIndex <= 0) {
           state.coordIndex = 0;
           state.direction = 'outbound';
-          state.speed = Math.round(26 + Math.random() * 10);
+          state.speed = Math.round(18 + Math.random() * 5);
         }
       }
 

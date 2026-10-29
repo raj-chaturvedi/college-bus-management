@@ -1,4 +1,5 @@
 import React from 'react';
+import useScrollLock from '../../utils/useScrollLock';
 import {
   X,
   CheckCircle2,
@@ -12,6 +13,8 @@ import {
 } from 'lucide-react';
 
 export default function WhyThisRouteModal({ isOpen, onClose, candidate, activeMode }) {
+  useScrollLock(isOpen);
+
   if (!isOpen || !candidate) return null;
 
   const { bus, route, scores, metrics, explanation, score } = candidate;

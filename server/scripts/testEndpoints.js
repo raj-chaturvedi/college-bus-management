@@ -91,8 +91,10 @@ async function runTests() {
   console.log('✓ Test 7 Passed: Email dispatch handled gracefully without crashing.\n');
 
   // Cleanup test incident
-  const Incident = mongoose.model('Incident');
-  await Incident.findByIdAndDelete(testIncident._id);
+  if (mongoose.connection?.readyState === 1) {
+    const Incident = mongoose.model('Incident');
+    await Incident.findByIdAndDelete(testIncident._id);
+  }
   console.log('   - Cleaned up test incident.');
 
   await mongoose.disconnect();

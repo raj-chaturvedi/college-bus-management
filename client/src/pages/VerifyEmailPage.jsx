@@ -7,12 +7,13 @@ import { MailCheck, CheckCircle2, AlertCircle, ArrowRight, Loader2, KeyRound } f
 export default function VerifyEmailPage() {
   const [searchParams] = useSearchParams();
   const tokenFromUrl = searchParams.get('token') || searchParams.get('code') || '';
+  const emailFromUrl = searchParams.get('email') || '';
   const navigate = useNavigate();
 
   const [tokenInput, setTokenInput] = useState(tokenFromUrl);
   const [status, setStatus] = useState('idle'); // 'idle' | 'verifying' | 'success' | 'error'
   const [message, setMessage] = useState('');
-  const [resendEmail, setResendEmail] = useState('');
+  const [resendEmail, setResendEmail] = useState(emailFromUrl);
   const [resending, setResending] = useState(false);
   const [resendMsg, setResendMsg] = useState('');
 

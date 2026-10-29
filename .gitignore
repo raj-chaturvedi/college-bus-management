@@ -31,3 +31,4 @@ yarn-error.log*
 
 # Backups
 _backup_pre_master_fix/
+_backup_*/

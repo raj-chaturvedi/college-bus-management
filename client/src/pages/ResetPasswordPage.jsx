@@ -23,11 +23,11 @@ export default function ResetPasswordPage() {
   const strengthInfo = useMemo(() => {
     if (!newPassword) return { score: 0, label: 'None', color: 'bg-slate-200', text: 'text-slate-400', width: 'w-0' };
     let score = 0;
-    if (newPassword.length >= 8) score += 1;
+    if (newPassword.length >= 10) score += 1;
     if (/[A-Z]/.test(newPassword)) score += 1;
     if (/[a-z]/.test(newPassword)) score += 1;
     if (/[0-9]/.test(newPassword)) score += 1;
-    if (/[^A-Za-z0-9]/.test(newPassword)) score += 1;
+    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(newPassword)) score += 1;
 
     if (score <= 2) return { score: 1, label: 'Weak', color: 'bg-rose-500', text: 'text-rose-600', width: 'w-1/4' };
     if (score === 3) return { score: 2, label: 'Fair', color: 'bg-amber-500', text: 'text-amber-600', width: 'w-2/4' };
@@ -46,8 +46,13 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    if (newPassword.length < 8) {
-      setError('Password must be at least 8 characters long.');
+    if (newPassword.length < 10) {
+      setError('Password must be at least 10 characters long.');
+      return;
+    }
+
+    if (!/[A-Z]/.test(newPassword) || !/[a-z]/.test(newPassword) || !/[0-9]/.test(newPassword) || !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(newPassword)) {
+      setError('Password must contain uppercase, lowercase, numbers, and symbols.');
       return;
     }
 

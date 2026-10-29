@@ -61,21 +61,21 @@ export default function Navbar({ onOpenAI, onOpenScanner, unreadAlertsCount = 0 
     <header className="sticky top-0 z-30 w-full border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md transition-colors duration-200">
       <div className="flex h-16 items-center justify-between px-3 sm:px-6 lg:px-8">
         {/* Brand / Logo */}
-        <div className="flex items-center space-x-2.5 sm:space-x-3">
-          <Link to="/dashboard" className="flex items-center space-x-2.5 sm:space-x-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-600 text-white shadow-sm shadow-sky-500/20">
+        <div className="flex items-center space-x-2 sm:space-x-3 shrink min-w-0">
+          <Link to="/dashboard" className="flex items-center space-x-2 sm:space-x-3 min-w-0">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-sky-600 text-white shadow-sm shadow-sky-500/20">
               <Bus className="h-5 w-5" />
             </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white tracking-tight">
+            <div className="min-w-0">
+              <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
+                <span className="text-xs sm:text-base font-bold text-slate-900 dark:text-white tracking-tight truncate max-w-[120px] xs:max-w-[160px] sm:max-w-none">
                   Greater Noida Transit
                 </span>
                 <span className="hidden sm:inline-block rounded bg-sky-50 dark:bg-sky-950/80 px-1.5 py-0.5 text-[10px] font-semibold text-sky-800 dark:text-sky-300 border border-sky-100 dark:border-sky-800">
                   Live
                 </span>
               </div>
-              <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 hidden xs:block">College Bus Management Network</p>
+              <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 hidden xs:block truncate">College Bus Management Network</p>
             </div>
           </Link>
         </div>
@@ -160,7 +160,7 @@ export default function Navbar({ onOpenAI, onOpenScanner, unreadAlertsCount = 0 
 
             {/* Alerts Dropdown */}
             {alertsDropdown && (
-              <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-4 z-50">
+              <div className="absolute right-0 mt-2 w-[calc(100vw-24px)] max-w-sm sm:w-96 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-4 z-50">
                 <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 dark:border-slate-800">
                   <h4 className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
                     <Bell className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
