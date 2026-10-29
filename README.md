@@ -232,9 +232,3 @@ Pre-seeded accounts are available for testing with 1-click quick-fill buttons on
 - `GET /api/buses/live` — 3-second live road telemetry with headings and occupancy
 - `POST /api/recommendations` — Multi-criteria route recommendation engine
 - `POST /api/ai/chat` — Context-grounded Gemini AI transit chatbot
-
----
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
