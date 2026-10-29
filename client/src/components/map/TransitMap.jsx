@@ -129,84 +129,80 @@ const createBusIcon = (bus, isSelected = false) => {
     className: 'realistic-bus-vehicle-marker',
     html: `
       <div style="
-        width: 36px;
-        height: 52px;
+        width: 38px;
+        height: 60px;
         position: relative;
         cursor: pointer;
         ${glowStyle}
       ">
         <div style="
-          width: 36px;
-          height: 52px;
+          width: 38px;
+          height: 60px;
           transform: rotate(${heading}deg);
-          transform-origin: 18px 26px;
+          transform-origin: 19px 30px;
           transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
         ">
-          <svg width="36" height="52" viewBox="0 0 36 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- Front Headlight Beams (subtle luminous gradient) -->
-            <polygon points="6,6 1,0 11,0" fill="url(#hbeam)" opacity="0.4"/>
-            <polygon points="30,6 25,0 35,0" fill="url(#hbeam)" opacity="0.4"/>
+          <svg width="38" height="60" viewBox="0 0 38 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Front Headlight Beams -->
+            <polygon points="7,5 1,0 12,0" fill="#fef08a" opacity="0.35"/>
+            <polygon points="31,5 26,0 37,0" fill="#fef08a" opacity="0.35"/>
 
-            <defs>
-              <linearGradient id="hbeam" x1="0%" y1="100%" x2="0%" y2="0%">
-                <stop offset="0%" stop-color="#fef08a" stop-opacity="0.9"/>
-                <stop offset="100%" stop-color="#fef08a" stop-opacity="0"/>
-              </linearGradient>
-              <linearGradient id="glassGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#0284c7"/>
-                <stop offset="100%" stop-color="#0f172a"/>
-              </linearGradient>
-            </defs>
+            <!-- Side Rearview Mirrors (Distinctive Large Bus Ears) -->
+            <rect x="0" y="8" width="3.5" height="7" rx="1.5" fill="#0f172a" stroke="#ffffff" stroke-width="0.8"/>
+            <rect x="34.5" y="8" width="3.5" height="7" rx="1.5" fill="#0f172a" stroke="#ffffff" stroke-width="0.8"/>
 
-            <!-- Side Wing Mirrors -->
-            <rect x="0.5" y="12" width="3" height="5.5" rx="1.5" fill="#1e293b" stroke="#ffffff" stroke-width="0.8"/>
-            <rect x="32.5" y="12" width="3" height="5.5" rx="1.5" fill="#1e293b" stroke="#ffffff" stroke-width="0.8"/>
+            <!-- Heavy Commercial Bus Body (Long Boxy Transit Coach) -->
+            <rect x="3" y="4" width="32" height="52" rx="4" fill="#0f172a" stroke="#ffffff" stroke-width="1.8"/>
 
-            <!-- Main Heavy Bus Chassis Outer Shell (Dark Navy with Crisp White Border) -->
-            <rect x="3" y="6" width="30" height="42" rx="6" fill="#0f172a" stroke="#ffffff" stroke-width="1.8"/>
+            <!-- Main Coach Roof in Dynamic Crowd Color -->
+            <rect x="4.5" y="5.5" width="29" height="49" rx="3" fill="${crowdColor}"/>
 
-            <!-- Roof Body Accent in Dynamic Crowd Color -->
-            <rect x="4.8" y="7.8" width="26.4" height="38.4" rx="4.5" fill="${crowdColor}" fill-opacity="0.95"/>
+            <!-- Flat Bus Front Bumper with Destination LED Sign -->
+            <rect x="7" y="5.5" width="24" height="4" rx="1" fill="#090d16"/>
+            <text x="19" y="8.7" fill="#38bdf8" font-size="3.5" font-weight="900" text-anchor="middle" font-family="monospace">BUS &bull; GNTA</text>
 
-            <!-- Directional Forward Chevron (Nose Pointer) -->
-            <polygon points="18,8.5 13.5,13.5 22.5,13.5" fill="#ffffff" opacity="0.95"/>
+            <!-- Large Panoramic Front Windshield with Center Divider -->
+            <rect x="6.5" y="10.5" width="25" height="9" rx="1.5" fill="#0284c7" stroke="#0f172a" stroke-width="1"/>
+            <line x1="19" y1="10.5" x2="19" y2="19.5" stroke="#ffffff" stroke-width="0.8"/>
 
-            <!-- Tinted Front Curved Windshield -->
-            <path d="M7 14.5 Q18 11.5 29 14.5 L28 19.5 Q18 17.5 8 19.5 Z" fill="url(#glassGrad)" stroke="#38bdf8" stroke-width="0.8"/>
+            <!-- Passenger Windows (Series of 5 Long Side Windows on each side) -->
+            <rect x="4.8" y="21" width="2" height="4.5" rx="0.5" fill="#0f172a"/>
+            <rect x="31.2" y="21" width="2" height="4.5" rx="0.5" fill="#0f172a"/>
+            <rect x="4.8" y="27" width="2" height="4.5" rx="0.5" fill="#0f172a"/>
+            <rect x="31.2" y="27" width="2" height="4.5" rx="0.5" fill="#0f172a"/>
+            <rect x="4.8" y="33" width="2" height="4.5" rx="0.5" fill="#0f172a"/>
+            <rect x="31.2" y="33" width="2" height="4.5" rx="0.5" fill="#0f172a"/>
+            <rect x="4.8" y="39" width="2" height="4.5" rx="0.5" fill="#0f172a"/>
+            <rect x="31.2" y="39" width="2" height="4.5" rx="0.5" fill="#0f172a"/>
 
-            <!-- Side Passenger Windows Left & Right -->
-            <rect x="5.5" y="21" width="2" height="3.5" rx="0.5" fill="#0f172a" opacity="0.75"/>
-            <rect x="28.5" y="21" width="2" height="3.5" rx="0.5" fill="#0f172a" opacity="0.75"/>
-            <rect x="5.5" y="26" width="2" height="3.5" rx="0.5" fill="#0f172a" opacity="0.75"/>
-            <rect x="28.5" y="26" width="2" height="3.5" rx="0.5" fill="#0f172a" opacity="0.75"/>
-            <rect x="5.5" y="31" width="2" height="3.5" rx="0.5" fill="#0f172a" opacity="0.75"/>
-            <rect x="28.5" y="31" width="2" height="3.5" rx="0.5" fill="#0f172a" opacity="0.75"/>
+            <!-- Large Dual Commercial Roof AC Hatch Units -->
+            <rect x="11.5" y="22" width="15" height="8" rx="1.5" fill="#0f172a" stroke="#ffffff" stroke-width="0.8"/>
+            <line x1="13.5" y1="24.5" x2="24.5" y2="24.5" stroke="${crowdAccent}" stroke-width="0.8"/>
+            <line x1="13.5" y1="27.5" x2="24.5" y2="27.5" stroke="${crowdAccent}" stroke-width="0.8"/>
 
-            <!-- Roof Ventilation / AC Unit -->
-            <rect x="11" y="21.5" width="14" height="13.5" rx="2" fill="#0f172a" stroke="#ffffff" stroke-width="0.8"/>
-            <line x1="13.5" y1="24.5" x2="22.5" y2="24.5" stroke="${crowdAccent}" stroke-width="1"/>
-            <line x1="13.5" y1="27.5" x2="22.5" y2="27.5" stroke="${crowdAccent}" stroke-width="1"/>
-            <line x1="13.5" y1="30.5" x2="22.5" y2="30.5" stroke="${crowdAccent}" stroke-width="1"/>
+            <rect x="11.5" y="32" width="15" height="8" rx="1.5" fill="#0f172a" stroke="#ffffff" stroke-width="0.8"/>
+            <line x1="13.5" y1="34.5" x2="24.5" y2="34.5" stroke="${crowdAccent}" stroke-width="0.8"/>
+            <line x1="13.5" y1="37.5" x2="24.5" y2="37.5" stroke="${crowdAccent}" stroke-width="0.8"/>
 
-            <!-- Rear High-Contrast Plate Tag (Like Zomato vehicle "44" badge) -->
-            <rect x="8" y="37" width="20" height="7.5" rx="2" fill="#0f172a" stroke="#ffffff" stroke-width="1"/>
-            <text x="18" y="42.8" fill="#ffffff" font-size="6.5" font-weight="900" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, monospace">${plateLabel}</text>
+            <!-- Rear High-Contrast Bus Number Badge -->
+            <rect x="8" y="42" width="22" height="9" rx="2" fill="#0f172a" stroke="#ffffff" stroke-width="1"/>
+            <text x="19" y="48.5" fill="#ffffff" font-size="7" font-weight="900" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, monospace">${plateLabel}</text>
 
-            <!-- Twin Front Headlights (Bright Golden Yellow) -->
-            <circle cx="7" cy="8" r="1.5" fill="#fef08a" stroke="#ca8a04" stroke-width="0.5"/>
-            <circle cx="29" cy="8" r="1.5" fill="#fef08a" stroke="#ca8a04" stroke-width="0.5"/>
+            <!-- Dual Headlights (Yellow) -->
+            <circle cx="7" cy="5" r="1.5" fill="#fef08a" stroke="#ca8a04" stroke-width="0.5"/>
+            <circle cx="31" cy="5" r="1.5" fill="#fef08a" stroke="#ca8a04" stroke-width="0.5"/>
 
-            <!-- Twin Rear Taillights (Red) -->
-            <circle cx="7" cy="46.5" r="1.4" fill="#dc2626"/>
-            <circle cx="29" cy="46.5" r="1.4" fill="#dc2626"/>
+            <!-- Dual Taillights (Red) -->
+            <circle cx="7.5" cy="54.5" r="1.4" fill="#dc2626"/>
+            <circle cx="30.5" cy="54.5" r="1.4" fill="#dc2626"/>
           </svg>
         </div>
       </div>
     `,
-    iconSize: [36, 52],
-    iconAnchor: [18, 26],
-    popupAnchor: [0, -28],
-    tooltipAnchor: [0, -28]
+    iconSize: [38, 60],
+    iconAnchor: [19, 30],
+    popupAnchor: [0, -32],
+    tooltipAnchor: [0, -32]
   });
 };
 

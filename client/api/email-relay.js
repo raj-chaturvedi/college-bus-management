@@ -121,7 +121,13 @@ export default async function handler(req, res) {
     const toStop = data?.toStop || data?.pass?.toStop || 'Pari Chowk Central Interchange';
     const passengerName = data?.passengerName || data?.userName || 'Student Commuter';
     const seatNumber = data?.seatNumber || data?.pass?.seatNumber || 'Window Seat';
-    const expiryTime = data?.expiryTime || new Date(Date.now() + 10 * 60 * 1000).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' }) + ' IST';
+    
+    // Exact 5-minute validity and strict IST time formatting
+    const rawValidUntil = data?.validUntil || data?.pass?.validUntil || (Date.now() + 5 * 60 * 1000);
+    const validUntilDate = new Date(rawValidUntil);
+    const expiryTime = !isNaN(validUntilDate.getTime())
+      ? validUntilDate.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }) + ' IST'
+      : new Date(Date.now() + 5 * 60 * 1000).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }) + ' IST';
     
     // High-resolution public QR code image that displays reliably in Gmail without blocked attachments
     const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=${encodeURIComponent(passCode)}`;
@@ -151,7 +157,7 @@ export default async function handler(req, res) {
         <div class="container">
           <div class="header">
             <h2 style="margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -0.5px;">GREATER NOIDA TRANSIT AUTHORITY</h2>
-            <p style="margin: 4px 0 0; font-size: 12px; color: #e0f2fe;">10-Minute Dynamic Boarding QR Token</p>
+            <p style="margin: 4px 0 0; font-size: 12px; color: #e0f2fe;">5-Minute Dynamic Boarding QR Token</p>
           </div>
           <div style="padding: 0 8px;">
             <div class="ticket-card">
@@ -178,7 +184,7 @@ export default async function handler(req, res) {
               </div>
 
               <div class="timer-box">
-                &#9200; VALID STRICTLY FOR 10 MINUTES &bull; EXPIRES AT ${expiryTime}
+                &#9200; VALID STRICTLY FOR 5 MINUTES &bull; EXPIRES AT ${expiryTime}
               </div>
             </div>
           </div>

@@ -631,8 +631,11 @@ async function sendPassIssuedEmail({ toEmail, userName, pass }) {
       color: { dark: '#090d16', light: '#ffffff' }
     });
 
-    const expTime = new Date(pass.validUntil).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const formattedDate = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const validDate = new Date(pass.validUntil || (Date.now() + 5 * 60 * 1000));
+    const expTime = !isNaN(validDate.getTime())
+      ? validDate.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }) + ' IST'
+      : new Date(Date.now() + 5 * 60 * 1000).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }) + ' IST';
+    const formattedDate = new Date().toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', month: 'short', day: 'numeric', year: 'numeric' });
 
     const htmlContent = `
       <!DOCTYPE html>
@@ -655,7 +658,7 @@ async function sendPassIssuedEmail({ toEmail, userName, pass }) {
         <div class="container">
           <div class="header">
             <h2 style="margin: 0; font-size: 18px;">GREATER NOIDA TRANSIT AUTHORITY (GNTA)</h2>
-            <p style="margin: 4px 0 0; font-size: 12px; color: #e0f2fe;">10-Minute Dynamic Boarding QR Token</p>
+            <p style="margin: 4px 0 0; font-size: 12px; color: #e0f2fe;">5-Minute Dynamic Boarding QR Token</p>
           </div>
           <div style="padding: 0 8px;">
             <div class="ticket-card">
@@ -676,7 +679,7 @@ async function sendPassIssuedEmail({ toEmail, userName, pass }) {
               </div>
 
               <div class="timer-box">
-                &#9200; VALID STRICTLY FOR 10 MINUTES &bull; EXPIRES AT ${expTime}
+                &#9200; VALID STRICTLY FOR 5 MINUTES &bull; EXPIRES AT ${expTime}
               </div>
             </div>
           </div>
