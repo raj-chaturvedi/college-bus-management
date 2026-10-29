@@ -41,8 +41,14 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png'
 });
 
-// Custom Clean Bus Stop Marker
+// Custom Clean Bus Stop Marker with in-memory caching to avoid GC stutter on mobile
+const stopIconCache = new Map();
 const createStopIcon = (stop, isSource = false, isDest = false) => {
+  const cacheKey = `${stop._id || stop.id || stop.code || stop.name}_${isSource}_${isDest}`;
+  if (stopIconCache.has(cacheKey)) {
+    return stopIconCache.get(cacheKey);
+  }
+
   let bgColor = '#0284c7';
   let badgeText = '🚏';
 
@@ -54,7 +60,7 @@ const createStopIcon = (stop, isSource = false, isDest = false) => {
     badgeText = '🎓';
   }
 
-  return L.divIcon({
+  const icon = L.divIcon({
     className: 'custom-stop-marker',
     html: `
       <div style="
@@ -78,6 +84,9 @@ const createStopIcon = (stop, isSource = false, isDest = false) => {
     iconAnchor: [13, 13],
     popupAnchor: [0, -14]
   });
+
+  stopIconCache.set(cacheKey, icon);
+  return icon;
 };
 
 // Helper for 8-point compass bearing
@@ -206,13 +215,15 @@ const createBusIcon = (bus, isSelected = false) => {
   });
 };
 
-// Smooth animated bus marker that linearly interpolates position between 3s telemetry ticks
-const SmoothBusMarker = ({ bus, isSelected, onClick }) => {
+// Ultra-smooth zero-overhead bus marker that updates Leaflet native position directly
+// Bypasses 960 React component state updates per second, giving 60fps native gestures on mobile
+const SmoothBusMarker = React.memo(({ bus, isSelected, onClick }) => {
   const targetLat = bus.currentLocation?.latitude;
   const targetLng = bus.currentLocation?.longitude;
-  const [currentPos, setCurrentPos] = useState([targetLat, targetLng]);
+  const markerRef = useRef(null);
   const prevPosRef = useRef([targetLat, targetLng]);
   const targetPosRef = useRef([targetLat, targetLng]);
+  const currentPosRef = useRef([targetLat, targetLng]);
   const animStartTimeRef = useRef(null);
   const animFrameRef = useRef(null);
 
@@ -224,16 +235,19 @@ const SmoothBusMarker = ({ bus, isSelected, onClick }) => {
     // Skip if position hasn't changed
     if (prev && prev[0] === newTarget[0] && prev[1] === newTarget[1]) return;
 
-    // If large jump (e.g. initial render or route switch > 0.01 deg ~ 1km), snap immediately
+    // If large jump (> 0.01 deg ~ 1km), snap immediately
     const dist = prev ? Math.hypot(newTarget[0] - prev[0], newTarget[1] - prev[1]) : 0;
     if (dist > 0.01 || !prev || !prev[0]) {
-      setCurrentPos(newTarget);
       prevPosRef.current = newTarget;
       targetPosRef.current = newTarget;
+      currentPosRef.current = newTarget;
+      if (markerRef.current) {
+        markerRef.current.setLatLng(newTarget);
+      }
       return;
     }
 
-    prevPosRef.current = currentPos;
+    prevPosRef.current = currentPosRef.current;
     targetPosRef.current = newTarget;
     animStartTimeRef.current = performance.now();
     const duration = 2800; // Linear glide across 2.8s of the 3s update tick
@@ -244,7 +258,12 @@ const SmoothBusMarker = ({ bus, isSelected, onClick }) => {
       // Smooth linear interpolation along road coordinates
       const lat = prevPosRef.current[0] + (targetPosRef.current[0] - prevPosRef.current[0]) * progress;
       const lng = prevPosRef.current[1] + (targetPosRef.current[1] - prevPosRef.current[1]) * progress;
-      setCurrentPos([lat, lng]);
+      currentPosRef.current = [lat, lng];
+
+      // Direct native Leaflet update without triggering expensive React virtual DOM diffing
+      if (markerRef.current) {
+        markerRef.current.setLatLng([lat, lng]);
+      }
 
       if (progress < 1) {
         animFrameRef.current = requestAnimationFrame(animate);
@@ -269,14 +288,15 @@ const SmoothBusMarker = ({ bus, isSelected, onClick }) => {
 
   return (
     <Marker
-      position={currentPos}
+      ref={markerRef}
+      position={currentPosRef.current}
       icon={createBusIcon(bus, isSelected)}
       eventHandlers={{
         click: () => onClick && onClick(bus)
       }}
     >
-      <Tooltip direction="top" offset={[0, -26]} opacity={0.95}>
-        <div className="font-sans text-[11px] font-bold text-slate-900 flex items-center gap-1.5 py-0.5">
+      <Tooltip direction="top" offset={[0, -26]} opacity={0.95} interactive={false}>
+        <div className="font-sans text-[11px] font-bold text-slate-900 flex items-center gap-1.5 py-0.5 pointer-events-none">
           <span>{bus.busNumber}</span>
           <span>&bull;</span>
           <span className={occ === null ? 'text-slate-500' : occ > 80 ? 'text-red-600' : occ >= 50 ? 'text-amber-600' : 'text-emerald-600'}>
@@ -347,11 +367,13 @@ const SmoothBusMarker = ({ bus, isSelected, onClick }) => {
       </Popup>
     </Marker>
   );
-};
+});
 
-// User Location Marker
+// Cached User Location Marker
+let cachedUserIcon = null;
 const createUserLocationIcon = () => {
-  return L.divIcon({
+  if (cachedUserIcon) return cachedUserIcon;
+  cachedUserIcon = L.divIcon({
     className: 'custom-user-marker',
     html: `
       <div style="
@@ -367,6 +389,7 @@ const createUserLocationIcon = () => {
     iconAnchor: [10, 10],
     popupAnchor: [0, -12]
   });
+  return cachedUserIcon;
 };
 
 /**
@@ -434,7 +457,7 @@ function MapLifecycleController({
   return null;
 }
 
-export default function TransitMap({
+function TransitMapComponent({
   buses = [],
   stops = [],
   routes = [],
@@ -748,6 +771,18 @@ export default function TransitMap({
         zoom={zoom}
         zoomControl={false} // Disable Leaflet default so our custom, accessible zoom buttons have exclusive control
         scrollWheelZoom={true}
+        preferCanvas={true} // Hardware-accelerated canvas rendering for all polylines and routes
+        zoomAnimation={true}
+        zoomAnimationThreshold={4}
+        fadeAnimation={true}
+        markerZoomAnimation={true}
+        touchZoom={true}
+        bounceAtZoomLimits={false}
+        inertia={true}
+        inertiaDeceleration={3000}
+        inertiaMaxSpeed={1500}
+        easeLinearity={0.2}
+        wheelPxPerZoomLevel={120}
         style={{ width: '100%', height: '100%' }}
       >
         <MapLifecycleController
@@ -762,6 +797,10 @@ export default function TransitMap({
           attribution={activeTile.attribution}
           url={activeTile.url}
           maxZoom={19}
+          updateWhenZooming={false}
+          updateWhenIdle={true}
+          keepBuffer={6}
+          tileSize={256}
         />
 
         {/* Alternative Routes (Dashed road lines) */}
@@ -1081,3 +1120,6 @@ export default function TransitMap({
     </div>
   );
 }
+
+const TransitMap = React.memo(TransitMapComponent);
+export default TransitMap;

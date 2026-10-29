@@ -76,6 +76,33 @@
   background-color: #f1f5f9 !important;
   z-index: 1 !important;
   isolation: isolate !important;
+  touch-action: pan-x pan-y pinch-zoom;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+/* GPU hardware acceleration for smooth 60fps mobile pinch-to-zoom and panning */
+.leaflet-tile-container img {
+  will-change: transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-pane > svg,
+.leaflet-pane > canvas,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
 }
 
 /* Restrict Leaflet controls from bleeding through */
