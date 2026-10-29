@@ -185,6 +185,33 @@ export default function VerifyEmailPage() {
               </button>
             </form>
 
+            {/* Quick Resend Box */}
+            <div className="pt-3 border-t border-slate-200">
+              <p className="text-[11px] text-slate-500 mb-2">
+                Didn't receive the email? Check your <strong>Spam / Junk</strong> folder, or resend below:
+              </p>
+              <form onSubmit={handleResend} className="flex gap-2">
+                <input
+                  type="email"
+                  required
+                  value={resendEmail}
+                  onChange={(e) => setResendEmail(e.target.value)}
+                  placeholder="Enter registered email"
+                  className="flex-1 px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#0F766E]"
+                />
+                <button
+                  type="submit"
+                  disabled={resending}
+                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs rounded-lg transition disabled:opacity-50 whitespace-nowrap"
+                >
+                  {resending ? 'Sending...' : 'Resend Code'}
+                </button>
+              </form>
+              {resendMsg && (
+                <p className="text-[11px] text-[#0F766E] text-center font-medium mt-1.5">{resendMsg}</p>
+              )}
+            </div>
+
             <div className="pt-2 text-xs text-slate-500">
               Need assistance?{' '}
               <Link to="/login" className="text-[#0F766E] hover:underline font-medium">
