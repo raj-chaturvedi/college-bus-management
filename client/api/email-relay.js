@@ -193,7 +193,64 @@ export default async function handler(req, res) {
     text = `GNTA Boarding Token: ${passCode}\nVehicle: ${busNumber} (${plateNumber})\nFrom: ${fromStop}\nTo: ${toStop}\nValid until: ${expiryTime}\n\nPresent this code to the bus validator.`;
   }
 
-  // 3. RICH PASSWORD RESET EMAIL TEMPLATE
+  // 3. RICH EMAIL VERIFICATION / 6-DIGIT OTP TEMPLATE
+  else if (type === 'VERIFICATION_CODE') {
+    const userName = data?.userName || 'Student Commuter';
+    const code = data?.code || data?.token?.slice(0, 6) || '------';
+    const verifyUrl = data?.verifyUrl || `https://college-bus-management-etd3.vercel.app/verify-email?token=${encodeURIComponent(data?.token || '')}&code=${encodeURIComponent(code)}`;
+    subject = `Verify your Transit Account - Code: ${code}`;
+
+    html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #0b1120; color: #f1f5f9; margin: 0; padding: 24px; }
+          .container { max-width: 540px; margin: 0 auto; background-color: #0f172a; border-radius: 16px; border: 1px solid #1e293b; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
+          .header { background: #0284c7; padding: 24px; text-align: center; }
+          .header h1 { color: #ffffff; margin: 0; font-size: 19px; font-weight: 800; }
+          .content { padding: 28px; line-height: 1.6; }
+          .otp-card { background: #1e293b; border: 2px dashed #0284c7; border-radius: 10px; padding: 18px; text-align: center; margin: 20px 0; }
+          .otp-title { color: #94a3b8; font-size: 12px; text-transform: uppercase; font-weight: 600; letter-spacing: 1px; margin-bottom: 6px; }
+          .otp-code { font-family: monospace; font-size: 34px; font-weight: 800; letter-spacing: 8px; color: #38bdf8; margin: 6px 0; }
+          .otp-sub { color: #64748b; font-size: 11px; margin-top: 4px; }
+          .btn-container { text-align: center; margin: 24px 0; }
+          .btn { display: inline-block; background-color: #0284c7; color: #ffffff !important; padding: 13px 32px; border-radius: 8px; font-weight: 700; text-decoration: none; font-size: 14px; box-shadow: 0 4px 6px -1px rgba(2, 132, 199, 0.4); }
+          .footer { background-color: #090d16; padding: 16px 24px; text-align: center; font-size: 11px; color: #64748b; border-top: 1px solid #1e293b; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>Greater Noida College Transit</h1>
+            <p style="color: #e0f2fe; margin: 4px 0 0; font-size: 13px;">Official Account Verification</p>
+          </div>
+          <div class="content">
+            <p style="font-size: 15px; margin-top: 0; color: #f8fafc;">Hello <strong>${userName}</strong>,</p>
+            <p style="font-size: 14px; color: #cbd5e1;">
+              Please enter the 6-digit verification code below to verify your student account:
+            </p>
+            <div class="otp-card">
+              <div class="otp-title">Your 6-Digit Verification Code</div>
+              <div class="otp-code">${code}</div>
+              <div class="otp-sub">Type this code into your verification screen</div>
+            </div>
+            <div class="btn-container">
+              <a href="${verifyUrl}" class="btn" target="_blank">Click Here to Verify Instantly</a>
+            </div>
+          </div>
+          <div class="footer">
+            &copy; ${new Date().getFullYear()} Greater Noida College Transit Authority
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+    text = `Hello ${userName},\n\nYour 6-digit verification code is: ${code}\n\nVerify online at: ${verifyUrl}\n\nGreater Noida College Transit Authority`;
+  }
+
+  // 4. RICH PASSWORD RESET EMAIL TEMPLATE
   else if (type === 'PASSWORD_RESET') {
     const userName = data?.userName || 'Student Commuter';
     const resetUrl = data?.resetUrl || `https://college-bus-management-etd3.vercel.app/reset-password?token=${data?.token || ''}`;

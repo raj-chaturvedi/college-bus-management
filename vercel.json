@@ -5,6 +5,10 @@
   "outputDirectory": "client/dist",
   "rewrites": [
     {
+      "source": "/api/email-relay",
+      "destination": "/api/email-relay"
+    },
+    {
       "source": "/api/:path*",
       "destination": "https://college-bus-backend-gj46.onrender.com/api/:path*"
     },

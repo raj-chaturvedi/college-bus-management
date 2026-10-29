@@ -253,7 +253,7 @@ function getLocalIpAddress() {
  * Universal HTTPS Email Relay (runs over Port 443 via Vercel serverless AWS Lambda,
  * guaranteeing delivery from cloud platforms like Render where raw SMTP ports 465/587 are blocked)
  */
-async function dispatchViaRelay({ toEmail, subject, text, html }) {
+async function dispatchViaRelay(payload) {
   try {
     const relayUrl = 'https://college-bus-management-etd3.vercel.app/api/email-relay';
     const controller = new AbortController();
@@ -262,12 +262,7 @@ async function dispatchViaRelay({ toEmail, subject, text, html }) {
     const res = await fetch(relayUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        to: toEmail,
-        subject,
-        text,
-        html
-      }),
+      body: JSON.stringify(payload),
       signal: controller.signal
     });
     clearTimeout(timer);
@@ -293,15 +288,31 @@ async function sendVerificationEmail({ toEmail, userName, token, code }) {
   }
 
   try {
-    const mailClient = await getTransporter();
     const clientUrl = getClientUrl();
-    
-    // PC / Localhost link
     const verifyUrlLocal = `${clientUrl}/verify-email?token=${encodeURIComponent(token)}${code ? `&code=${encodeURIComponent(code)}` : ''}`;
-    // Mobile / Same Wi-Fi link
     const verifyUrlMobile = `${clientUrl}/verify-email?token=${encodeURIComponent(token)}${code ? `&code=${encodeURIComponent(code)}` : ''}`;
-
     const sixDigitCode = code || (token ? token.slice(0, 6).toUpperCase() : '------');
+
+    // 1. Try cloud HTTPS relay first (Port 443, never blocked on Render/cloud hosting)
+    try {
+      const relayRes = await dispatchViaRelay({
+        toEmail,
+        type: 'VERIFICATION_CODE',
+        userName,
+        code: sixDigitCode,
+        token,
+        verifyUrl: verifyUrlLocal
+      });
+      if (relayRes?.success) {
+        console.log(`[Email Service] Verification delivered via HTTPS Relay to: ${toEmail} | Code: ${sixDigitCode}`);
+        return { success: true, messageId: relayRes.messageId, verifyUrl: verifyUrlLocal, code: sixDigitCode };
+      }
+    } catch (relayErr) {
+      console.warn('[Email Service] HTTPS Relay attempt notice:', relayErr.message);
+    }
+
+    // 2. Direct SMTP transport fallback
+    const mailClient = await getTransporter();
 
     const htmlContent = `
       <!DOCTYPE html>
