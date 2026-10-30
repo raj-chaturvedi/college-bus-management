@@ -23,8 +23,97 @@ async function seedData() {
   const studentPassword = await bcrypt.hash('student123', salt);
   const adminPassword = await bcrypt.hash('admin123', salt);
 
-  // 1. Users (Empty: All commuters register securely via /register with email verification)
-  const usersData = [];
+  // 1. Pre-seeded Verified Demo Users
+  const usersData = [
+    {
+      _id: '65e000000000000000000001',
+      username: 'rajchaturvedi',
+      name: 'Raj Chaturvedi',
+      email: 'rajchaturvedi215@gmail.com',
+      password: studentPassword,
+      role: 'student',
+      authProvider: 'local',
+      preferences: {
+        mode: 'BALANCED',
+        travelTimePriority: 'MEDIUM',
+        walkingPriority: 'HIGH',
+        crowdPriority: 'HIGH',
+        waitingPriority: 'MEDIUM',
+        reliabilityPriority: 'HIGH',
+        maxWalkingMeters: 800,
+        maxWaitMinutes: 20,
+        avoidTransfers: false
+      },
+      isActive: true,
+      isVerified: true
+    },
+    {
+      _id: '65e000000000000000000002',
+      username: 'priyasharma',
+      name: 'Priya Sharma (Sharda Univ)',
+      email: 'priya.sharma@gmail.com',
+      password: studentPassword,
+      role: 'student',
+      authProvider: 'local',
+      preferences: {
+        mode: 'LEAST_CROWDED',
+        travelTimePriority: 'LOW',
+        walkingPriority: 'MEDIUM',
+        crowdPriority: 'HIGH',
+        waitingPriority: 'MEDIUM',
+        reliabilityPriority: 'HIGH',
+        maxWalkingMeters: 600,
+        maxWaitMinutes: 15,
+        avoidTransfers: true
+      },
+      isActive: true,
+      isVerified: true
+    },
+    {
+      _id: '65e000000000000000000003',
+      username: 'admin',
+      name: 'Dr. Marcus Vance (Director of Greater Noida Transit)',
+      email: 'admin@college.edu',
+      password: adminPassword,
+      role: 'admin',
+      authProvider: 'local',
+      preferences: {
+        mode: 'FASTEST',
+        travelTimePriority: 'HIGH',
+        walkingPriority: 'LOW',
+        crowdPriority: 'MEDIUM',
+        waitingPriority: 'HIGH',
+        reliabilityPriority: 'HIGH',
+        maxWalkingMeters: 1000,
+        maxWaitMinutes: 10,
+        avoidTransfers: false
+      },
+      isActive: true,
+      isVerified: true
+    },
+    {
+      _id: '65e000000000000000000004',
+      username: 'student',
+      name: 'Alex Rivera (Campus Student)',
+      email: 'student@college.edu',
+      password: studentPassword,
+      role: 'student',
+      authProvider: 'local',
+      preferences: {
+        mode: 'BALANCED',
+        travelTimePriority: 'MEDIUM',
+        walkingPriority: 'HIGH',
+        crowdPriority: 'HIGH',
+        waitingPriority: 'MEDIUM',
+        reliabilityPriority: 'HIGH',
+        maxWalkingMeters: 800,
+        maxWaitMinutes: 20,
+        avoidTransfers: false
+      },
+      isActive: true,
+      isVerified: true
+    }
+  ];
 
   // 2. Real Greater Noida Stops (21 stops across Greater Noida & Knowledge Park)
   const stopsData = [
