@@ -14,6 +14,15 @@
 
 ---
 
+### 🌐 Live Portal Access & Evaluation
+
+For portfolio evaluators, recruiters, and transit testing:
+- **Instant Google One-Tap:** Use the **"Continue with Google"** option on the [Sign In Page](https://college-bus-management-etd3.vercel.app/login) to access the commuter dashboard immediately.
+- **Commuter Registration:** New commuters can register with an institutional or personal email address via the **"Create an account"** flow and complete the 6-digit OTP email verification.
+- **Enterprise Credential Security:** In strict adherence to security best practices, live administrative credentials are not published in public documentation. Technical reviewers requiring elevated administrative access can request evaluation access directly from the platform author.
+
+---
+
 > [!CAUTION]
 > ### PROPRIETARY & CONFIDENTIAL INTELLECTUAL PROPERTY — ALL RIGHTS RESERVED
 > **Copyright &copy; 2026 Raj Chaturvedi. All rights reserved.**  
@@ -97,11 +106,13 @@ Traditional college transport portals rely on static PDF time tables or primitiv
 - **Incident & Emergency SOS Dispatch:** Immediate access to emergency security contacts, campus control room dispatch, and driver incident reporting.
 
 ### 4. Advanced Authentication & Account Protection
+- **Google OAuth 2.0 Identity Federation:** Native Google Identity integration (`@react-oauth/google`) with cryptographic ID token validation and automatic commuter onboarding.
 - **Strict Username Sanitation:** 4–20 characters, alphanumeric with underscores (`/^[a-zA-Z0-9_]+$/`), normalized to lowercase, preventing whitespace injection or spoofing.
-- **Enterprise-Grade Password Rules:** Minimum 10 characters requiring uppercase, lowercase, numbers, and special symbols (`!@#$%^&*`). Prevents dictionary and credential-stuffing attacks.
+- **Enterprise-Grade Password Rules:** Minimum 10 characters requiring uppercase, lowercase, numbers, and special symbols (`!@#$%^&*`). Enforces rejection of common passwords and user-attribute inclusion to neutralize credential-stuffing and dictionary attacks.
 - **6-Digit Email Verification Flow:** Account registration issues a 15-minute 6-digit OTP code delivered via dual SMTP / HTTPS relay with a 10-second timeout guarantee.
 - **Password Reset Token System:** Generates cryptographically secure 32-byte hex reset tokens sent to verified commuter email inboxes, displayed in a high-visibility security box.
-- **Automated Rate Limiting:** Sliding-window rate limiters safeguarding login endpoints (10 attempts / 15 mins), registration (5 accounts / hr), and verification code resends.
+- **Sliding-Window Rate Limiting:** In-memory sliding rate limiters safeguarding login endpoints (10 attempts / 15 mins), registration (5 accounts / hr), and OTP verification resends.
+- **Zero Static Credential Exposure:** Production deployments adhere to OWASP guidelines; credentials and secrets are injected via secure environment variables rather than hardcoded in public repository markdown.
 
 ### 5. Grounded AI Transit Assistant (Google Gemini 1.5 Flash)
 - Seamless slide-over AI assistant drawer providing instant answers on transit timings, least crowded routes, and delay alerts.
@@ -209,7 +220,7 @@ JWT_SECRET=college_bus_management_super_secure_jwt_secret_key_2026
 GEMINI_API_KEY=your_gemini_api_key
 
 # Optional: Live Gmail SMTP Dispatch
-GMAIL_APP_USER=rajchaturvedi215@gmail.com
+GMAIL_APP_USER=your_gmail_address@gmail.com
 GMAIL_APP_PASS=your_gmail_app_password
 ```
 
